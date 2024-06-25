@@ -4,7 +4,6 @@ import numpy as np
 import cv2
 from tqdm import tqdm
 import argparse
-from scipy import stats
 
 # Global variables
 PDF_PATH = 'input.pdf'
