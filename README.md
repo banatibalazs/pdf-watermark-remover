@@ -72,7 +72,7 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_3_erode_dilate.gif" alt="draw mask gif">
 </p>
 
-6. **Color Range:** After finalizing the mask, set the color range with trackbars.
+6. **Color Range:** Set the color range with trackbars to finalize the mask
 <p align="center">
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
 </p>
