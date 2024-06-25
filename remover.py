@@ -7,9 +7,8 @@ import argparse
 from scipy import stats
 
 # Global variables
-# PDF_PATH = '.\\gra.pdf'
-PDF_PATH = '.\\inputs\\w.pdf'
-SAVE_PATH = '.\\outputs\\output.pdf'
+PDF_PATH = 'input.pdf'
+SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
 # The final PDF will have the same dimensions as the original PDF
@@ -49,15 +48,6 @@ def sharpen_image(img, w):
 
 
 def get_most_frequent_color(image):
-    """
-    Get the most frequent color in each channel of an image.
-
-    Parameters:
-    image (np.array): The BGR image.
-
-    Returns:
-    np.array: The most frequent color in each channel.
-    """
     # Split the image into B, G, R channels
     b, g, r = cv2.split(image)
 
