@@ -2,6 +2,9 @@
 
 This python script removes watermarks from PDFs using opencv.
 
+## Python Version Compatibility
+
+This script is compatible with Python 3.6 and above.
 
 ## Dependencies
 
