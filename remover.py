@@ -15,7 +15,7 @@ MAX_WIDTH = 1920
 MAX_HEIGHT = 1080
 
 # Set the DPI for the images, this affects the quality of the final PDF
-DPI = 100
+DPI = 200
 
 
 def add_text_to_image(img, text, org, color=(255, 0, 0), thickness=2, fontScale=0.8):
@@ -447,7 +447,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Remove watermark from PDF.')
     parser.add_argument('pdf_path', type=str, nargs='?', default=PDF_PATH, help='Path to the input PDF file.')
     parser.add_argument('save_path', type=str, nargs='?', default=SAVE_PATH, help='Path to save the output PDF file.')
-    parser.add_argument('--dpi', type=int, default=300, help='DPI for the images. Default is 300.')
+    parser.add_argument('--dpi', type=int, default=DPI, help='DPI for the images. Default is 300.')
     parser.add_argument('--max_width', type=int, default=1920, help='Maximum width for the images. Default is 1920.')
     parser.add_argument('--max_height', type=int, default=1080, help='Maximum height for the images. Default is 1080.')
     return parser.parse_args()
