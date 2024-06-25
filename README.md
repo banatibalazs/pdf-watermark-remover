@@ -50,19 +50,29 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 
 ## Usage
 
-For `watermark.py`:
 
 1. **Path to your pdf:** Set `PDF_PATH` global variable or pass it as an argument in the command line. 
 2. **Area Selection:** Draw on the image to create a mask for the watermark.
-<p align="center"> ![draw mask gif](https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_1_draw.gif)
-/p>
-4. **Median Image Calculation:** This process sorts pixel values at each location in a set of images and selects the middle value. It helps to identify the constant features in the image.
-![threshold mask gif](https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_2_threshold.gif)
+<p align="center">
+  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_1_draw.gif" alt="draw mask gif">
+</p>
+
+3. **Median Image Calculation:** This process sorts pixel values at each location in a set of images and selects the middle value. It helps to identify the constant features in the image.
+<p align="center">
+  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_2_threshold.gif" alt="draw mask gif">
+</p>
+
 4. **Thresholding:** Adjust the threshold value to fine-tune the mask.
 5. **Mask Adjustment:** Use 'd', 'e', or 'r' to dilate, erode, or reset the mask.
-![erode dilate mask gif](https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_3_erode_dilate.gif)
+<p align="center">
+  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_3_erode_dilate.gif" alt="draw mask gif">
+</p>
+
 6. **Color Range:** After finalizing the mask, set the color range with trackbars.
-![adjust color filter gif](https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif)
+<p align="center">
+  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
+</p>
+
 7. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file.
 
 Note: Large files or high DPI can slow the reading of the PDF file. If the process is too slow, consider decreasing the DPI or using smaller PDFs.
