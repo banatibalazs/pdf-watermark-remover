@@ -32,7 +32,7 @@ pip install pdf2image img2pdf opencv-contrib-python tqdm
 ## Running the Script
 
 ```
-python remover.py input.pdf output.pdf
+python remover.py 
 ```
 
 
@@ -77,7 +77,7 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
 </p>
 
-7. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file.
+7. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. The area of the removed watermark is filled with the **most common color** in the image.
 
 ## Note
 Large files or high DPI can slow the reading of the PDF file. If the process is too slow,
