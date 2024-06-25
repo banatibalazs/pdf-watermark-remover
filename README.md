@@ -78,4 +78,6 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 Note: Large files or high DPI can slow the reading of the PDF file. If the process is too slow, consider decreasing the DPI or using smaller PDFs.
 
 ## Note
+Large files or high DPI can slow the reading of the PDF file. If the process is too slow,
+consider decreasing the DPI or using smaller PDFs.
 This project is for educational purposes and should not infringe on copyrights.
