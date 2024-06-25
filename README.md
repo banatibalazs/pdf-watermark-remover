@@ -39,7 +39,7 @@ python remover.py
 The arguments for the script are as follows (all are optional)
 - **pdf_path**: The path to the PDF file. Default is `input.pdf`.
 - **save_path**: The path to save the output PDF file. Default is `output.pdf`.
-- **--dpi**: The resolution of the images extracted from the PDF file. Default is `300`.
+- **--dpi**: The resolution of the images extracted from the PDF file. Default is `100`.
 - **--max_width**: The maximum width of the images shown during the mask selection. Default is `1920`.
 - **--max_height**: The maximum height of the images shown during the mask selection. Default is `1080`.
 
