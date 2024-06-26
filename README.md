@@ -49,20 +49,35 @@ The script requires the following Python libraries:
 
 ## Installation
 
-Create a virtual environment, activate it and install the required libraries.
+0. **Clone the repository**
 
-```bash
-python -m venv env_name
-```
+    ```bash
+    git clone git@github.com:banatibalazs/pdf-watermark-remover.git
+   ```
+    ```commandline
+    cd pdf-watermark-remover
+    ```
+1. **Create a virtual environment and activate it**
+
+    ```bash
+    python -m venv env_name
+    ```
+   - on Windows:
     
-```bash
-env_name\Scripts\activate
-```
+        ```bash
+        env_name\Scripts\activate
+        ```
 
+   - on Linux:
+        ```
+        source env_name/bin/activate
+        ```
 
-```bash
-pip install pdf2image img2pdf opencv-contrib-python tqdm
-```
+2. **Install the required libraries.**
+    
+    ```bash
+    pip install pdf2image img2pdf opencv-contrib-python tqdm
+    ```
 
 ## Running the Script
 
