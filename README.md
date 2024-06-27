@@ -42,7 +42,10 @@ This script is compatible with `Python 3.6` and above.
 
 The script requires the following Python libraries:
 
-- `pdf2image`: Used for converting PDF files into images.
+- `pdf2image`: Used for converting PDF files into images. This library depends on `poppler-utils`, which is a set of command line tools for working with PDF files. You need to install `poppler-utils` separately for `pdf2image` to work. The installation process depends on your operating system:
+  - For Windows: You can download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). After downloading, extract the files into a directory, and then add that directory to your PATH environment variable.
+  - For Ubuntu/Debian: You can install `poppler-utils` with the following command: `sudo apt-get install -y poppler-utils`
+  - For macOS: If you have Homebrew installed, you can install `poppler` with the following command: `brew install poppler`
 - `img2pdf`: Used for converting images back into a PDF file.
 - `opencv-contrib-python`: A wrapper package for OpenCV python bindings along with its extra modules.
 - `tqdm`: Used for displaying progress bars in the console.
