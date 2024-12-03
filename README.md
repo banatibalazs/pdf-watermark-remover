@@ -47,7 +47,9 @@ The script requires the following Python libraries:
 - `opencv-contrib-python`: A wrapper package for OpenCV python bindings along with its extra modules.
 - `tqdm`: Used for displaying progress bars in the console.
 
-## Installation #TODO Solve Windows fitz installation error
+## Installation 
+
+**TODO Solve Windows fitz installation error**
 
 0. **Clone the repository**
 
@@ -62,7 +64,7 @@ The script requires the following Python libraries:
     ```bash
     python -m venv env_name
     ```
-   - on Windows: 
+   - ~~on Windows:~~ 
     
         ```bash
         env_name\Scripts\activate
@@ -81,9 +83,9 @@ The script requires the following Python libraries:
 
 3. **Install poppler-utils**
 
-    - For Windows: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.
+    - ~~For Windows: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.~~
     - For Ubuntu/Debian: Install `poppler-utils` with the following command: `sudo apt-get install -y poppler-utils`
-    - For macOS: If you have Homebrew installed, you can install `poppler` with the following command: `brew install poppler`
+    - ~~For macOS: If you have Homebrew installed, you can install `poppler` with the following command: `brew install poppler`~~
    
 
 ## Running the Script
