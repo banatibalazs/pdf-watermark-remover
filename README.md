@@ -47,7 +47,7 @@ The script requires the following Python libraries:
 - `opencv-contrib-python`: A wrapper package for OpenCV python bindings along with its extra modules.
 - `tqdm`: Used for displaying progress bars in the console.
 
-## Installation
+## Installation #TODO Solve Windows fitz installation error
 
 0. **Clone the repository**
 
@@ -62,7 +62,7 @@ The script requires the following Python libraries:
     ```bash
     python -m venv env_name
     ```
-   - on Windows:
+   - on Windows: 
     
         ```bash
         env_name\Scripts\activate
@@ -76,7 +76,7 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install pdf2image img2pdf opencv-contrib-python tqdm
+    pip install pdf2image img2pdf opencv-contrib-python tqdm fitz tools frontend
     ```
 
 3. **Install poppler-utils**
