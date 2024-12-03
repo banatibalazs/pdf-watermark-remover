@@ -52,7 +52,7 @@ The script requires the following Python libraries:
 0. **Clone the repository**
 
     ```bash
-    git clone git@github.com:banatibalazs/pdf-watermark-remover.git
+    git clone https://github.com/banatibalazs/pdf-watermark-remover.git
    ```
     ```commandline
     cd pdf-watermark-remover
