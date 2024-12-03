@@ -17,26 +17,6 @@ MAX_HEIGHT = 1080
 # Set the DPI for the images, this affects the quality of the final PDF
 DPI = 200
 
-
-
-import fitz  # PyMuPDF
-
-def convert_pdf_to_images(pdf_path):
-    doc = fitz.open(pdf_path)
-    images = []
-    for i in range(len(doc)):
-        for img in doc.get_page_images(i):
-            xref = img[0]
-            base = doc.extract_image(xref)
-            image_data = base["image"]
-
-            # Convert the image data to an OpenCV image (numpy array format)
-            image = np.array(bytearray(image_data), dtype=np.uint8)
-            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-
-            images.append(image)
-    return images
-
 def add_text_to_image(img, text, org, color=(255, 0, 0), thickness=2, fontScale=0.8):
     overlay = img.copy()
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
