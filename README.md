@@ -49,8 +49,6 @@ The script requires the following Python libraries:
 
 ## Installation 
 
-**TODO Solve Windows fitz installation error**
-
 0. **Clone the repository**
 
     ```bash
@@ -64,13 +62,13 @@ The script requires the following Python libraries:
     ```bash
     python -m venv env_name
     ```
-   - ~~on Windows:~~ 
+   - on Windows:
     
         ```bash
         env_name\Scripts\activate
         ```
 
-   - on Linux:
+   - ~~on Linux:~~
         ```
         source env_name/bin/activate
         ```
@@ -78,13 +76,13 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install pdf2image img2pdf opencv-contrib-python tqdm fitz tools frontend
+    pip install pdf2image img2pdf opencv-contrib-python tqdm
     ```
 
 3. **Install poppler-utils**
 
-    - ~~For Windows: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.~~
-    - For Ubuntu/Debian: Install `poppler-utils` with the following command: `sudo apt-get install -y poppler-utils`
+    - For Windows: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.
+    - ~~For Ubuntu/Debian: Install `poppler-utils` with the following command: `sudo apt-get install -y poppler-utils`~~
     - ~~For macOS: If you have Homebrew installed, you can install `poppler` with the following command: `brew install poppler`~~
    
 
