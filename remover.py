@@ -17,25 +17,20 @@ MAX_HEIGHT = 1080
 # Set the DPI for the images, this affects the quality of the final PDF
 DPI = 200
 
-def add_text_to_image(img, text, org, color=(255, 0, 0), thickness=2, fontScale=0.8):
-    overlay = img.copy()
-    fontFace = cv2.FONT_HERSHEY_SIMPLEX
-    # Use cv2.putText() method to draw the text on the overlay
-    overlay = cv2.putText(overlay, text, org, fontFace, fontScale, color, thickness, cv2.LINE_AA)
-    # Define the transparency factor (alpha)
-    alpha = 0.4
-    # Blend the original image with the overlay
-    texted_image = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
 
-    return texted_image
-
-
-def add_texts_to_image(image, texts, start_pos, color):
-    pos = list(start_pos)
+def add_texts_to_image(image, texts, start_pos, color, background_color = (0,0,0)):
+    font_face = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.8
+    thickness = 1
+    texted_image = image.copy()
+    x, y = start_pos
     for text in texts:
-        image = add_text_to_image(image, text, tuple(pos), color)
-        pos[1] += 30  # Move position for next text
-    return image
+        (text_w, text_h), _ = cv2.getTextSize(text, font_face, font_scale, thickness)
+
+        texted_image = cv2.rectangle(texted_image, (x, y + 10), (x + text_w, y - text_h - 5), background_color, -1)
+        texted_image = cv2.putText(texted_image, text, (x, y), font_face, font_scale, color, thickness, cv2.LINE_AA)
+        y += 30  # Move position for next text
+    return texted_image
 
 
 def sharpen_image(img, w):
@@ -144,9 +139,9 @@ class MaskDrawer:
                       "Press 'A' to go to the previous page.",
                       "Press 'D' to go to the next page.",
                       "Press 'R' to reset the mask.",
-                      "Press 'C' to remove this text.",
+                      "Press 'C' to hide/show this text.",
                       "Press 'space' to finish."]
-        self.text_color = (255, 0, 0)
+        self.text_color = (255, 255, 255)
         self.text_pos = (10, 40)
         self.is_text_shown = True
 
@@ -223,7 +218,7 @@ class MaskProcessor:
         self.texts = ["Press 'D' to dilate the mask.",
                       "Press 'E' to erode the mask.",
                       "Press 'R' to reset the mask.",
-                      "Press 'C' to remove this text.",
+                      "Press 'C' to hide/show this text.",
                       "Press 'space' to finish."]
         self.text_color = (255, 255, 255)
         self.text_pos = (10, 40)
@@ -322,9 +317,9 @@ class ColorFilter:
         self.texts = ["Set the color range with trackbars.",
                       "Press 'A' to go to the previous page.",
                       "Press 'D' to go to the next page.",
-                      "Press 'C' to remove this text.",
+                      "Press 'C' to hide/show this text.",
                       "Press 'space' to finish."]
-        self.text_color = (255, 0, 0)
+        self.text_color = (255, 255, 255)
         self.text_pos = (10, 40)
         self.is_text_shown = True
 
