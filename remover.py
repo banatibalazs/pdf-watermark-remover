@@ -217,7 +217,8 @@ class MaskProcessor:
         self.mask = gray_mask
         self.final_mask = None
         self.median_image = self.calc_median_image()
-        self.threshold = 175
+        self.threshold_min = 0
+        self.threshold_max = 195
         self.thresholded_mask = None
         self.texts = ["Press 'D' to dilate the mask.",
                       "Press 'E' to erode the mask.",
@@ -242,16 +243,24 @@ class MaskProcessor:
 
     def threshold_mask(self):
         cv2.imshow('mask', self.median_image)
-        cv2.createTrackbar('threshold', 'mask', self.threshold, 255, self.on_threshold_trackbar)
+        cv2.createTrackbar('th_min', 'mask', self.threshold_min, 255, self.on_threshold_trackbar_min)
+        cv2.createTrackbar('th_max', 'mask', self.threshold_max, 255, self.on_threshold_trackbar_max)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    def on_threshold_trackbar(self, pos):
-        self.threshold = pos
+    def on_threshold_trackbar_min(self, pos):
+        self.threshold_min = pos
+        self.update_median()
+
+    def on_threshold_trackbar_max(self, pos):
+        self.threshold_max = pos
         self.update_median()
 
     def update_median(self):
-        _, self.thresholded_mask = cv2.threshold(self.median_image, self.threshold, 255, cv2.THRESH_BINARY_INV)
+        _, self.thresholded_mask_min = cv2.threshold(self.median_image, self.threshold_min, 255, cv2.THRESH_BINARY)
+        _, self.thresholded_mask_max = cv2.threshold(self.median_image, self.threshold_max, 255, cv2.THRESH_BINARY_INV)
+
+        self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask_min, self.thresholded_mask_max)
         self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask, self.mask)
         cv2.imshow('mask', self.thresholded_mask)
 
