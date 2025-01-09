@@ -89,7 +89,7 @@ class ColorAdjuster:
                 self.update_image()
             if key == 32:
                 break
-        # cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
     def get_parameters(self):
         return self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w
