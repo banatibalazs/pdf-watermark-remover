@@ -31,23 +31,28 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # Extract images from the PDF
     image_extractor = PDFImageExtractor(args.pdf_path, args.dpi, args.max_width, args.max_height)
     images_for_mask_making = image_extractor.get_images_for_mask_making()
     images_for_watermark_removal = image_extractor.get_images_for_watermark_removal()
 
+    # Draw the initial mask
     drawer = MaskDrawer(images_for_mask_making)
     drawer.draw_mask()
     drawn_mask = drawer.get_gray_mask()
 
+    # Refine the mask
     refiner = MaskRefiner(images_for_mask_making, drawn_mask)
     refiner.threshold_mask()
     refiner.erode_dilate_mask()
     mask = refiner.get_bgr_mask()
 
+    # Set the color range to be filtered/removed
     color_adjuster = ColorAdjuster(images_for_mask_making, mask)
     color_adjuster.adjust_color_filter()
     parameters = color_adjuster.get_parameters()
 
+    # Remove the watermark and save the final PDF
     remover = WatermarkRemover(images_for_watermark_removal, mask, parameters)
     remover.remove_watermark()
     remover.save_pdf(args.save_path)
