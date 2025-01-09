@@ -101,7 +101,3 @@ class MaskRefiner:
     def get_bgr_mask(self):
         return cv2.cvtColor(self.final_mask, cv2.COLOR_GRAY2BGR)
 
-    def show_mask(self):
-        cv2.imshow('watermark remover', self.final_mask)
-        cv2.waitKey(0)
-        # cv2.destroyAllWindows()
