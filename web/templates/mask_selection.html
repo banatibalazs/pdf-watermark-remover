@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mask Selection</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/mask_selection.css">
+</head>
+<body>
+    <h1>Mask Selection</h1>
+    <div class="canvas-container">
+        <img id="pdf-page" src="/page/{{ page_num }}" alt="PDF Page">
+        <canvas id="drawing-canvas"></canvas>
+    </div>
+    <div class="buttons">
+        <button onclick="prevPage()">Previous</button>
+        <button onclick="nextPage()">Next</button>
+        <button class="reset-mask" onclick="resetMask()">Reset Mask</button>
+        <button onclick="mask_selection_done()">Done</button>
+    </div>
+
+    <script>
+        let currentPage = {{ page_num }};
+        const totalPages = {{ total_pages }};
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const img = document.getElementById('pdf-page');
+        let drawing = false;
+        let points = [];
+        let polygon = [];
+
+        function resizeCanvas() {
+            canvas.width = img.clientWidth;
+            canvas.height = img.clientHeight;
+        }
+
+        window.onload = resizeCanvas;
+        window.onresize = resizeCanvas;
+
+        canvas.addEventListener('mousedown', () => {
+            drawing = true;
+            points = []; // Reset points array
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            if (points.length > 1) {
+                polygon.push(points.slice()); // Save the drawn polygon
+                fillPoly(ctx, points, 'blue'); // Call fillPoly with the points
+            }
+        });
+
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            points.push([x, y]); // Store the coordinates
+
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'red';
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function fillPoly(ctx, points, color) {
+            if (points.length < 2) return;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+
+            ctx.closePath();
+            ctx.lineTo(points[0][0], points[0][1]);
+            ctx.stroke();
+            ctx.beginPath();
+            savePolygon();
+            polygon = [];
+        }
+
+        function savePolygon() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            fetch('/save_polygon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    polygon: polygon,
+                    canvasWidth: canvasWidth,
+                    canvasHeight: canvasHeight
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .then(() => {
+                refreshPage();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                document.getElementById('pdf-page').src = '/page/' + currentPage;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function resetMask() {
+        fetch('/reset_mask', {
+            method: 'POST'
+        })
+        .then(() => {
+            refreshPage();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+        function refreshPage() {
+            document.getElementById('pdf-page').src = '/page/' + currentPage;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                document.getElementById('pdf-page').src = '/page/' + currentPage;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function mask_selection_done() {
+            window.location.href = '/mask_thresholding';
+        }
+    </script>
+</body>
+</html>

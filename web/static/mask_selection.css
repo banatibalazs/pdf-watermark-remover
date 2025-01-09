@@ -1,0 +1,25 @@
+/* web/static/mask_selection.css */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+.canvas-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; /* Adjust the height as needed */
+    width: 100%;
+}
+.canvas-container img,
+.canvas-container canvas {
+    position: absolute;
+}
+.buttons {
+    margin-top: 20px;
+    z-index: 2;
+}

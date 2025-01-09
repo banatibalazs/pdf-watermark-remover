@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 from pdf2image import convert_from_path
 from modules.utils import convert_images
 
