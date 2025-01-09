@@ -18,7 +18,6 @@ MAX_HEIGHT = 1080
 DPI = 200
 
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Remove watermark from PDF.')
     parser.add_argument('pdf_path', type=str, nargs='?', default=PDF_PATH, help='Path to the input PDF file.')

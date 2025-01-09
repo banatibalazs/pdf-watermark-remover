@@ -2,6 +2,13 @@ import cv2
 import numpy as np
 from modules.utils import add_texts_to_image
 
+TEXTS = ["Press 'D' to dilate the mask.",
+        "Press 'E' to erode the mask.",
+        "Press 'R' to reset the mask.",
+        "Press 'C' to hide/show this text.",
+        "Press 'space' to finish."]
+
+TEXT_COLOR = (255, 255, 255)
 
 
 class MaskRefiner:
@@ -13,12 +20,8 @@ class MaskRefiner:
         self.threshold_min = 0
         self.threshold_max = 195
         self.thresholded_mask = None
-        self.texts = ["Press 'D' to dilate the mask.",
-                      "Press 'E' to erode the mask.",
-                      "Press 'R' to reset the mask.",
-                      "Press 'C' to hide/show this text.",
-                      "Press 'space' to finish."]
-        self.text_color = (255, 255, 255)
+        self.texts = TEXTS
+        self.text_color = TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
 

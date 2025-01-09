@@ -3,6 +3,13 @@ import numpy as np
 from modules.utils import filter_color, sharpen_image, add_texts_to_image, fill_masked_area
 
 
+TEXTS = ["Set the color range with trackbars.",
+        "Press 'A' to go to the previous page.",
+        "Press 'D' to go to the next page.",
+        "Press 'C' to hide/show this text.",
+        "Press 'space' to finish."]
+TEXT_COLOR = (255, 255, 255)
+
 class ColorAdjuster:
     def __init__(self, images, mask):
         self.images = images
@@ -16,7 +23,7 @@ class ColorAdjuster:
                       "Press 'D' to go to the next page.",
                       "Press 'C' to hide/show this text.",
                       "Press 'space' to finish."]
-        self.text_color = (255, 255, 255)
+        self.text_color = TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
 
