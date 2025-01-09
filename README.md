@@ -49,8 +49,6 @@ The script requires the following Python libraries:
 
 ## Installation 
 
-Known error: On linux the trackbars do not show up. 
-
 0. **Clone the repository**
 
     ```bash
