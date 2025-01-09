@@ -11,8 +11,8 @@ SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
 # The final PDF will have the same dimensions as the original PDF
-MAX_WIDTH = 1920
-MAX_HEIGHT = 1080
+MAX_WIDTH = 1400
+MAX_HEIGHT = 800
 
 # Set the DPI for the images, this affects the quality of the final PDF
 DPI = 200
@@ -23,8 +23,8 @@ def parse_args():
     parser.add_argument('pdf_path', type=str, nargs='?', default=PDF_PATH, help='Path to the input PDF file.')
     parser.add_argument('save_path', type=str, nargs='?', default=SAVE_PATH, help='Path to save the output PDF file.')
     parser.add_argument('--dpi', type=int, default=DPI, help='DPI for the images. Default is 300.')
-    parser.add_argument('--max_width', type=int, default=1920, help='Maximum width for the images. Default is 1920.')
-    parser.add_argument('--max_height', type=int, default=1080, help='Maximum height for the images. Default is 1080.')
+    parser.add_argument('--max_width', type=int, default=MAX_WIDTH, help='Maximum width for the images. Default is 1920.')
+    parser.add_argument('--max_height', type=int, default=MAX_HEIGHT, help='Maximum height for the images. Default is 1080.')
     return parser.parse_args()
 
 

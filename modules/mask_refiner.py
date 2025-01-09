@@ -96,7 +96,7 @@ class MaskRefiner:
             if key == 32:
                 break
 
-        # cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
     def get_bgr_mask(self):
         return cv2.cvtColor(self.final_mask, cv2.COLOR_GRAY2BGR)
