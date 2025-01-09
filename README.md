@@ -117,7 +117,7 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 
 - **Process is too slow:**
 
-   If the process is too slow, try decreasing the `dpi` parameter.
+   The reading of large PDF files can be slow, especially if the resolution is high. If the process is too slow, try decreasing the `dpi` parameter.
 
 
 ## Disclaimer
