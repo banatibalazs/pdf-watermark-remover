@@ -38,11 +38,11 @@ class MaskRefiner:
         return median_image_gray
 
     def threshold_mask(self):
-        cv2.imshow('mask', self.median_image)
-        cv2.createTrackbar('th_min', 'mask', self.threshold_min, 255, self.on_threshold_trackbar_min)
-        cv2.createTrackbar('th_max', 'mask', self.threshold_max, 255, self.on_threshold_trackbar_max)
+        cv2.imshow('watermark remover', self.median_image)
+        cv2.createTrackbar('th_min', 'watermark remover', self.threshold_min, 255, self.on_threshold_trackbar_min)
+        cv2.createTrackbar('th_max', 'watermark remover', self.threshold_max, 255, self.on_threshold_trackbar_max)
         cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
     def on_threshold_trackbar_min(self, pos):
         self.threshold_min = pos
@@ -58,7 +58,7 @@ class MaskRefiner:
 
         self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask_min, self.thresholded_mask_max)
         self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask, self.mask)
-        cv2.imshow('mask', self.thresholded_mask)
+        cv2.imshow('watermark remover', self.thresholded_mask)
 
     def erode_dilate_mask(self):
 
@@ -67,7 +67,7 @@ class MaskRefiner:
 
         kernel = np.ones((3, 3), np.uint8)
         texted_mask = add_texts_to_image(self.final_mask, self.texts, self.text_pos, self.text_color)
-        cv2.imshow('mask', texted_mask)
+        cv2.imshow('watermark remover', texted_mask)
         while True:
             # Listen for keypress events
             key = cv2.waitKey(1) & 0xFF
@@ -85,9 +85,9 @@ class MaskRefiner:
 
             if self.is_text_shown:
                 texted_mask = add_texts_to_image(self.final_mask, self.texts, self.text_pos, self.text_color)
-                cv2.imshow('mask', texted_mask)
+                cv2.imshow('watermark remover', texted_mask)
             else:
-                cv2.imshow('mask', self.final_mask)
+                cv2.imshow('watermark remover', self.final_mask)
 
             if key == ord('c'):
                 self.is_text_shown = not self.is_text_shown
@@ -96,12 +96,12 @@ class MaskRefiner:
             if key == 32:
                 break
 
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
     def get_bgr_mask(self):
         return cv2.cvtColor(self.final_mask, cv2.COLOR_GRAY2BGR)
 
     def show_mask(self):
-        cv2.imshow('mask', self.final_mask)
+        cv2.imshow('watermark remover', self.final_mask)
         cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()

@@ -64,17 +64,17 @@ class ColorAdjuster:
         im_to_show = sharpen_image(im_to_show, self.w)
         if self.is_text_shown:
             im_to_show = add_texts_to_image(im_to_show, self.texts, self.text_pos, self.text_color)
-        cv2.imshow('image', im_to_show)
+        cv2.imshow('watermark remover', im_to_show)
 
     def adjust_color_filter(self):
-        cv2.imshow('image', add_texts_to_image(self.images[self.current_index], self.texts, self.text_pos, self.text_color))
-        cv2.createTrackbar('R min', 'image', self.r_min, 255, self.on_r_min_changed)
-        cv2.createTrackbar('R max', 'image', self.r_max, 255, self.on_r_max_changed)
-        cv2.createTrackbar('G min', 'image', self.g_min, 255, self.on_g_min_changed)
-        cv2.createTrackbar('G max', 'image', self.g_max, 255, self.on_g_max_changed)
-        cv2.createTrackbar('B min', 'image', self.b_min, 255, self.on_b_min_changed)
-        cv2.createTrackbar('B max', 'image', self.b_max, 255, self.on_b_max_changed)
-        cv2.createTrackbar('Sharpen', 'image', 0, 100, self.on_w_changed)
+        cv2.imshow('watermark remover', add_texts_to_image(self.images[self.current_index], self.texts, self.text_pos, self.text_color))
+        cv2.createTrackbar('R min', 'watermark remover', self.r_min, 255, self.on_r_min_changed)
+        cv2.createTrackbar('R max', 'watermark remover', self.r_max, 255, self.on_r_max_changed)
+        cv2.createTrackbar('G min', 'watermark remover', self.g_min, 255, self.on_g_min_changed)
+        cv2.createTrackbar('G max', 'watermark remover', self.g_max, 255, self.on_g_max_changed)
+        cv2.createTrackbar('B min', 'watermark remover', self.b_min, 255, self.on_b_min_changed)
+        cv2.createTrackbar('B max', 'watermark remover', self.b_max, 255, self.on_b_max_changed)
+        cv2.createTrackbar('Sharpen', 'watermark remover', 0, 100, self.on_w_changed)
 
         while True:
             key = cv2.waitKey(1) & 0xFF

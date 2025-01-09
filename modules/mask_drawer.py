@@ -46,8 +46,8 @@ class MaskDrawer:
             self.points.clear()
 
     def draw_mask(self):
-        cv2.namedWindow('mask')
-        cv2.setMouseCallback('mask', self.draw_free)
+        cv2.namedWindow('watermark remover')
+        cv2.setMouseCallback('watermark remover', self.draw_free)
 
         self.current_image = add_texts_to_image(self.images[self.current_page_index], self.texts, self.text_pos, self.text_color)
 
@@ -70,9 +70,9 @@ class MaskDrawer:
                 else:
                     self.current_image = self.images[self.current_page_index].copy()
 
-            cv2.imshow('mask', cv2.addWeighted(self.current_image, 0.7, self.mask, 0.3, 0))
+            cv2.imshow('watermark remover', cv2.addWeighted(self.current_image, 0.7, self.mask, 0.3, 0))
 
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
     def get_gray_mask(self):
         return cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY)
