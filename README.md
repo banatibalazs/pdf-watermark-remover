@@ -106,7 +106,20 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 ```
 
 
-## Note
-Large files or high DPI can slow the reading of the PDF file. If the process is too slow,
-consider decreasing the DPI or using smaller PDFs.
-This project is for educational purposes and should not infringe on copyrights.
+## Troubleshooting
+
+- **Trackbars not visible:**
+
+   If you cannot see the trackbar, try decreasing the `max_height` parameter.
+
+   **Note:** On Linux, the trackbars are displayed at the bottom of the window, while on Windows, they are displayed at the top.
+
+
+- **Process is too slow:**
+
+   If the process is too slow, try decreasing the `dpi` parameter.
+
+
+## Disclaimer
+
+This script is for educational purposes only. The watermark removal process may not be perfect and may not work for all types of watermarks. The script may also remove parts of the image that are not watermarks. Use this script at your own risk.
