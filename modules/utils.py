@@ -31,7 +31,7 @@ def fill_masked_area(image, mask):
     return img
 
 def inpaint_image(image, mask):
-     return cv2.inpaint(image, mask, 3, cv2.INPAINT_TELEA)
+     return cv2.inpaint(image, mask, 2, cv2.INPAINT_TELEA)
     # return cv2.inpaint(image, mask, 3, cv2.INPAINT_NS)
 
 def add_texts_to_image(image, texts, start_pos, color, background_color=(0, 0, 0)):

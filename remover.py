@@ -45,15 +45,15 @@ def main():
     refiner = MaskRefiner(images_for_mask_making, drawn_mask)
     refiner.threshold_mask()
     refiner.erode_dilate_mask()
-    mask = refiner.get_bgr_mask()
+    bgr_mask = refiner.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    color_adjuster = ColorAdjuster(images_for_mask_making, mask)
+    color_adjuster = ColorAdjuster(images_for_mask_making, bgr_mask)
     color_adjuster.adjust_color_filter()
     parameters = color_adjuster.get_parameters()
 
     # Remove the watermark and save the final PDF
-    remover = WatermarkRemover(images_for_watermark_removal, mask, parameters)
+    remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
     remover.remove_watermark()
     remover.save_pdf(args.save_path)
 
