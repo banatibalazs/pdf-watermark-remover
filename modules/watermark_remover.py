@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 import img2pdf
-from modules.utils import filter_color, sharpen_image, fill_masked_area
+from modules.utils import filter_color, sharpen_image, fill_masked_area, add_texts_to_image
 
 
-def draw_progress_bar(image, progress, bar_color=(0, 255, 0), bar_thickness=20):
+def draw_progress_bar(image, progress, bar_color=(255, 255, 255), bar_thickness=20):
     height, width = image.shape[:2]
     bar_length = int(width * progress)
     cv2.rectangle(image, (0, height - bar_thickness), (bar_length, height), bar_color, -1)
@@ -25,15 +25,15 @@ class WatermarkRemover:
 
         index = 0
         total_images = len(self.images)
-        blank_image = np.zeros((25, 800, 3), np.uint8)
+        blank_image = np.zeros((75, 800, 3), np.uint8)
         for img in tqdm(self.images, desc="Removing watermark..."):
-            index += 1
 
             # Calculate progress
             progress = (index + 1) / total_images
 
             # Draw progress bar on the blank image
             image_with_progress = draw_progress_bar(blank_image, progress)
+            image_with_progress = add_texts_to_image(image_with_progress, [f"Progress: {progress * 100:.2f}%"], (10, 30), (255, 255, 255))
 
             # Show the image with progress bar
             cv2.imshow('Removing watermark...', image_with_progress)
@@ -48,6 +48,7 @@ class WatermarkRemover:
             is_success, im_buf_arr = cv2.imencode(".jpg", image)
             byte_im = im_buf_arr.tobytes()
             self.processed_images.append(byte_im)
+            index += 1
 
     def save_pdf(self, save_path):
         with open(save_path, "wb") as f:
