@@ -15,6 +15,13 @@ threshold_mask = None
 dilate_erode_mask = None
 th_min, th_max = 100, 195
 gl_page_num = 0
+r_min = 0
+r_max = 255
+g_min = 0
+g_max = 255
+b_min = 0
+b_max = 255
+w = 0
 
 
 def convert_images(images):
@@ -207,6 +214,53 @@ def mask_reset():
     dilate_erode_mask = threshold_mask.copy()
 
     return jsonify({'status': 'success'})
+
+
+def get_most_frequent_color(image):
+    b, g, r = cv2.split(image)
+    b_most_frequent = np.bincount(b.flatten()).argmax()
+    g_most_frequent = np.bincount(g.flatten()).argmax()
+    r_most_frequent = np.bincount(r.flatten()).argmax()
+    return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
+
+
+@app.route('/update_color_filters', methods=['POST'])
+def update_color_filters():
+    global r_min, r_max, g_min, g_max, b_min, b_max, w, mask, gl_page_num, images
+
+    data = request.get_json()
+    r_min = int(data.get('r_min'))
+    r_max = int(data.get('r_max'))
+    g_min = int(data.get('g_min'))
+    g_max = int(data.get('g_max'))
+    b_min = int(data.get('b_min'))
+    b_max = int(data.get('b_max'))
+    w = int(data.get('sharpen'))
+
+    current_image = images[gl_page_num]
+    _mask = cv2.resize(mask, (current_image.shape[1], current_image.shape[0]))
+
+    lower = np.array([b_min, g_min, r_min])
+    upper = np.array([b_max, g_max, r_max])
+    _mask = cv2.bitwise_and(current_image, _mask)
+    _mask = cv2.inRange(_mask, lower, upper)
+    if True:
+        new_color = get_most_frequent_color(current_image)
+        img = current_image.copy()
+        img[_mask == 255] = new_color
+        im_to_show = img
+    else:
+        im_to_show = cv2.inpaint(current_image, _mask, 2, cv2.INPAINT_TELEA)
+
+    # im_to_show = sharpen_image(im_to_show, self.w)
+
+    # Convert the image to base64
+    pil_img = Image.fromarray(cv2.cvtColor(im_to_show, cv2.COLOR_BGR2RGB))
+    buffer = BytesIO()
+    pil_img.save(buffer, format="PNG")
+    img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+    return jsonify({'status': 'success', 'image': img_str})
 
 
 if __name__ == '__main__':

@@ -69,20 +69,66 @@
             top: 100px;
 
         }
+
+        .color-filtering-sliders {
+            display: none;
+            position: absolute;
+            top: 80px;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
     <h1>Mask Thresholding</h1>
-    <div class="sliders">
+    <div class="threshold-sliders">
         <div class="slider-container">
             <label for="th_min_slider">Threshold min:</label>
-            <input type="range" id="th_min_slider" min="0" max="255" value="0" oninput="updateSliderValue('th_min_value', this.value)">
+            <input type="range" id="th_min_slider" min="0" max="255" value="0" oninput="updateThresholdSliderValue('th_min_value', this.value)">
             <span id="th_min_value">0</span>
         </div>
         <div class="slider-container">
             <label for="th_max_slider">Threshold max:</label>
-            <input type="range" id="th_max_slider" min="0" max="255" value="195" oninput="updateSliderValue('th_max_value', this.value)">
+            <input type="range" id="th_max_slider" min="0" max="255" value="195" oninput="updateThresholdSliderValue('th_max_value', this.value)">
             <span id="th_max_value">195</span>
+        </div>
+    </div>
+    <div class="color-filtering-sliders">
+        <div class="slider-container">
+            <label for="th_min_slider">Red min:</label>
+            <input type="range" id="r_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('r_min_value', this.value)">
+            <span id="r_min_value">0</span>
+        </div>
+        <div class="slider-container">
+            <label for="th_max_slider">Red max:</label>
+            <input type="range" id="r_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('r_max_value', this.value)">
+            <span id="r_max_value">195</span>
+        </div>
+        <div class="slider-container">
+            <label for="th_min_slider">Green min:</label>
+            <input type="range" id="g_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('g_min_value', this.value)">
+            <span id="g_min_value">0</span>
+        </div>
+        <div class="slider-container">
+            <label for="th_max_slider">Green max:</label>
+            <input type="range" id="g_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('g_max_value', this.value)">
+            <span id="g_max_value">195</span>
+        </div>
+        <div class="slider-container">
+            <label for="th_min_slider">Blue min:</label>
+            <input type="range" id="b_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('b_min_value', this.value)">
+            <span id="b_min_value">0</span>
+        </div>
+        <div class="slider-container">
+            <label for="th_max_slider">Blue max:</label>
+            <input type="range" id="b_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('b_max_value', this.value)">
+            <span id="b_max_value">195</span>
+        </div>
+        <div class="slider-container">
+            <label for="sharpen_slider">Sharpening:</label>
+            <input type="range" id="sharpen_slider" min="0" max="100" value="0" oninput="debouncedSendSliderValues('sharpen_value', this.value)">
+            <span id="sharpen_value">0</span>
         </div>
     </div>
     <div class="canvas-container">
@@ -103,12 +149,12 @@
             updateSliderValue('th_max_value', document.getElementById('th_max_slider').value);
         };
 
-        function updateSliderValue(id, value) {
+        function updateThresholdSliderValue(id, value) {
             document.getElementById(id).textContent = value;
             sendSliderValues();
         }
 
-        function sendSliderValues() {
+        function sendThresholdSliderValues() {
             const thMinValue = document.getElementById('th_min_slider').value;
             const thMaxValue = document.getElementById('th_max_slider').value;
 
@@ -131,10 +177,72 @@
             });
         }
 
+        function updateColorSliderValue(id, value) {
+            document.getElementById(id).textContent = value;
+            sendColorSliderValues();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function sendColorSliderValues() {
+            const rMinValue = document.getElementById('r_min_slider').value;
+            const rMaxValue = document.getElementById('r_max_slider').value;
+            const gMinValue = document.getElementById('g_min_slider').value;
+            const gMaxValue = document.getElementById('g_max_slider').value;
+            const bMinValue = document.getElementById('b_min_slider').value;
+            const bMaxValue = document.getElementById('b_max_slider').value;
+            const sharpenValue = document.getElementById('sharpen_slider').value;
+
+            fetch('/update_color_filters', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    r_min: rMinValue,
+                    r_max: rMaxValue,
+                    g_min: gMinValue,
+                    g_max: gMaxValue,
+                    b_min: bMinValue,
+                    b_max: bMaxValue,
+                    sharpen: sharpenValue
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const img = document.getElementById('mask');
+                    img.src = 'data:image/png;base64,' + data.image;
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        const debouncedSendSliderValues = debounce(sendColorSliderValues, 300);
+
+        function color_filtering_done() {
+            document.querySelector('.color-filtering-sliders').style.display = 'none';
+        }
+
+        function erode_dilate_done() {
+            console.log('New function executed');
+            document.querySelector('.color-filtering-sliders').style.display = 'flex';
+            document.querySelector('.new-buttons').style.display = 'None';
+            document.querySelector('.buttons button').addEventListener('click', color_filtering_done);
+        }
 
         function mask_selection_done() {
-            document.querySelector('.sliders').style.display = 'none';
+            document.querySelector('.threshold-sliders').style.display = 'none';
             document.querySelector('.new-buttons').style.display = 'flex';
+            document.querySelector('.buttons button').addEventListener('click', erode_dilate_done);
         }
 
         function erode_mask() {
