@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from modules.utils import filter_color, sharpen_image, add_texts_to_image, fill_masked_area
+from modules.utils import filter_color, sharpen_image, add_texts_to_image, fill_masked_area, inpaint_image
 
 
 TEXTS = ["Set the color range with trackbars.",
@@ -18,11 +18,7 @@ class ColorAdjuster:
         self.r_max = self.g_max = self.b_max = 200
         self.w = 0
         self.current_index = 0
-        self.texts = ["Set the color range with trackbars.",
-                      "Press 'A' to go to the previous page.",
-                      "Press 'D' to go to the next page.",
-                      "Press 'C' to hide/show this text.",
-                      "Press 'space' to finish."]
+        self.texts = TEXTS
         self.text_color = TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
@@ -56,11 +52,12 @@ class ColorAdjuster:
         self.update_image()
 
     def update_image(self):
+        current_image = self.images[self.current_index]
         lower = np.array([self.b_min, self.g_min, self.r_min])
         upper = np.array([self.b_max, self.g_max, self.r_max])
-        mask = cv2.bitwise_and(self.images[self.current_index], self.mask)
+        mask = cv2.bitwise_and(current_image, self.mask)
         mask = filter_color(mask, lower, upper)
-        im_to_show = fill_masked_area(self.images[self.current_index], mask)
+        im_to_show = fill_masked_area(current_image, mask)
         im_to_show = sharpen_image(im_to_show, self.w)
         if self.is_text_shown:
             im_to_show = add_texts_to_image(im_to_show, self.texts, self.text_pos, self.text_color)

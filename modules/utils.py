@@ -9,9 +9,7 @@ def convert_images(images):
 
 def filter_color(img, lower, upper):
     color_mask = cv2.inRange(img, lower, upper)
-    color_mask_bgr = cv2.cvtColor(color_mask, cv2.COLOR_GRAY2BGR)
-    img = cv2.bitwise_or(img, color_mask_bgr)
-    return img
+    return color_mask
 
 def sharpen_image(img, w):
     im_blur = cv2.GaussianBlur(img, (3, 3), 2.0)
@@ -27,11 +25,15 @@ def get_most_frequent_color(image):
     return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
 
 def fill_masked_area(image, mask):
-    bool_mask = mask[:, :, 0] == 255
     new_color = get_most_frequent_color(image)
     img = image.copy()
-    img[bool_mask] = new_color
+    img[mask == 255] = new_color
     return img
+
+def inpaint_image(image, mask):
+    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    # return cv2.inpaint(image, mask, 3, cv2.INPAINT_TELEA)
+    return cv2.inpaint(image, mask, 3, cv2.INPAINT_NS)
 
 def add_texts_to_image(image, texts, start_pos, color, background_color=(0, 0, 0)):
     font_face = cv2.FONT_HERSHEY_SIMPLEX

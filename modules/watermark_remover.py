@@ -25,14 +25,14 @@ class WatermarkRemover:
 
         index = 0
         total_images = len(self.images)
-        blank_image = np.zeros((75, 800, 3), np.uint8)
+        progressbar_bg_image = np.zeros((75, 800, 3), np.uint8)
         for img in tqdm(self.images, desc="Removing watermark..."):
 
             # Calculate progress
             progress = (index + 1) / total_images
 
             # Draw progress bar on the blank image
-            image_with_progress = draw_progress_bar(blank_image, progress)
+            image_with_progress = draw_progress_bar(progressbar_bg_image, progress)
             image_with_progress = add_texts_to_image(image_with_progress, [f"Progress: {progress * 100:.2f}%"], (10, 30), (255, 255, 255))
 
             # Show the image with progress bar
@@ -40,8 +40,8 @@ class WatermarkRemover:
             cv2.waitKey(1)
 
             masked_image_part = cv2.bitwise_and(img, self.mask)
-            shape = filter_color(masked_image_part, lower, upper)
-            image = fill_masked_area(img, shape)
+            mask = filter_color(masked_image_part, lower, upper)
+            image = fill_masked_area(img, mask)
             image = sharpen_image(image, self.w)
 
             # Convert the image to bytes and append it to the list
