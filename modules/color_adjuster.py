@@ -7,6 +7,8 @@ TEXTS = ["Set the color range with trackbars.",
         "Press 'A' to go to the previous page.",
         "Press 'D' to go to the next page.",
         "Press 'C' to hide/show this text.",
+        "Press 'M' to change the mode.",
+        "(Most common color vs Inpainting)",
         "Press 'space' to finish."]
 TEXT_COLOR = (255, 255, 255)
 
@@ -17,6 +19,7 @@ class ColorAdjuster:
         self.r_min = self.g_min = self.b_min = 145
         self.r_max = self.g_max = self.b_max = 200
         self.w = 0
+        self.mode = True
         self.current_index = 0
         self.texts = TEXTS
         self.text_color = TEXT_COLOR
@@ -57,7 +60,10 @@ class ColorAdjuster:
         upper = np.array([self.b_max, self.g_max, self.r_max])
         mask = cv2.bitwise_and(current_image, self.mask)
         mask = filter_color(mask, lower, upper)
-        im_to_show = fill_masked_area(current_image, mask)
+        if self.mode:
+            im_to_show = fill_masked_area(current_image, mask)
+        else:
+            im_to_show = inpaint_image(current_image, mask)
         im_to_show = sharpen_image(im_to_show, self.w)
         if self.is_text_shown:
             im_to_show = add_texts_to_image(im_to_show, self.texts, self.text_pos, self.text_color)
@@ -84,11 +90,14 @@ class ColorAdjuster:
             elif key == ord('c'):
                 self.is_text_shown = not self.is_text_shown
                 self.update_image()
+            elif key == ord('m'):
+                self.mode = not self.mode
+                self.update_image()
             if key == 32:
                 break
         cv2.destroyAllWindows()
 
     def get_parameters(self):
-        return self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w
+        return self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode
 
 

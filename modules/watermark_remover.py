@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 import img2pdf
-from modules.utils import filter_color, sharpen_image, fill_masked_area, add_texts_to_image
+from modules.utils import filter_color, sharpen_image, fill_masked_area, add_texts_to_image, inpaint_image
 
 
 def draw_progress_bar(image, progress, bar_color=(255, 255, 255), bar_thickness=20):
@@ -16,7 +16,7 @@ class WatermarkRemover:
     def __init__(self, images, bgr_mask, parameters):
         self.images = images
         self.mask = cv2.resize(bgr_mask, (images[0].shape[1], images[0].shape[0]), interpolation=cv2.INTER_AREA)
-        self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w = parameters
+        self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = parameters
         self.processed_images = []
 
     def remove_watermark(self):
@@ -41,7 +41,10 @@ class WatermarkRemover:
 
             masked_image_part = cv2.bitwise_and(img, self.mask)
             mask = filter_color(masked_image_part, lower, upper)
-            image = fill_masked_area(img, mask)
+            if self.mode:
+                image = fill_masked_area(img, mask)
+            else:
+                image = inpaint_image(img, mask)
             image = sharpen_image(image, self.w)
 
             # Convert the image to bytes and append it to the list
@@ -51,5 +54,10 @@ class WatermarkRemover:
             index += 1
 
     def save_pdf(self, save_path):
-        with open(save_path, "wb") as f:
-            f.write(img2pdf.convert(self.processed_images))
+        try:
+            with open(save_path, "wb") as f:
+                f.write(img2pdf.convert(self.processed_images))
+        except Exception as e:
+            print(f"Error: {e}")
+            print("Please try again with a different path.")
+            return
