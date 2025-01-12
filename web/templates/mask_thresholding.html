@@ -3,306 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Mask Thresholding</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            position: relative;
-        }
-        h1 {
-            position: absolute;
-            top: 20px;
-        }
-        .sliders {
-            position: absolute;
-            top: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 80%;
-        }
-        .slider-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .slider-container label {
-            width: 100px; /* Adjust the width as needed */
-            text-align: right;
-            margin-right: 10px;
-        }
-        .slider-container span {
-            margin-left: 10px;
-        }
-        .slider-container input[type="range"] {
-            width: 50%; /* Adjust the width as needed */
-            height: 25px; /* Adjust the height as needed */
-        }
-        .canvas-container {
-            position: absolute;
-            top: 350px; /* Adjust the top position as needed */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 60vh; /* Adjust the height as needed */
-            width: 100%;
-        }
-        .canvas-container img {
-            position: absolute;
-            z-index: 1; /* Ensure the mask image is below the sliders */
-        }
-        .buttons {
-            position: absolute;
-            top: 175px;
-            z-index: 2;
-        }
-        .new-buttons {
-            display: none;
-            position: absolute;
-            top: 100px;
-
-        }
-
-        .color-filtering-sliders {
-            display: none;
-            position: absolute;
-            top: 80px;
-            flex-direction: column;
-            align-items: center;
-            width: 80%;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/mask_thresholding.css">
 </head>
 <body>
-    <h1>Mask Thresholding</h1>
-    <div class="threshold-sliders">
-        <div class="slider-container">
-            <label for="th_min_slider">Threshold min:</label>
-            <input type="range" id="th_min_slider" min="0" max="255" value="0" oninput="updateThresholdSliderValue('th_min_value', this.value)">
-            <span id="th_min_value">0</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_max_slider">Threshold max:</label>
-            <input type="range" id="th_max_slider" min="0" max="255" value="195" oninput="updateThresholdSliderValue('th_max_value', this.value)">
-            <span id="th_max_value">195</span>
+    <div class="container">
+        <h1 class="text-center my-4">Mask Thresholding</h1>
+        <div class="row">
+            <div class="col-lg-3">
+                <div>
+                    <button id="done_button" class="btn btn-primary">Done</button>
+                </div>
+                <div class="threshold-sliders mb-4">
+                    <div id="threshold-sliders-div">
+                        <label for="th_min_slider">Threshold min:</label>
+                        <input type="range" id="th_min_slider" class="form-control" min="0" max="255" value="0" oninput="debouncedSendThresholdSliderValues('th_min_value', this.value)">
+                        <span id="th_min_value">0</span>
+                        <label for="th_max_slider">Threshold max:</label>
+                        <input type="range" id="th_max_slider" class="form-control" min="0" max="255" value="195" oninput="debouncedSendThresholdSliderValues('th_max_value', this.value)">
+                        <span id="th_max_value">195</span>
+                    </div>
+                </div>
+                <div class="color-filtering-sliders mb-4">
+                    <div id="color-filtering-sliders-div">
+                        <label for="r_min_slider">Red min:</label>
+                        <input type="range" id="r_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('r_min_value', this.value)">
+                        <span id="r_min_value">0</span>
+                        <label for="r_max_slider">Red max:</label>
+                        <input type="range" id="r_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('r_max_value', this.value)">
+                        <span id="r_max_value">195</span>
+                        <label for="g_min_slider">Green min:</label>
+                        <input type="range" id="g_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('g_min_value', this.value)">
+                        <span id="g_min_value">0</span>
+                        <label for="g_max_slider">Green max:</label>
+                        <input type="range" id="g_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('g_max_value', this.value)">
+                        <span id="g_max_value">195</span>
+                        <label for="b_min_slider">Blue min:</label>
+                        <input type="range" id="b_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('b_min_value', this.value)">
+                        <span id="b_min_value">0</span>
+                        <label for="b_max_slider">Blue max:</label>
+                        <input type="range" id="b_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('b_max_value', this.value)">
+                        <span id="b_max_value">195</span>
+                        <label for="sharpen_slider">Sharpening:</label>
+                        <input type="range" id="sharpen_slider" class="form-control" min="1" max="100" value="0" oninput="debouncedSendColorSliderValues('sharpen_value', this.value)">
+                        <span id="sharpen_value">0</span>
+                    </div>
+                </div>
+                <div id="buttons" class="buttons mb-4 d-flex flex-row align-items-center justify-content-center">
+                    <button id="erode_button" class="btn btn-secondary new-buttons">Erode</button>
+                    <button id="dilate_button" class="btn btn-secondary new-buttons">Dilate</button>
+                    <button id="reset_button" class="btn btn-secondary new-buttons">Reset</button>
+                </div>
+            </div>
+            <div class="col-lg-9 justify-content-center align-items-center">
+                <div class="canvas-container">
+                    <img id="mask" src="/get_threshold_mask" alt="Mask Image" class="img-fluid">
+                </div>
+            </div>
         </div>
     </div>
-    <div class="color-filtering-sliders">
-        <div class="slider-container">
-            <label for="th_min_slider">Red min:</label>
-            <input type="range" id="r_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('r_min_value', this.value)">
-            <span id="r_min_value">0</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_max_slider">Red max:</label>
-            <input type="range" id="r_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('r_max_value', this.value)">
-            <span id="r_max_value">195</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_min_slider">Green min:</label>
-            <input type="range" id="g_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('g_min_value', this.value)">
-            <span id="g_min_value">0</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_max_slider">Green max:</label>
-            <input type="range" id="g_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('g_max_value', this.value)">
-            <span id="g_max_value">195</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_min_slider">Blue min:</label>
-            <input type="range" id="b_min_slider" min="0" max="255" value="0" oninput="debouncedSendSliderValues('b_min_value', this.value)">
-            <span id="b_min_value">0</span>
-        </div>
-        <div class="slider-container">
-            <label for="th_max_slider">Blue max:</label>
-            <input type="range" id="b_max_slider" min="0" max="255" value="195" oninput="debouncedSendSliderValues('b_max_value', this.value)">
-            <span id="b_max_value">195</span>
-        </div>
-        <div class="slider-container">
-            <label for="sharpen_slider">Sharpening:</label>
-            <input type="range" id="sharpen_slider" min="0" max="100" value="0" oninput="debouncedSendSliderValues('sharpen_value', this.value)">
-            <span id="sharpen_value">0</span>
-        </div>
-    </div>
-    <div class="canvas-container">
-        <img id="mask" src="/get_threshold_mask" alt="Mask Image">
-    </div>
-    <div class="buttons">
-        <button onclick="mask_selection_done()">Done</button>
-    </div>
-    <div class="new-buttons">
-        <button onclick="erode_mask()">Erode</button>
-        <button onclick="dilate_mask()">Dilate</button>
-        <button onclick="reset_mask()">Reset</button>
-    </div>
-
-    <script>
-        window.onload = function() {
-            updateSliderValue('th_min_value', document.getElementById('th_min_slider').value);
-            updateSliderValue('th_max_value', document.getElementById('th_max_slider').value);
-        };
-
-        function updateThresholdSliderValue(id, value) {
-            document.getElementById(id).textContent = value;
-            sendSliderValues();
-        }
-
-        function sendThresholdSliderValues() {
-            const thMinValue = document.getElementById('th_min_slider').value;
-            const thMaxValue = document.getElementById('th_max_slider').value;
-
-            fetch('/update_thresholds', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    th_min: thMinValue,
-                    th_max: thMaxValue
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateImage();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function updateColorSliderValue(id, value) {
-            document.getElementById(id).textContent = value;
-            sendColorSliderValues();
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-
-        function sendColorSliderValues() {
-            const rMinValue = document.getElementById('r_min_slider').value;
-            const rMaxValue = document.getElementById('r_max_slider').value;
-            const gMinValue = document.getElementById('g_min_slider').value;
-            const gMaxValue = document.getElementById('g_max_slider').value;
-            const bMinValue = document.getElementById('b_min_slider').value;
-            const bMaxValue = document.getElementById('b_max_slider').value;
-            const sharpenValue = document.getElementById('sharpen_slider').value;
-
-            fetch('/update_color_filters', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    r_min: rMinValue,
-                    r_max: rMaxValue,
-                    g_min: gMinValue,
-                    g_max: gMaxValue,
-                    b_min: bMinValue,
-                    b_max: bMaxValue,
-                    sharpen: sharpenValue
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const img = document.getElementById('mask');
-                    img.src = 'data:image/png;base64,' + data.image;
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        const debouncedSendSliderValues = debounce(sendColorSliderValues, 300);
-
-        function color_filtering_done() {
-            document.querySelector('.color-filtering-sliders').style.display = 'none';
-        }
-
-        function erode_dilate_done() {
-            console.log('New function executed');
-            document.querySelector('.color-filtering-sliders').style.display = 'flex';
-            document.querySelector('.new-buttons').style.display = 'None';
-            document.querySelector('.buttons button').addEventListener('click', color_filtering_done);
-        }
-
-        function mask_selection_done() {
-            document.querySelector('.threshold-sliders').style.display = 'none';
-            document.querySelector('.new-buttons').style.display = 'flex';
-            document.querySelector('.buttons button').addEventListener('click', erode_dilate_done);
-        }
-
-        function erode_mask() {
-            fetch('/erode_mask', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateImageDilateErode();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function dilate_mask() {
-            fetch('/dilate_mask', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateImageDilateErode();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function reset_mask() {
-            fetch('/mask_reset', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateImageDilateErode();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function updateImage() {
-            const img = document.getElementById('mask');
-            img.src = '/get_threshold_mask/';
-        }
-
-        function updateImageDilateErode() {
-            console.log('updateImageDilateErode');
-            const img = document.getElementById('mask');
-            img.src = '/get_dilate_erode_mask/';
-        }
-    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/static/mask_thresholding.js"></script>
 </body>
 </html>

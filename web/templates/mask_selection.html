@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Mask Selection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="/static/mask_selection.css">
 </head>
 <body>
-    <h1>Mask Selection</h1>
-    <div class="canvas-container">
-        <img id="pdf-page" src="/page/{{ page_num }}" alt="PDF Page">
-        <canvas id="drawing-canvas"></canvas>
+    <div class="container">
+        <h1 class="text-center my-4">Mask Selection</h1>
+        <div class="row">
+            <div class="col-lg-3">
+                <div>
+                    <button id="done-button" class="btn btn-primary mx-2" onclick="mask_selection_done()">Done</button>
+                </div>
+                <div class="buttons d-flex flex-row align-items-center justify-content-center">
+                    <button id="prev-button" class="btn btn-secondary mx-2" onclick="prevPage()">Previous</button>
+                    <button id="next-button" class="btn btn-secondary mx-2" onclick="nextPage()">Next</button>
+                    <button id="reset-button" class="btn btn-secondary mx-2" onclick="resetMask()">Reset</button>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="canvas-container text-center mb-4">
+                    <img id="pdf-page" src="/page/{{ page_num }}" alt="PDF Page" class="img-fluid" data-page-num="{{ page_num }}" data-total-pages="{{ total_pages }}">
+                    <canvas id="drawing-canvas" class="border"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="buttons">
-        <button onclick="prevPage()">Previous</button>
-        <button onclick="nextPage()">Next</button>
-        <button class="reset-mask" onclick="resetMask()">Reset Mask</button>
-        <button onclick="mask_selection_done()">Done</button>
-    </div>
-
     <script>
         let currentPage = {{ page_num }};
         const totalPages = {{ total_pages }};
@@ -151,5 +161,9 @@
             window.location.href = '/mask_thresholding';
         }
     </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/static/mask_selection.js"></script>
 </body>
 </html>

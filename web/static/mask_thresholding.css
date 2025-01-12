@@ -1,0 +1,26 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    margin: 20px 0;
+}
+
+#color-filtering-sliders-div {
+    display: none;
+}
+
+.new-buttons {
+    display: None;
+}
+
+.threshold-sliders label, .color-filtering-sliders label {
+    margin-top: 10px;
+}
+
+.canvas-container img {
+    max-width: 100%;
+    height: auto;
+}
