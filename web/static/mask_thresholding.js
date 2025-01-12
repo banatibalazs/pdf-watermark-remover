@@ -85,6 +85,7 @@ function color_filtering_done() {
 
 function erode_dilate_done() {
     console.log('erode_dilate_done');
+    document.querySelector('h1').innerHTML = 'Color filtering';
     document.getElementById('color-filtering-sliders-div').style.display = 'flex';
     document.getElementById('color-filtering-sliders-div').style.flexDirection = 'column';
     const elements = document.querySelectorAll('.new-buttons');
@@ -96,6 +97,7 @@ function erode_dilate_done() {
 }
 
 function mask_selection_done() {
+    document.querySelector('h1').innerHTML = 'Erode/Dilate mask';
     console.log('mask_selection_done');
     document.getElementById('threshold-sliders-div').style.display = 'None';
     const elements = document.querySelectorAll('.new-buttons');

@@ -28,25 +28,28 @@
                 <div class="color-filtering-sliders mb-4">
                     <div id="color-filtering-sliders-div">
                         <label for="r_min_slider">Red min:</label>
-                        <input type="range" id="r_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('r_min_value', this.value)">
+                        <input type="range" id="r_min_slider" class="form-control" min="0" max="255" value="1" oninput="debouncedSendColorSliderValues('r_min_value', this.value)">
                         <span id="r_min_value">0</span>
                         <label for="r_max_slider">Red max:</label>
-                        <input type="range" id="r_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('r_max_value', this.value)">
+                        <input type="range" id="r_max_slider" class="form-control" min="0" max="255" value="195" oninput="debouncedSendColorSliderValues('r_max_value', this.value)">
                         <span id="r_max_value">195</span>
+
                         <label for="g_min_slider">Green min:</label>
-                        <input type="range" id="g_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('g_min_value', this.value)">
+                        <input type="range" id="g_min_slider" class="form-control" min="0" max="255" value="1" oninput="debouncedSendColorSliderValues('g_min_value', this.value)">
                         <span id="g_min_value">0</span>
                         <label for="g_max_slider">Green max:</label>
-                        <input type="range" id="g_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('g_max_value', this.value)">
+                        <input type="range" id="g_max_slider" class="form-control" min="0" max="255" value="195" oninput="debouncedSendColorSliderValues('g_max_value', this.value)">
                         <span id="g_max_value">195</span>
+
                         <label for="b_min_slider">Blue min:</label>
-                        <input type="range" id="b_min_slider" class="form-control" min="1" max="255" value="0" oninput="debouncedSendColorSliderValues('b_min_value', this.value)">
+                        <input type="range" id="b_min_slider" class="form-control" min="0" max="255" value="1" oninput="debouncedSendColorSliderValues('b_min_value', this.value)">
                         <span id="b_min_value">0</span>
                         <label for="b_max_slider">Blue max:</label>
-                        <input type="range" id="b_max_slider" class="form-control" min="1" max="255" value="195" oninput="debouncedSendColorSliderValues('b_max_value', this.value)">
+                        <input type="range" id="b_max_slider" class="form-control" min="0" max="255" value="195" oninput="debouncedSendColorSliderValues('b_max_value', this.value)">
                         <span id="b_max_value">195</span>
+
                         <label for="sharpen_slider">Sharpening:</label>
-                        <input type="range" id="sharpen_slider" class="form-control" min="1" max="100" value="0" oninput="debouncedSendColorSliderValues('sharpen_value', this.value)">
+                        <input type="range" id="sharpen_slider" class="form-control" min="0" max="10" value="1" oninput="debouncedSendColorSliderValues('sharpen_value', this.value)">
                         <span id="sharpen_value">0</span>
                     </div>
                 </div>

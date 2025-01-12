@@ -24,11 +24,30 @@ b_max = 255
 w = 0
 
 
+def sharpen_image(img, _w):
+    im_blur = cv2.GaussianBlur(img, (3, 3), 2.0)
+    im_diff = cv2.subtract(img, im_blur, dtype=cv2.CV_16S)
+    img = cv2.add(img, _w * im_diff, dtype=cv2.CV_8UC1)
+    return img
+
 def convert_images(images):
     converted_images = [np.array(image) for image in images]
     converted_images = [cv2.cvtColor(image, cv2.COLOR_RGB2BGR) for image in converted_images]
     return converted_images
 
+def save_image_to_io(image):
+    img_io = BytesIO()
+    pil_img = Image.fromarray(image)
+    pil_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return img_io
+
+def get_most_frequent_color(image):
+    b, g, r = cv2.split(image)
+    b_most_frequent = np.bincount(b.flatten()).argmax()
+    g_most_frequent = np.bincount(g.flatten()).argmax()
+    r_most_frequent = np.bincount(r.flatten()).argmax()
+    return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
 
 @app.route('/')
 def index():
@@ -76,10 +95,7 @@ def page(page_num):
     blended_image = cv2.addWeighted(images[page_num], 0.7, resized_mask, 0.3, 0)
     img = cv2.cvtColor(blended_image, cv2.COLOR_BGR2RGB)
 
-    img_io = BytesIO()
-    pil_img = Image.fromarray(img)
-    pil_img.save(img_io, 'PNG')
-    img_io.seek(0)
+    img_io = save_image_to_io(img)
 
     response = send_file(img_io, mimetype='image/png')
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
@@ -130,10 +146,7 @@ def get_threshold_mask():
     threshold_mask = cv2.bitwise_and(threshold_mask_min, threshold_mask_max)
     threshold_mask = cv2.bitwise_and(threshold_mask, mask_gray)
 
-    img_io = BytesIO()
-    pil_img = Image.fromarray(threshold_mask)
-    pil_img.save(img_io, 'PNG')
-    img_io.seek(0)
+    img_io = save_image_to_io(threshold_mask)
 
     response = send_file(img_io, mimetype='image/png')
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
@@ -195,10 +208,7 @@ def dilate_mask():
 def get_dilate_erode_mask():
     global dilate_erode_mask
 
-    img_io = BytesIO()
-    pil_img = Image.fromarray(dilate_erode_mask)
-    pil_img.save(img_io, 'PNG')
-    img_io.seek(0)
+    img_io = save_image_to_io(dilate_erode_mask)
 
     response = send_file(img_io, mimetype='image/png')
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
@@ -216,25 +226,14 @@ def mask_reset():
     return jsonify({'status': 'success'})
 
 
-def get_most_frequent_color(image):
-    b, g, r = cv2.split(image)
-    b_most_frequent = np.bincount(b.flatten()).argmax()
-    g_most_frequent = np.bincount(g.flatten()).argmax()
-    r_most_frequent = np.bincount(r.flatten()).argmax()
-    return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
-
-
 @app.route('/update_color_filters', methods=['POST'])
 def update_color_filters():
     global r_min, r_max, g_min, g_max, b_min, b_max, w, mask, gl_page_num, images
 
     data = request.get_json()
-    r_min = int(data.get('r_min'))
-    r_max = int(data.get('r_max'))
-    g_min = int(data.get('g_min'))
-    g_max = int(data.get('g_max'))
-    b_min = int(data.get('b_min'))
-    b_max = int(data.get('b_max'))
+    r_min, r_max = int(data.get('r_min')), int(data.get('r_max'))
+    g_min, g_max = int(data.get('g_min')), int(data.get('g_max'))
+    b_min, b_max = int(data.get('b_min')), int(data.get('b_max'))
     w = int(data.get('sharpen'))
 
     current_image = images[gl_page_num]
@@ -252,10 +251,10 @@ def update_color_filters():
     else:
         im_to_show = cv2.inpaint(current_image, _mask, 2, cv2.INPAINT_TELEA)
 
-    # im_to_show = sharpen_image(im_to_show, self.w)
+    im_to_show = sharpen_image(im_to_show, w)
 
     # Convert the image to base64
-    pil_img = Image.fromarray(cv2.cvtColor(im_to_show, cv2.COLOR_BGR2RGB))
+    pil_img = Image.fromarray(cv2.cvtColor(_mask, cv2.COLOR_BGR2RGB))
     buffer = BytesIO()
     pil_img.save(buffer, format="PNG")
     img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
