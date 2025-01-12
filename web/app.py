@@ -49,6 +49,12 @@ def get_most_frequent_color(image):
     r_most_frequent = np.bincount(r.flatten()).argmax()
     return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
 
+def fill_masked_area(image, gray_mask):
+    new_color = get_most_frequent_color(image)
+    img = image.copy()
+    img[gray_mask == 255] = new_color
+    return img
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -237,24 +243,21 @@ def update_color_filters():
     w = int(data.get('sharpen'))
 
     current_image = images[gl_page_num]
-    _mask = cv2.resize(mask, (current_image.shape[1], current_image.shape[0]))
-
     lower = np.array([b_min, g_min, r_min])
     upper = np.array([b_max, g_max, r_max])
-    _mask = cv2.bitwise_and(current_image, _mask)
-    _mask = cv2.inRange(_mask, lower, upper)
+    _mask = cv2.resize(mask, (current_image.shape[1], current_image.shape[0]))
+    masked_image = cv2.bitwise_and(current_image, _mask)
+    gray_mask = cv2.inRange(masked_image, lower, upper)
+    gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(_mask, cv2.COLOR_BGR2GRAY))
     if True:
-        new_color = get_most_frequent_color(current_image)
-        img = current_image.copy()
-        img[_mask == 255] = new_color
-        im_to_show = img
+        im_to_show = fill_masked_area(current_image, gray_mask)
     else:
         im_to_show = cv2.inpaint(current_image, _mask, 2, cv2.INPAINT_TELEA)
 
     im_to_show = sharpen_image(im_to_show, w)
 
     # Convert the image to base64
-    pil_img = Image.fromarray(cv2.cvtColor(_mask, cv2.COLOR_BGR2RGB))
+    pil_img = Image.fromarray(cv2.cvtColor(im_to_show, cv2.COLOR_BGR2RGB))
     buffer = BytesIO()
     pil_img.save(buffer, format="PNG")
     img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
