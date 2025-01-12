@@ -40,11 +40,13 @@ class WatermarkRemover:
             cv2.waitKey(1)
 
             masked_image_part = cv2.bitwise_and(img, self.mask)
-            mask = filter_color(masked_image_part, lower, upper)
+            gray_mask = filter_color(masked_image_part, lower, upper)
+            gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))
+
             if self.mode:
-                image = fill_masked_area(img, mask)
+                image = fill_masked_area(img, gray_mask)
             else:
-                image = inpaint_image(img, mask)
+                image = inpaint_image(img, gray_mask)
             image = sharpen_image(image, self.w)
 
             # Convert the image to bytes and append it to the list

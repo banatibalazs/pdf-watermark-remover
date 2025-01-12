@@ -8,8 +8,17 @@ def convert_images(images):
     return converted_images
 
 def filter_color(img, lower, upper):
-    color_mask = cv2.inRange(img, lower, upper)
-    return color_mask
+    """Filter the color of the image based on the lower and upper bounds.
+    Args:
+        img: The image to filter.
+        lower: The lower bound of the color filter.
+        upper: The upper bound of the color filter.
+    Returns:
+        A mask with 1 color channel. The color white (255) represents pixels that are within the color range,
+         while the color black (0) represents pixels that are outside the color range.
+    """
+    gray_mask = cv2.inRange(img, lower, upper)
+    return gray_mask
 
 def sharpen_image(img, w):
     im_blur = cv2.GaussianBlur(img, (3, 3), 2.0)
@@ -24,10 +33,10 @@ def get_most_frequent_color(image):
     r_most_frequent = np.bincount(r.flatten()).argmax()
     return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
 
-def fill_masked_area(image, mask):
+def fill_masked_area(image, gray_mask):
     new_color = get_most_frequent_color(image)
     img = image.copy()
-    img[mask == 255] = new_color
+    img[gray_mask == 255] = new_color
     return img
 
 def inpaint_image(image, mask):

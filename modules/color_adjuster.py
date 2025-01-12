@@ -59,11 +59,14 @@ class ColorAdjuster:
         lower = np.array([self.b_min, self.g_min, self.r_min])
         upper = np.array([self.b_max, self.g_max, self.r_max])
         mask = cv2.bitwise_and(current_image, self.mask)
-        mask = filter_color(mask, lower, upper)
+        gray_mask = filter_color(mask, lower, upper)
+        # This next line fixes a bug: If all the min color ranges was set to 0,
+        # then the unmasked area (represented by 0 values) would also get selected by the cv2.inRange function.
+        gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))
         if self.mode:
-            im_to_show = fill_masked_area(current_image, mask)
+            im_to_show = fill_masked_area(current_image, gray_mask)
         else:
-            im_to_show = inpaint_image(current_image, mask)
+            im_to_show = inpaint_image(current_image, gray_mask)
         im_to_show = sharpen_image(im_to_show, self.w)
         if self.is_text_shown:
             im_to_show = add_texts_to_image(im_to_show, self.texts, self.text_pos, self.text_color)
