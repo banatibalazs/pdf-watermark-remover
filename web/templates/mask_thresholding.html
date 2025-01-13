@@ -51,6 +51,13 @@
                         <label for="sharpen_slider">Sharpening:</label>
                         <input type="range" id="sharpen_slider" class="form-control" min="0" max="10" value="1" oninput="debouncedSendColorSliderValues('sharpen_value', this.value)">
                         <span id="sharpen_value">0</span>
+
+                        <label for="mode_select">Mode:</label>
+                        <select id="mode_select" class="form-control">
+                            <option id="option_zero" value="0">Most common color</option>
+                            <option id="option_one" value="1">Inpaint</option>
+                        </select>
+
                     </div>
                 </div>
                 <div id="buttons" class="buttons mb-4 d-flex flex-row align-items-center justify-content-center">
