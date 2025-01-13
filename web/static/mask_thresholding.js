@@ -30,14 +30,16 @@ function sendThresholdSliderValues() {
             th_max: thMaxValue
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        updateImage();
+    .then(response => response.blob())
+    .then(blob => {
+        const img = document.getElementById('mask');
+        img.src = URL.createObjectURL(blob);
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
+
 
 function sendColorSliderValues() {
     const rMinValue = document.getElementById('r_min_slider').value;
@@ -47,6 +49,7 @@ function sendColorSliderValues() {
     const bMinValue = document.getElementById('b_min_slider').value;
     const bMaxValue = document.getElementById('b_max_slider').value;
     const sharpenValue = document.getElementById('sharpen_slider').value;
+    const modeValue = document.getElementById('mode_select').value;
 
     fetch('/update_color_filters', {
         method: 'POST',
@@ -60,23 +63,22 @@ function sendColorSliderValues() {
             g_max: gMaxValue,
             b_min: bMinValue,
             b_max: bMaxValue,
-            sharpen: sharpenValue
+            sharpen: sharpenValue,
+            mode: modeValue
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const img = document.getElementById('mask');
-            img.src = 'data:image/png;base64,' + data.image;
-        }
+    .then(response => response.blob())
+    .then(blob => {
+        const img = document.getElementById('mask');
+        img.src = URL.createObjectURL(blob);
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
 
-const debouncedSendColorSliderValues = debounce(updateColorSliderValue, 200);
-const debouncedSendThresholdSliderValues = debounce(updateThresholdSliderValue, 200);
+const debouncedSendThresholdSliderValues = debounce(updateThresholdSliderValue, 10);
+const debouncedSendColorSliderValues = debounce(updateColorSliderValue, 75);
 
 function color_filtering_done() {
     console.log('color_filtering_done');
@@ -132,7 +134,7 @@ function dilate_mask() {
 }
 
 function reset_mask() {
-    processMask('/mask_reset');
+    processMask('/reset_dilate_erode_mask');
 }
 
 function updateImage() {
@@ -154,4 +156,5 @@ window.onload = function() {
     document.getElementById('erode_button').addEventListener('click', erode_mask);
     document.getElementById('dilate_button').addEventListener('click', dilate_mask);
     document.getElementById('reset_button').addEventListener('click', reset_mask);
+    document.getElementById('mode_select').addEventListener('change', sendColorSliderValues);
 };
