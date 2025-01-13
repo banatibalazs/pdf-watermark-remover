@@ -53,10 +53,7 @@ class MaskRefiner:
         self.update_median()
 
     def update_median(self):
-        _, self.thresholded_mask_min = cv2.threshold(self.median_image, self.threshold_min, 255, cv2.THRESH_BINARY)
-        _, self.thresholded_mask_max = cv2.threshold(self.median_image, self.threshold_max, 255, cv2.THRESH_BINARY_INV)
-
-        self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask_min, self.thresholded_mask_max)
+        self.thresholded_mask = cv2.inRange(self.median_image, self.threshold_min, self.threshold_max)
         self.thresholded_mask = cv2.bitwise_and(self.thresholded_mask, self.mask)
         cv2.imshow('watermark remover', self.thresholded_mask)
 
