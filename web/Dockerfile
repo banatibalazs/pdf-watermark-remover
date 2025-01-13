@@ -18,6 +18,7 @@ RUN pip install pdf2image img2pdf opencv-contrib-python Flask
 # Copy the necessary files and directories into the container
 COPY static/ ./static/
 COPY templates/ ./templates/
+COPY utils.py .
 COPY app.py .
 
 # Expose the port the app runs on
