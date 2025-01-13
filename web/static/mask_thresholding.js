@@ -83,6 +83,8 @@ const debouncedSendColorSliderValues = debounce(updateColorSliderValue, 75);
 function color_filtering_done() {
     console.log('color_filtering_done');
     document.getElementById('color-filtering-sliders-div').style.display = 'none';
+    document.getElementById('progress-bar').style.display = 'flex';
+    document.getElementById('start_button').style.display = 'flex';
 }
 
 function erode_dilate_done() {
@@ -148,7 +150,18 @@ function updateImageDilateErode() {
     img.src = '/get_dilate_erode_mask/';
 }
 
+
+
 window.onload = function() {
+    const socket = io();
+    socket.on('progress_update', function(data) {
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.value = data.progress;
+    });
+
+    document.getElementById('start_button').addEventListener('click', function() {
+        fetch('/start_long_task', { method: 'POST' });
+    });
     updateThresholdSliderValue('th_min_value', document.getElementById('th_min_slider').value);
     updateThresholdSliderValue('th_max_value', document.getElementById('th_max_slider').value);
 

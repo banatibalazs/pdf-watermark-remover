@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit
 from pdf2image import convert_from_path
-from utils import sharpen_image, convert_images, fill_masked_area, resize_image, get_masked_median_image, save_image_response
+from utils import (sharpen_image, convert_images, fill_masked_area,
+                   resize_image, get_masked_median_image, save_image_response)
 import cv2
 import numpy as np
+import img2pdf
 
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 IMAGES = []
 IMAGES_FOR_MASK_MAKING = []  # Reduced size images to speed up the process
@@ -20,6 +24,7 @@ GL_PAGE_NUM = 0
 R_MIN, G_MIN, B_MIN = 0, 0, 0
 R_MAX, G_MAX, B_MAX = 255, 255, 255
 W = 0
+MODE = 0
 
 @app.route('/')
 def index():
@@ -145,14 +150,15 @@ def reset_dilate_erode_mask():
 
 @app.route('/update_color_filters', methods=['POST'])
 def update_color_filters():
-    global R_MIN, R_MAX, G_MIN, G_MAX, B_MIN, B_MAX, W, DILATE_ERODE_MASK, GL_PAGE_NUM, IMAGES_FOR_MASK_MAKING
+    global R_MIN, R_MAX, G_MIN, G_MAX, B_MIN, B_MAX, W, \
+        DILATE_ERODE_MASK, GL_PAGE_NUM, IMAGES_FOR_MASK_MAKING, MODE
 
     data = request.get_json()
     R_MIN, R_MAX = int(data.get('r_min')), int(data.get('r_max'))
     G_MIN, G_MAX = int(data.get('g_min')), int(data.get('g_max'))
     B_MIN, B_MAX = int(data.get('b_min')), int(data.get('b_max'))
     W = int(data.get('sharpen'))
-    mode = int(data.get('mode'))
+    MODE = int(data.get('mode'))
 
     # BGR Image
     current_image = IMAGES_FOR_MASK_MAKING[GL_PAGE_NUM]
@@ -166,7 +172,7 @@ def update_color_filters():
     gray_mask = cv2.inRange(masked_image, lower, upper)
     gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(_mask, cv2.COLOR_BGR2GRAY))
 
-    if mode == 0:
+    if MODE == 0:
         im_to_show = fill_masked_area(current_image, gray_mask)
     else:
         im_to_show = cv2.inpaint(current_image, gray_mask, 2, cv2.INPAINT_TELEA)
@@ -176,5 +182,54 @@ def update_color_filters():
 
     return save_image_response(im_to_show)
 
+
+def remove_watermark(img, lower, upper, mask, mode, w):
+    masked_image_part = cv2.bitwise_and(img, mask)
+    gray_mask = cv2.inRange(masked_image_part, lower, upper)
+    gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY))
+
+    if mode == 0:
+        image = fill_masked_area(img, gray_mask)
+    else:
+        image = cv2.inpaint(img, gray_mask, 2, cv2.INPAINT_TELEA)
+    image = sharpen_image(image, w)
+
+    return image
+
+def save_pdf(images, save_path):
+    try:
+        with open(save_path, "wb") as f:
+            f.write(img2pdf.convert(images))
+    except Exception as e:
+        print(f"Error: {e}")
+        print("Please try again with a different path.")
+        return
+
+@app.route('/start_long_task', methods=['POST'])
+def start_long_task():
+    global IMAGES, MASK, R_MIN, R_MAX, G_MIN, G_MAX, B_MIN, B_MAX, W, MODE
+    def long_task():
+        processed_images = []
+        total_images = len(IMAGES)
+        mask = cv2.resize(MASK, (IMAGES[0].shape[1], IMAGES[0].shape[0]))
+        mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        i = 0
+        for img in IMAGES:
+            progress = int((i + 1) / total_images * 100)
+            socketio.emit('progress_update', {'progress': progress})
+            image = remove_watermark(img, np.array([B_MIN, G_MIN, R_MIN]),
+                                     np.array([B_MAX, G_MAX, R_MAX]), mask, MODE, W)
+            is_success, im_buf_arr = cv2.imencode(".jpg", image)
+            byte_im = im_buf_arr.tobytes()
+            processed_images.append(byte_im)
+            i += 1
+
+        save_pdf(processed_images, 'output.pdf')
+
+        socketio.emit('progress_update', {'progress': 100})
+
+    socketio.start_background_task(long_task)
+    return jsonify({'status': 'Task started'})
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

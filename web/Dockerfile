@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-xinerama0
 
 # Install the dependencies
-RUN pip install pdf2image img2pdf opencv-contrib-python Flask
+RUN pip install pdf2image img2pdf opencv-contrib-python Flask flask-socketio
 
 # Copy the necessary files and directories into the container
 COPY static/ ./static/
