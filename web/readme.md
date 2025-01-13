@@ -43,14 +43,21 @@ This will be the web version of the PDF watermark remover app.
 2. **Draw bounding box(es) around the watermark(s)**:
     Click and drag to draw a bounding box around the watermark in the uploaded PDF file.
 3. **Refine the mask**:
-   ![Description of the first image](assets/first-image-file.png)
-    Threshold the mask.
-    Use the `Erode` and `Dilate` buttons to refine the mask around the watermark.
+   Threshold the mask.
+   Use the `Erode` and `Dilate` buttons to refine the mask around the watermark.
+    <p align="center">
+      <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/web/assets/color_adjusting.png" alt="draw mask gif">
+    </p>
+ 
+
 4. **Set the color range**:
    Use the trackbars to set the color range for the mask.
-   ![Description of the second image](assets/second-image-file.png)
+    <p align="center">
+      <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/web/assets/thresholding.png" alt="draw mask gif">
+    </p>
 5. **Remove watermark**:
     Click on the `Remove Watermark` button to remove the watermark from the uploaded PDF file.
 
-TODO:
-    - [ ] Add error handling for invalid PDF files.
+
+
+
