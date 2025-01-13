@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from io import BytesIO
 from PIL import Image
+from flask import send_file
+
 
 def sharpen_image(img, _w):
     im_blur = cv2.GaussianBlur(img, (3, 3), 2.0)
@@ -55,4 +57,14 @@ def get_masked_median_image(images, mask, length=40):
     print('mask shape:', mask.shape, 'median image shape:', median_image_gray.shape)
     median_image_gray = cv2.bitwise_and(median_image_gray, mask)
     return median_image_gray
+
+def save_image_response(image):
+    img_io = save_image_to_io(image)
+    response = send_file(img_io, mimetype='image/png')
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+
 

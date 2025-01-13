@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 from pdf2image import convert_from_path
-from utils import sharpen_image, convert_images, save_image_to_io, fill_masked_area, resize_image, get_masked_median_image
+from utils import sharpen_image, convert_images, fill_masked_area, resize_image, get_masked_median_image, save_image_response
 import cv2
 import numpy as np
 
@@ -20,16 +20,6 @@ GL_PAGE_NUM = 0
 R_MIN, G_MIN, B_MIN = 0, 0, 0
 R_MAX, G_MAX, B_MAX = 255, 255, 255
 W = 0
-
-
-def save_image_response(image):
-    img_io = save_image_to_io(image)
-    response = send_file(img_io, mimetype='image/png')
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
-
 
 @app.route('/')
 def index():
