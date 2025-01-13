@@ -59,5 +59,8 @@ This will be the web version of the PDF watermark remover app.
     Click on the `Remove Watermark` button to remove the watermark from the uploaded PDF file.
 
 
+## TODO
 
-
+- [ ] Add a download link/button for the output PDF file.
+- [ ] Change layout to make it more user-friendly.
+- [ ] ...
