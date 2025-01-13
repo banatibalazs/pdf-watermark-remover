@@ -1,11 +1,9 @@
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from pdf2image import convert_from_path
 from utils import sharpen_image, convert_images, save_image_to_io, fill_masked_area, resize_image, get_masked_median_image
-from io import BytesIO
 import cv2
 import numpy as np
-from PIL import Image
-import base64
+
 
 app = Flask(__name__)
 
@@ -18,11 +16,19 @@ MASK = None
 THRESHOLD_MASK = None
 DILATE_ERODE_MASK = None
 
-TH_MIN, TH_MAX = 100, 195
 GL_PAGE_NUM = 0
 R_MIN, G_MIN, B_MIN = 0, 0, 0
 R_MAX, G_MAX, B_MAX = 255, 255, 255
 W = 0
+
+
+def save_image_response(image):
+    img_io = save_image_to_io(image)
+    response = send_file(img_io, mimetype='image/png')
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 @app.route('/')
@@ -61,19 +67,13 @@ def page(page_num):
     if len(resized_mask.shape) == 2:  # Check if the image is single-channel (grayscale)
         resized_mask = cv2.cvtColor(resized_mask, cv2.COLOR_GRAY2BGR)
     blended_image = cv2.addWeighted(IMAGES_FOR_MASK_MAKING[page_num], 0.7, resized_mask, 0.3, 0)
-
     img = cv2.cvtColor(blended_image, cv2.COLOR_BGR2RGB)
-    img_io = save_image_to_io(img)
 
-    response = send_file(img_io, mimetype='image/png')
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    return save_image_response(img)
 
 @app.route('/save_polygon', methods=['POST'])
 def save_polygon():
-    global MASK, GL_PAGE_NUM
+    global MASK
 
     data = request.get_json()
     polygon = data.get('polygon')
@@ -121,13 +121,7 @@ def update_thresholds():
 
     DILATE_ERODE_MASK = THRESHOLD_MASK.copy()
 
-    img_io = save_image_to_io(THRESHOLD_MASK)
-
-    response = send_file(img_io, mimetype='image/png')
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    return save_image_response(THRESHOLD_MASK)
 
 
 @app.route('/erode_mask', methods=['POST'])
@@ -151,14 +145,7 @@ def dilate_mask():
 @app.route('/get_dilate_erode_mask/')
 def get_dilate_erode_mask():
     global DILATE_ERODE_MASK
-
-    img_io = save_image_to_io(DILATE_ERODE_MASK)
-
-    response = send_file(img_io, mimetype='image/png')
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    return save_image_response(DILATE_ERODE_MASK)
 
 @app.route('/reset_dilate_erode_mask', methods=['POST'])
 def reset_dilate_erode_mask():
@@ -196,13 +183,8 @@ def update_color_filters():
 
     im_to_show = sharpen_image(im_to_show, W)
     im_to_show = cv2.cvtColor(im_to_show, cv2.COLOR_BGR2RGB)
-    img_io = save_image_to_io(im_to_show)
 
-    response = send_file(img_io, mimetype='image/png')
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    return save_image_response(im_to_show)
 
 if __name__ == '__main__':
     app.run(debug=True)
