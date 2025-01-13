@@ -7,10 +7,22 @@ body {
     height: 100vh;
     margin: 0;
 }
+
+.container {
+    background: black;
+    color: white;
+}
+
+h1 {
+    margin: 20px 0;
+    color: white;
+}
+
 .canvas-container {
     position: relative;
     display: flex;
     justify-content: center;
+    background: #000000;
     align-items: center;
     height: 80vh; /* Adjust the height as needed */
     width: 100%;

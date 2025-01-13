@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Mask Thresholding</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="/static/mask_thresholding.css">
 </head>
 <body>
@@ -18,8 +17,8 @@
                 <div class="threshold-sliders mb-4">
                     <div id="threshold-sliders-div">
                         <label for="th_min_slider">Threshold min:</label>
-                        <input type="range" id="th_min_slider" class="form-control" min="0" max="255" value="0" oninput="debouncedSendThresholdSliderValues('th_min_value', this.value)">
-                        <span id="th_min_value">0</span>
+                            <input type="range" id="th_min_slider" class="form-control" min="0" max="255" value="0" oninput="debouncedSendThresholdSliderValues('th_min_value', this.value)">
+                            <span id="th_min_value">0</span>
                         <label for="th_max_slider">Threshold max:</label>
                         <input type="range" id="th_max_slider" class="form-control" min="0" max="255" value="195" oninput="debouncedSendThresholdSliderValues('th_max_value', this.value)">
                         <span id="th_max_value">195</span>
