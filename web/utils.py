@@ -1,4 +1,5 @@
 import cv2
+import img2pdf
 import numpy as np
 from io import BytesIO
 from PIL import Image
@@ -67,4 +68,24 @@ def save_image_response(image):
     return response
 
 
+def remove_watermark(img, lower, upper, mask, mode, w):
+    masked_image_part = cv2.bitwise_and(img, mask)
+    gray_mask = cv2.inRange(masked_image_part, lower, upper)
+    gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY))
 
+    if mode == 0:
+        image = fill_masked_area(img, gray_mask)
+    else:
+        image = cv2.inpaint(img, gray_mask, 2, cv2.INPAINT_TELEA)
+    image = sharpen_image(image, w)
+
+    return image
+
+def save_pdf(images, save_path):
+    try:
+        with open(save_path, "wb") as f:
+            f.write(img2pdf.convert(images))
+    except Exception as e:
+        print(f"Error: {e}")
+        print("Please try again with a different path.")
+        return

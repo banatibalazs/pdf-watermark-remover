@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
 from pdf2image import convert_from_path
 from utils import (sharpen_image, convert_images, fill_masked_area,
-                   resize_image, get_masked_median_image, save_image_response)
+                   resize_image, get_masked_median_image, save_image_response,
+                    save_pdf, remove_watermark)
+
 import cv2
 import numpy as np
-import img2pdf
 
 
 app = Flask(__name__)
@@ -182,28 +183,6 @@ def update_color_filters():
 
     return save_image_response(im_to_show)
 
-
-def remove_watermark(img, lower, upper, mask, mode, w):
-    masked_image_part = cv2.bitwise_and(img, mask)
-    gray_mask = cv2.inRange(masked_image_part, lower, upper)
-    gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY))
-
-    if mode == 0:
-        image = fill_masked_area(img, gray_mask)
-    else:
-        image = cv2.inpaint(img, gray_mask, 2, cv2.INPAINT_TELEA)
-    image = sharpen_image(image, w)
-
-    return image
-
-def save_pdf(images, save_path):
-    try:
-        with open(save_path, "wb") as f:
-            f.write(img2pdf.convert(images))
-    except Exception as e:
-        print(f"Error: {e}")
-        print("Please try again with a different path.")
-        return
 
 @app.route('/start_long_task', methods=['POST'])
 def start_long_task():
