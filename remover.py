@@ -1,5 +1,4 @@
 import argparse
-from statistics import median
 
 from modules.mask_drawing import MaskDrawing
 from modules.mask_erosion_dilation import MaskErosionDilation

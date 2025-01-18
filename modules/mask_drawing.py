@@ -34,7 +34,6 @@ class MaskDrawing:
                     self.cursor_size = min(self.cursor_size + 1, 50)
                 else:
                     self.cursor_size = max(self.cursor_size - 1, 1)
-                print(f"Cursor size: {self.cursor_size}")
 
             # Draw the cursor perimeter as a white line
             temp_image = self.drawn_mask.copy()
