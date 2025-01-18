@@ -20,18 +20,20 @@ This python script removes watermarks from PDFs using opencv.
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_2_threshold.gif" alt="draw mask gif">
 </p>
 
-5. **Mask Adjustment:** Use 'd', 'e', or 'r' to dilate, erode, or reset the mask.
+5. **Draw on the mask**: Use the mouse to draw on the mask to refine it. Erase the unwanted parts of the mask or draw on the missing parts. 
+
+6. **Mask Adjustment:** Use 'd', 'e', or 'r' to dilate, erode, or reset the mask.
 
 <p align="center">
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_3_erode_dilate.gif" alt="draw mask gif">
 </p>
 
-6. **Color Range:** Set the color range with trackbars to finalize the mask
+7. **Color Range:** Set the color range with trackbars to finalize the mask
 <p align="center">
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
 </p>
 
-7. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. <u> The area of the removed watermark is filled with the **most common color** in the image. </u>
+8. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. <u> The area of the removed watermark is filled with the **most common color** in the image. </u>
 
 
 ## Python Version Compatibility
