@@ -10,7 +10,7 @@ TEXTS = ["Draw on the mask.",
         "Press 'C' to hide/show this text.",
         "Press 'space' to finish."]
 
-TEXT_COLOR = (255, 255, 255)
+TEXT_COLOR = (0, 0, 0)
 
 class MaskDrawing:
     def __init__(self, thresholded_mask):

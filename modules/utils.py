@@ -44,6 +44,10 @@ def inpaint_image(image, mask):
     # return cv2.inpaint(image, mask, 3, cv2.INPAINT_NS)
 
 def add_texts_to_image(image, texts, start_pos, color, background_color=(0, 0, 0)):
+    if color == (0, 0, 0):
+        background_color = (255, 255, 255)
+    elif color == (255, 255, 255):
+        background_color = (0, 0, 0)
     font_face = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 0.8
     thickness = 1

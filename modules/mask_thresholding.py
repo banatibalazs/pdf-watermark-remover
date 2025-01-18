@@ -7,7 +7,7 @@ TEXTS = ["Use the trackbars to",
         "Press 'space' to finish.",
         "Press 'C' to hide/show this text."]
 
-TEXT_COLOR = (255, 255, 255)
+TEXT_COLOR = (0, 0, 0)
 
 class MaskThresholding:
     def __init__(self, masked_image):
