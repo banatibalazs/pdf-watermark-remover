@@ -39,7 +39,7 @@ This Python project uses OpenCV to remove watermarks or other objects from PDFs.
   <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
 </p>
 
-8. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. <u> The area of the removed watermark is filled with the **most common color** in the image. </u>
+8. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. <u> The area of the removed watermark is either filled with the **most common color** in the image or **inpainted**. </u>
 
 
 ## Python Version Compatibility
