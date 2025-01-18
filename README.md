@@ -6,7 +6,7 @@
 ![OpenCV](https://img.shields.io/badge/opencv_contrib_python--green.svg)
 
 
-This python script removes watermarks from PDFs using opencv.
+This Python project uses OpenCV to remove watermarks or other objects from PDFs. The process includes steps such as area selection, thresholding, drawing, mask erosion/dilation, and color range setting. The final result is a new PDF file with the watermark removed, either filled with the most common color in the image or inpainted.
 
 ## Usage
 
