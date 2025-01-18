@@ -1,7 +1,12 @@
 import argparse
+from statistics import median
+
+from modules.mask_drawing import MaskDrawing
+from modules.mask_erosion_dilation import MaskErosionDilation
+from modules.mask_thresholding import MaskThresholding
+from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
-from modules.mask_drawer import MaskDrawer
-from modules.mask_refiner import MaskRefiner
+from modules.mask_selector import MaskSelector
 from modules.color_adjuster import ColorAdjuster
 from modules.watermark_remover import WatermarkRemover
 
@@ -37,15 +42,25 @@ def main():
     images_for_watermark_removal = image_extractor.get_images_for_watermark_removal()
 
     # Draw the initial mask
-    drawer = MaskDrawer(images_for_mask_making)
+    drawer = MaskSelector(images_for_mask_making)
     drawer.draw_mask()
     drawn_mask = drawer.get_gray_mask()
 
-    # Refine the mask
-    refiner = MaskRefiner(images_for_mask_making, drawn_mask)
-    refiner.threshold_mask()
-    refiner.erode_dilate_mask()
-    bgr_mask = refiner.get_bgr_mask()
+    # Create a median mask
+    median_mask_maker = MedianMaskMaking(images_for_mask_making, drawn_mask)
+
+    # Threshold the mask
+    mask_thresholder = MaskThresholding(median_mask_maker.get_gray_mask())
+    mask_thresholder.threshold_mask()
+
+    # Draw on the mask
+    mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask())
+    mask_drawer.draw_on_mask()
+
+    # Erode and dilate the mask
+    mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask())
+    mask_eroder_dilater.erode_dilate_mask()
+    bgr_mask = mask_eroder_dilater.get_bgr_mask()
 
     # Set the color range to be filtered/removed
     color_adjuster = ColorAdjuster(images_for_mask_making, bgr_mask)

@@ -3,7 +3,8 @@ import numpy as np
 from modules.utils import add_texts_to_image
 
 
-TEXTS = ["Draw a circle around the object you want to remove.",
+TEXTS = ["Draw a circle around the object",
+         "you want to remove.",
         "Press 'A' to go to the previous page.",
         "Press 'D' to go to the next page.",
         "Press 'R' to reset the mask.",
@@ -11,7 +12,7 @@ TEXTS = ["Draw a circle around the object you want to remove.",
         "Press 'space' to finish."]
 TEXT_COLOR = (255, 255, 255)
 
-class MaskDrawer:
+class MaskSelector:
     def __init__(self, images):
         self.images = images
         self.width, self.height = images[0].shape[:2]
