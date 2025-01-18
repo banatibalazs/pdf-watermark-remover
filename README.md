@@ -1,5 +1,11 @@
 #  Watermark Remover
 
+![Python](https://img.shields.io/badge/python-3.6+-green.svg)
+![PDF2Image](https://img.shields.io/badge/pdf2image--green.svg)
+![Img2PDF](https://img.shields.io/badge/img2pdf--green.svg)
+![OpenCV](https://img.shields.io/badge/opencv_contrib_python--green.svg)
+
+
 This python script removes watermarks from PDFs using opencv.
 
 ## Usage
