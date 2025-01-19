@@ -41,9 +41,9 @@ def main():
     images_for_watermark_removal = image_extractor.get_images_for_watermark_removal()
 
     # Draw the initial mask
-    drawer = MaskSelector(images_for_mask_making)
-    drawer.draw_mask()
-    drawn_mask = drawer.get_gray_mask()
+    selector = MaskSelector(images_for_mask_making)
+    selector.draw_mask()
+    drawn_mask = selector.get_gray_mask()
 
     # Create a median mask
     median_mask_maker = MedianMaskMaking(images_for_mask_making, drawn_mask)

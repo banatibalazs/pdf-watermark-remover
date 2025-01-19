@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from modules.utils import filter_color, sharpen_image, add_texts_to_image, fill_masked_area, inpaint_image
+from modules.utils import sharpen_image, add_texts_to_image, fill_masked_area, inpaint_image
 
 
 TEXTS = ["Set the color range with trackbars.",
@@ -59,7 +59,7 @@ class ColorAdjuster:
         lower = np.array([self.b_min, self.g_min, self.r_min])
         upper = np.array([self.b_max, self.g_max, self.r_max])
         mask = cv2.bitwise_and(current_image, self.mask)
-        gray_mask = filter_color(mask, lower, upper)
+        gray_mask = cv2.inRange(mask, lower, upper)
         # This next line fixes a bug: If all the min color ranges was set to 0,
         # then the unmasked area (represented by 0 values) would also get selected by the cv2.inRange function.
         gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))

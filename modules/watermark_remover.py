@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
-from tqdm import tqdm
 import img2pdf
-from modules.utils import filter_color, sharpen_image, fill_masked_area, add_texts_to_image, inpaint_image
+from modules.utils import sharpen_image, fill_masked_area, add_texts_to_image, inpaint_image
 
 
 def draw_progress_bar(image, progress, bar_color=(255, 255, 255), bar_thickness=20):
@@ -26,7 +25,7 @@ class WatermarkRemover:
         index = 0
         total_images = len(self.images)
         progressbar_bg_image = np.zeros((75, 800, 3), np.uint8)
-        for img in tqdm(self.images, desc="Removing watermark..."):
+        for img in self.images:
 
             # Calculate progress
             progress = (index + 1) / total_images
@@ -40,7 +39,7 @@ class WatermarkRemover:
             cv2.waitKey(1)
 
             masked_image_part = cv2.bitwise_and(img, self.mask)
-            gray_mask = filter_color(masked_image_part, lower, upper)
+            gray_mask = cv2.inRange(masked_image_part, lower, upper)
             gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))
 
             if self.mode:

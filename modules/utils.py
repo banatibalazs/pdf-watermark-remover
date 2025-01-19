@@ -3,22 +3,8 @@ import numpy as np
 
 
 def convert_images(images):
-    converted_images = [np.array(image) for image in images]
-    converted_images = [cv2.cvtColor(image, cv2.COLOR_RGB2BGR) for image in converted_images]
-    return converted_images
+    return [cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR) for image in images]
 
-def filter_color(img, lower, upper):
-    """Filter the color of the image based on the lower and upper bounds.
-    Args:
-        img: The image to filter.
-        lower: The lower bound of the color filter.
-        upper: The upper bound of the color filter.
-    Returns:
-        A mask with 1 color channel. The color white (255) represents pixels that are within the color range,
-         while the color black (0) represents pixels that are outside the color range.
-    """
-    gray_mask = cv2.inRange(img, lower, upper)
-    return gray_mask
 
 def sharpen_image(img, w):
     im_blur = cv2.GaussianBlur(img, (3, 3), 2.0)
@@ -27,11 +13,10 @@ def sharpen_image(img, w):
     return img
 
 def get_most_frequent_color(image):
-    b, g, r = cv2.split(image)
-    b_most_frequent = np.bincount(b.flatten()).argmax()
-    g_most_frequent = np.bincount(g.flatten()).argmax()
-    r_most_frequent = np.bincount(r.flatten()).argmax()
-    return np.array([b_most_frequent, g_most_frequent, r_most_frequent])
+    # Split the image into its channels and get the most frequent color in each channel
+    channels = cv2.split(image)
+    most_frequent_colors = [np.bincount(channel.flatten()).argmax() for channel in channels]
+    return np.array(most_frequent_colors)
 
 def fill_masked_area(image, gray_mask):
     new_color = get_most_frequent_color(image)
@@ -49,7 +34,7 @@ def add_texts_to_image(image, texts, start_pos, color, background_color=(0, 0, 0
     elif color == (255, 255, 255):
         background_color = (0, 0, 0)
     font_face = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 0.8
+    font_scale = 0.6
     thickness = 1
     texted_image = image.copy()
     x, y = start_pos
