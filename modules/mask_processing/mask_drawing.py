@@ -2,7 +2,6 @@ import cv2
 from modules.mask_processing.mask_processing import MaskProcessing
 from modules.utils import add_texts_to_image
 
-
 class MaskDrawing(MaskProcessing):
     TEXTS = ["Draw on the mask.",
              "L mouse: erase",
@@ -10,15 +9,41 @@ class MaskDrawing(MaskProcessing):
              "Mouse wheel: cursor size",
              "Press 'R' to reset the mask.",
              "Press 'C' to hide/show this text.",
+             "Press 'U' to undo.",
+             "Press 'Y' to redo.",
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
 
     def __init__(self, input_mask):
         super().__init__(input_mask, MaskDrawing.TEXTS, MaskDrawing.TEXT_COLOR)
         self.cursor_size = 15
+        self.undo_stack = []
+        self.redo_stack = []
+
+    def save_state(self):
+        self.undo_stack.append(self.final_mask.copy())
+        self.redo_stack.clear()
+
+    def undo(self):
+        if self.undo_stack:
+            self.redo_stack.append(self.final_mask.copy())
+            self.final_mask = self.undo_stack.pop()
+            self.show_mask()
+        else:
+            self.final_mask = self.input_mask.copy()
+            self.show_mask()
+
+    def redo(self):
+        if self.redo_stack:
+            self.undo_stack.append(self.final_mask.copy())
+            self.final_mask = self.redo_stack.pop()
+            self.show_mask()
 
     def process_mask(self):
         def draw_circle(event, x, y, flags, param):
+            if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN:
+                self.save_state()
+
             if event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON):
                 cv2.circle(self.final_mask, (x, y), self.cursor_size, (0), -1)
             elif event == cv2.EVENT_RBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_RBUTTON):
@@ -44,10 +69,15 @@ class MaskDrawing(MaskProcessing):
                 break
             elif key == ord('r'):
                 self.final_mask = self.input_mask.copy()
+                self.undo_stack.clear()
+                self.redo_stack.clear()
                 self.show_mask()
-            if key == ord('c'):
+            elif key == ord('c'):
                 self.is_text_shown = not self.is_text_shown
                 self.show_mask()
+            elif key == ord('u'):
+                self.undo()
+            elif key == ord('y'):
+                self.redo()
 
         cv2.destroyAllWindows()
-
