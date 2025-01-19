@@ -23,8 +23,8 @@ class ColorAdjusterParameters:
 class ColorAdjuster:
     TEXTS = ["Set the color range with trackbars.",
              "Press 'A'/'D' to go to the previous/next page.",
+             "Press 'T' to set different parameters for each image.",
              "Press 'C' to hide/show this text.",
-             "Press 'T' to apply the same parameters to all images.",
              "Press 'space' to finish."]
     TEXT_COLOR = (255, 255, 255)
 
