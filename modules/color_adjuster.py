@@ -115,7 +115,7 @@ class ColorAdjuster:
             im_to_show = add_texts_to_image(im_to_show, self.texts, self.text_pos, self.text_color)
         cv2.imshow('watermark remover', im_to_show)
 
-    def set_all_parameters(self):
+    def set_all_parameters_the_same_as_current(self):
         params = self.current_parameters.get_parameters()
         for i in range(len(self.parameters)):
             self.parameters[i].set_parameters(params)
@@ -133,7 +133,7 @@ class ColorAdjuster:
     def toggle_apply_same_parameters(self):
         self.apply_same_parameters = not self.apply_same_parameters
         if self.apply_same_parameters:
-            self.set_all_parameters()
+            self.set_all_parameters_the_same_as_current()
 
 
     def adjust_parameters(self):
