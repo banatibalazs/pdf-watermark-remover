@@ -63,7 +63,7 @@ def main():
 
     # Set the color range to be filtered/removed
     color_adjuster = ColorAdjuster(images_for_mask_making, bgr_mask)
-    color_adjuster.adjust_color_filter()
+    color_adjuster.adjust_parameters()
     parameters = color_adjuster.get_parameters()
 
     # Remove the watermark and save the final PDF

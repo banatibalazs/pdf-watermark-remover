@@ -15,20 +15,18 @@ class WatermarkRemover:
     def __init__(self, images, bgr_mask, parameters):
         self.images = images
         self.mask = cv2.resize(bgr_mask, (images[0].shape[1], images[0].shape[0]), interpolation=cv2.INTER_AREA)
-        self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = parameters
+        # self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = parameters
+        self.parameters = parameters
         self.processed_images = []
 
     def remove_watermark(self):
-        lower = np.array([self.b_min, self.g_min, self.r_min])
-        upper = np.array([self.b_max, self.g_max, self.r_max])
 
-        index = 0
         total_images = len(self.images)
         progressbar_bg_image = np.zeros((75, 800, 3), np.uint8)
-        for img in self.images:
+        for i, img in enumerate(self.images):
 
             # Calculate progress
-            progress = (index + 1) / total_images
+            progress = (i + 1) / total_images
 
             # Draw progress bar on the blank image
             image_with_progress = draw_progress_bar(progressbar_bg_image, progress)
@@ -38,21 +36,23 @@ class WatermarkRemover:
             cv2.imshow('Removing watermark...', image_with_progress)
             cv2.waitKey(1)
 
+            lower = np.array([self.parameters[i].b_min, self.parameters[i].g_min, self.parameters[i].r_min])
+            upper = np.array([self.parameters[i].b_max, self.parameters[i].g_max, self.parameters[i].r_max])
+
             masked_image_part = cv2.bitwise_and(img, self.mask)
             gray_mask = cv2.inRange(masked_image_part, lower, upper)
             gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))
 
-            if self.mode:
+            if self.parameters[i].mode:
                 image = fill_masked_area(img, gray_mask)
             else:
                 image = inpaint_image(img, gray_mask)
-            image = sharpen_image(image, self.w)
+            image = sharpen_image(image, self.parameters[i].w)
 
             # Convert the image to bytes and append it to the list
             is_success, im_buf_arr = cv2.imencode(".jpg", image)
             byte_im = im_buf_arr.tobytes()
             self.processed_images.append(byte_im)
-            index += 1
 
     def save_pdf(self, save_path):
         try:
