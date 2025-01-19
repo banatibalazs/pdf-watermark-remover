@@ -5,9 +5,9 @@ from modules.utils import add_texts_to_image
 
 class MaskDrawing(MaskProcessing):
     TEXTS = ["Draw on the mask.",
-             "Mouse wheel: change cursor size",
-             "Left mouse button: erase",
-             "Right mouse button: draw",
+             "L mouse: erase",
+             "R mouse: draw",
+             "Mouse wheel: cursor size",
              "Press 'R' to reset the mask.",
              "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
@@ -15,7 +15,7 @@ class MaskDrawing(MaskProcessing):
 
     def __init__(self, input_mask):
         super().__init__(input_mask, MaskDrawing.TEXTS, MaskDrawing.TEXT_COLOR)
-        self.cursor_size = 5
+        self.cursor_size = 15
 
     def process_mask(self):
         def draw_circle(event, x, y, flags, param):

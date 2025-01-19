@@ -3,16 +3,14 @@ import numpy as np
 from modules.utils import sharpen_image, add_texts_to_image, fill_masked_area, inpaint_image
 
 
-TEXTS = ["Set the color range with trackbars.",
-        "Press 'A' to go to the previous page.",
-        "Press 'D' to go to the next page.",
-        "Press 'C' to hide/show this text.",
-        "Press 'M' to change the mode.",
-        "(Most common color vs Inpainting)",
-        "Press 'space' to finish."]
-TEXT_COLOR = (255, 255, 255)
-
 class ColorAdjuster:
+    TEXTS = ["Set the color range with trackbars.",
+             "Press 'A' to go to the previous page.",
+             "Press 'D' to go to the next page.",
+             "Press 'C' to hide/show this text.",
+             "Press 'space' to finish."]
+    TEXT_COLOR = (255, 255, 255)
+
     def __init__(self, images, mask):
         self.images = images
         self.mask = mask
@@ -21,10 +19,12 @@ class ColorAdjuster:
         self.w = 0
         self.mode = True
         self.current_index = 0
-        self.texts = TEXTS
-        self.text_color = TEXT_COLOR
+        self.texts = ColorAdjuster.TEXTS
+        self.text_color = ColorAdjuster.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
+        self.parameters = []
+        self.current_parameters = []
 
     def on_r_min_changed(self, val):
         self.r_min = val
@@ -54,6 +54,13 @@ class ColorAdjuster:
         self.w = pos / 10
         self.update_image()
 
+    def on_mode_changed(self, pos):
+        if pos == 0:
+            self.mode = False
+        else:
+            self.mode = True
+        self.update_image()
+
     def update_image(self):
         current_image = self.images[self.current_index]
         lower = np.array([self.b_min, self.g_min, self.r_min])
@@ -81,6 +88,7 @@ class ColorAdjuster:
         cv2.createTrackbar('B min', 'watermark remover', self.b_min, 255, self.on_b_min_changed)
         cv2.createTrackbar('B max', 'watermark remover', self.b_max, 255, self.on_b_max_changed)
         cv2.createTrackbar('Sharpen', 'watermark remover', 0, 100, self.on_w_changed)
+        cv2.createTrackbar('Mode', 'watermark remover', 1, 1, self.on_mode_changed)
 
         while True:
             key = cv2.waitKey(1) & 0xFF
@@ -92,9 +100,6 @@ class ColorAdjuster:
                 self.update_image()
             elif key == ord('c'):
                 self.is_text_shown = not self.is_text_shown
-                self.update_image()
-            elif key == ord('m'):
-                self.mode = not self.mode
                 self.update_image()
             if key == 32:
                 break
