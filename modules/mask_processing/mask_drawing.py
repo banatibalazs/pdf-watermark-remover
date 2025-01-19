@@ -29,29 +29,25 @@ class MaskDrawing(MaskProcessing):
                 else:
                     self.cursor_size = max(self.cursor_size - 1, 1)
 
-            # Draw the cursor perimeter as a white line
-            temp_image = self.final_mask.copy()
-            cv2.circle(temp_image, (x, y), self.cursor_size, (255), 1)
+            display_image = self.final_mask.copy()
+            cv2.circle(display_image, (x, y), self.cursor_size, (255), 1)
             if self.is_text_shown:
-                temp_image = add_texts_to_image(temp_image, self.texts, self.text_pos, self.text_color)
-            cv2.imshow('Drawing on the mask', temp_image)
+                display_image = add_texts_to_image(display_image, self.texts, self.text_pos, self.text_color)
+            cv2.imshow('Mask processing', display_image)
 
-        cv2.namedWindow('Drawing on the mask')
-        cv2.setMouseCallback('Drawing on the mask', draw_circle)
-        cv2.imshow('Drawing on the mask', self.final_mask)
+        cv2.namedWindow('Mask processing')
+        cv2.setMouseCallback('Mask processing', draw_circle)
+        cv2.imshow('Mask processing', self.final_mask)
         while True:
             key = cv2.waitKey(1) & 0xFF
             if key == 32:
                 break
             elif key == ord('r'):
                 self.final_mask = self.input_mask.copy()
-                cv2.imshow('Drawing on the mask', self.final_mask)
+                self.show_mask()
             if key == ord('c'):
                 self.is_text_shown = not self.is_text_shown
-                if self.is_text_shown:
-                    texted_mask = add_texts_to_image(self.final_mask, self.texts, self.text_pos, self.text_color)
-                    cv2.imshow('Drawing on the mask', texted_mask)
-                else:
-                    cv2.imshow('Drawing on the mask', self.final_mask)
+                self.show_mask()
 
         cv2.destroyAllWindows()
+

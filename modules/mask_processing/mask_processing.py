@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import cv2
+from modules.utils import add_texts_to_image
+
 
 class MaskProcessing(ABC):
     def __init__(self, input_mask, texts=None, text_color=(0, 0, 0)):
@@ -15,6 +17,12 @@ class MaskProcessing(ABC):
     @abstractmethod
     def process_mask(self):
         pass
+
+    def show_mask(self):
+        display_image = self.final_mask.copy()
+        if self.is_text_shown:
+            display_image = add_texts_to_image(display_image, self.texts, self.text_pos, self.text_color)
+        cv2.imshow('Mask processing', display_image)
 
     def get_gray_mask(self):
         return self.final_mask

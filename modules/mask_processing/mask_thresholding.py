@@ -1,6 +1,5 @@
 import cv2
 from modules.mask_processing.mask_processing import MaskProcessing
-from modules.utils import add_texts_to_image
 
 
 class MaskThresholding(MaskProcessing):
@@ -16,9 +15,9 @@ class MaskThresholding(MaskProcessing):
         self.threshold_max = 195
 
     def process_mask(self):
-        cv2.imshow('watermark remover', self.input_mask)
-        cv2.createTrackbar('th_min', 'watermark remover', self.threshold_min, 255, self.on_threshold_trackbar_min)
-        cv2.createTrackbar('th_max', 'watermark remover', self.threshold_max, 255, self.on_threshold_trackbar_max)
+        cv2.imshow('Mask processing', self.input_mask)
+        cv2.createTrackbar('th_min', 'Mask processing', self.threshold_min, 255, self.on_threshold_trackbar_min)
+        cv2.createTrackbar('th_max', 'Mask processing', self.threshold_max, 255, self.on_threshold_trackbar_max)
 
         while True:
             key = cv2.waitKey(1) & 0xFF
@@ -41,7 +40,4 @@ class MaskThresholding(MaskProcessing):
     def update_mask(self):
         self.final_mask = cv2.inRange(self.input_mask, self.threshold_min, self.threshold_max)
         self.final_mask = cv2.bitwise_and(self.final_mask, cv2.inRange(self.input_mask, 1, 255))
-        display_image = self.final_mask.copy()
-        if self.is_text_shown:
-            display_image = add_texts_to_image(display_image, self.texts, self.text_pos, self.text_color)
-        cv2.imshow('watermark remover', display_image)
+        self.show_mask()

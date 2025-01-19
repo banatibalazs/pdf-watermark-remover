@@ -73,7 +73,7 @@ class MaskSelector:
 
             cv2.imshow('watermark remover', cv2.addWeighted(self.current_image, 0.7, self.mask, 0.3, 0))
 
-        # cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
     def get_gray_mask(self):
         return cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY)

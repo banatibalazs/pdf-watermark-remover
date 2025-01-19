@@ -1,7 +1,7 @@
 import argparse
 
-from modules.mask_processing.mask_processing import MaskDrawing
-from modules.mask_processing.mask_processing import MaskErosionDilation
+from modules.mask_processing.mask_drawing import MaskDrawing
+from modules.mask_processing.mask_erosion_dilation import MaskErosionDilation
 from modules.mask_processing.mask_thresholding import MaskThresholding
 from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
