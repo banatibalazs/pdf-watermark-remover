@@ -8,9 +8,9 @@ class MaskDrawing(MaskProcessing):
              "R mouse: draw",
              "Mouse wheel: cursor size",
              "Press 'R' to reset the mask.",
-             "Press 'C' to hide/show this text.",
              "Press 'U' to undo.",
              "Press 'Y' to redo.",
+             "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
 
