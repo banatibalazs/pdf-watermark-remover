@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from modules.mask_processing import MaskProcessing
+from modules.mask_processing.mask_processing import MaskProcessing
 from modules.utils import add_texts_to_image
 
 

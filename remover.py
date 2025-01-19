@@ -1,8 +1,8 @@
 import argparse
 
-from modules.mask_drawing import MaskDrawing
-from modules.mask_erosion_dilation import MaskErosionDilation
-from modules.mask_thresholding import MaskThresholding
+from modules.mask_processing.mask_processing import MaskDrawing
+from modules.mask_processing.mask_processing import MaskErosionDilation
+from modules.mask_processing.mask_thresholding import MaskThresholding
 from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
 from modules.mask_selector import MaskSelector
@@ -50,15 +50,15 @@ def main():
 
     # Threshold the mask
     mask_thresholder = MaskThresholding(median_mask_maker.get_gray_mask())
-    mask_thresholder.threshold_mask()
+    mask_thresholder.process_mask()
 
     # Draw on the mask
     mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask())
-    mask_drawer.draw_on_mask()
+    mask_drawer.process_mask()
 
     # Erode and dilate the mask
     mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask())
-    mask_eroder_dilater.erode_dilate_mask()
+    mask_eroder_dilater.process_mask()
     bgr_mask = mask_eroder_dilater.get_bgr_mask()
 
     # Set the color range to be filtered/removed
