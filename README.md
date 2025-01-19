@@ -53,7 +53,6 @@ The script requires the following Python libraries:
 - `pdf2image`: Used for converting PDF files into images. This library depends on `poppler-utils`, which is a set of command line tools for working with PDF files. You need to install `poppler-utils` separately for `pdf2image` to work. The installation process depends on your operating system.
 - `img2pdf`: Used for converting images back into a PDF file.
 - `opencv-contrib-python`: A wrapper package for OpenCV python bindings along with its extra modules.
-- `tqdm`: Used for displaying progress bars in the console.
 
 ## Installation 
 
@@ -84,7 +83,7 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install pdf2image img2pdf opencv-contrib-python tqdm
+    pip install pdf2image img2pdf opencv-contrib-python 
     ```
 
 3. **Install poppler-utils**
