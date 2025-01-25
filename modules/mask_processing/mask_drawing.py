@@ -1,5 +1,5 @@
 import cv2
-from modules.mask_processing.mask_processing import MaskProcessing
+from modules.mask_processing.abstract_mask_processing import MaskProcessing
 from modules.utils import add_texts_to_image
 
 class MaskDrawing(MaskProcessing):
