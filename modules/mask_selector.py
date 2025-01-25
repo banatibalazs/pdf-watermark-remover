@@ -30,7 +30,7 @@ class MaskSelector:
         self.text_pos = (10, 40)
         self.is_text_shown = True
 
-    def draw_free(self, event, x, y, flags, param):
+    def draw_polygone(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
             self.drawing = True
             self.ix, self.iy = x, y
@@ -49,7 +49,7 @@ class MaskSelector:
 
     def draw_mask(self):
         cv2.namedWindow('watermark remover')
-        cv2.setMouseCallback('watermark remover', self.draw_free)
+        cv2.setMouseCallback('watermark remover', self.draw_polygone)
 
         self.current_image = add_texts_to_image(self.images[self.current_page_index], self.texts, self.text_pos, self.text_color)
 
