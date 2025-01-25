@@ -29,3 +29,7 @@ class MaskProcessing(ABC):
 
     def get_bgr_mask(self):
         return cv2.cvtColor(self.final_mask, cv2.COLOR_GRAY2BGR)
+
+    def save_mask(self, path):
+        cv2.imwrite(path, self.final_mask)
+
