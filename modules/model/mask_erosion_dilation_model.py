@@ -1,9 +1,6 @@
 import cv2
 import numpy as np
 
-from modules.interfaces.gui_interfaces import DisplayInterface, KeyHandlerInterface
-from modules.utils import add_texts_to_image
-
 
 class MaskErosionDilationModel:
     def __init__(self, input_mask):
@@ -28,10 +25,3 @@ class MaskErosionDilationModel:
 
     def save_mask(self, path):
         cv2.imwrite(path, self.final_mask)
-
-
-
-
-
-
-

@@ -34,14 +34,18 @@ class MaskSelectorView(DisplayInterface):
              "Press 'R' to reset the mask.",
              "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
-    TEXT_COLOR = (255, 255, 255)
 
+    TEXT_COLOR = (255, 255, 255)
     def __init__(self, model=None):
         self.texts = MaskSelectorView.TEXTS
         self.text_color = MaskSelectorView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
         self.model = model
+
+    def setup_window(self, handle_mouse):
+        cv2.namedWindow('watermark remover')
+        cv2.setMouseCallback('watermark remover', handle_mouse)
 
     def display_image(self):
         displayed_image = self.model.current_image.copy()
@@ -95,10 +99,8 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
             self.model.points.clear()
         self.view.display_image()
 
-    def draw_mask(self):
-        cv2.namedWindow('watermark remover')
-        cv2.setMouseCallback('watermark remover', self.handle_mouse)
-
+    def run(self):
+        self.view.setup_window(self.handle_mouse)
         self.view.display_image()
 
         while True:

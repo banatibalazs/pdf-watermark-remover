@@ -11,6 +11,10 @@ class DisplayInterface(ABC):
     def close_window(self):
         pass
 
+    @abstractmethod
+    def setup_window(self, *args, **kwargs):
+        pass
+
 
 class KeyHandlerInterface(ABC):
     @abstractmethod
