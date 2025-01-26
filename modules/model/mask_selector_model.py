@@ -15,7 +15,6 @@ class MaskSelectorModel:
         self.points = []
         self.redo_stack = []
         self.undo_stack = []
-        self.title = "Mask selector"
 
     def reset_mask(self):
         self.mask = cv2.cvtColor(np.zeros((self.width, self.height), np.uint8), cv2.COLOR_GRAY2BGR)

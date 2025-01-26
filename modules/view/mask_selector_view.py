@@ -18,17 +18,18 @@ class MaskSelectorView(DisplayInterface):
         self.text_pos = (10, 40)
         self.is_text_shown = True
         self.model = model
+        self.title = "Mask selector"
 
     def setup_window(self, handle_mouse):
-        cv2.namedWindow(self.model.title)
-        cv2.setMouseCallback(self.model.title, handle_mouse)
+        cv2.namedWindow(self.title)
+        cv2.setMouseCallback(self.title, handle_mouse)
 
     def display_image(self):
         displayed_image = self.model.current_image.copy()
         mask = self.model.mask.copy()
         if self.is_text_shown:
             displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
-        cv2.imshow(self.model.title, cv2.addWeighted(displayed_image, 0.7, mask, 0.3, 0))
+        cv2.imshow(self.title, cv2.addWeighted(displayed_image, 0.7, mask, 0.3, 0))
 
     def close_window(self):
         cv2.destroyAllWindows()

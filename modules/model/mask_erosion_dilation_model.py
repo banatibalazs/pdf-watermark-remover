@@ -7,7 +7,6 @@ class MaskErosionDilationModel:
         self.input_mask = input_mask
         self.final_mask = input_mask.copy()
         self.kernel = np.ones((3, 3), np.uint8)
-        self.title = "Mask processing"
 
     def dilate(self):
         self.final_mask = cv2.dilate(self.final_mask, self.kernel, iterations=1)
