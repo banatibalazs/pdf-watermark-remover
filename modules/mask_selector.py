@@ -36,25 +36,29 @@ class MaskSelectorView(DisplayInterface):
              "Press 'space' to finish."]
     TEXT_COLOR = (255, 255, 255)
 
-    def __init__(self):
+    def __init__(self, model=None):
         self.texts = MaskSelectorView.TEXTS
         self.text_color = MaskSelectorView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
+        self.model = model
 
-    def display_image(self, image=None, mask=None):
-        displayed_image = image.copy()
+    def display_image(self):
+        displayed_image = self.model.current_image.copy()
+        mask = self.model.mask.copy()
         if self.is_text_shown:
             displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
         cv2.imshow('watermark remover', cv2.addWeighted(displayed_image, 0.7, mask, 0.3, 0))
 
+    def close_window(self):
+        cv2.destroyAllWindows()
 
 
 
 class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
     def __init__(self, images):
         self.model = MaskSelectorModel(images)
-        self.view: DisplayInterface = MaskSelectorView()
+        self.view: DisplayInterface = MaskSelectorView(self.model)
 
     def handle_key(self, key):
         if key == ord('a'):
@@ -70,7 +74,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
         elif key == 32:
             return False
         if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
-            self.view.display_image(self.model.current_image, self.model.mask)
+            self.view.display_image()
         return True
 
     def handle_mouse(self, event, x, y, flags, param):
@@ -89,20 +93,20 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
             self.model.points.append((x, y))
             cv2.fillPoly(self.model.mask, [np.array(self.model.points)], (255, 255, 255))
             self.model.points.clear()
-        self.view.display_image(self.model.current_image, self.model.mask)
+        self.view.display_image()
 
     def draw_mask(self):
         cv2.namedWindow('watermark remover')
         cv2.setMouseCallback('watermark remover', self.handle_mouse)
 
-        self.view.display_image(self.model.current_image, self.model.mask)
+        self.view.display_image()
 
         while True:
             key = cv2.waitKey(1) & 0xFF
             if not self.handle_key(key):
                 break
 
-        cv2.destroyAllWindows()
+        self.view.close_window()
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

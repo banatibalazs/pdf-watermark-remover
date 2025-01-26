@@ -7,6 +7,10 @@ class DisplayInterface(ABC):
     def display_image(self, *args, **kwargs):
         pass
 
+    @abstractmethod
+    def close_window(self):
+        pass
+
 
 class KeyHandlerInterface(ABC):
     @abstractmethod
