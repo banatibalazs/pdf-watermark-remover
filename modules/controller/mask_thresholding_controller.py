@@ -1,13 +1,7 @@
 import cv2
-
-from modules.interfaces.gui_interfaces import KeyHandlerInterface, DisplayInterface
-from modules.mask_processing.abstract_mask_processing import MaskProcessing
-from modules.utils import add_texts_to_image
-
-
-
-
-
+from modules.interfaces.gui_interfaces import KeyHandlerInterface
+from modules.model.mask_thresholding_model import MaskThresholdingModel
+from modules.view.mask_thresholding_view import MaskThresholdingView
 
 
 
@@ -30,6 +24,7 @@ class MaskThresholding(KeyHandlerInterface):
         elif key == ord('c'):
             self.view.toggle_text()
             self.view.display_image()
+        return True
 
     def process_mask(self):
         self.view.setup_window(self.on_threshold_trackbar_min, self.on_threshold_trackbar_max,
@@ -41,4 +36,8 @@ class MaskThresholding(KeyHandlerInterface):
                 break
         self.view.close_window()
 
+    def get_gray_mask(self):
+        return self.model.get_gray_mask()
 
+    def get_bgr_mask(self):
+        return self.model.get_bgr_mask()

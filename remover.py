@@ -2,7 +2,7 @@ import argparse
 
 from modules.controller.mask_drawing_controller import MaskDrawing
 from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
-from modules.mask_processing.mask_thresholding import MaskThresholding
+from modules.controller.mask_thresholding_controller import MaskThresholding
 from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
 from modules.mask_selector import MaskSelector
