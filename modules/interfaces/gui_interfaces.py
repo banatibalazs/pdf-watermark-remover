@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class DisplayInterface(ABC):
     @abstractmethod
-    def display_image(self, *args):
+    def display_image(self, *args, **kwargs):
         pass
 
 
