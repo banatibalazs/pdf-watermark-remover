@@ -1,8 +1,10 @@
 import cv2
+
+from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.mask_processing.abstract_mask_processing import MaskProcessing
 from modules.utils import add_texts_to_image
 
-class MaskDrawing(MaskProcessing):
+class MaskDrawing(MaskProcessing, RedoUndoInterface):
     TEXTS = ["Draw on the mask.",
              "L mouse: erase",
              "R mouse: draw",
