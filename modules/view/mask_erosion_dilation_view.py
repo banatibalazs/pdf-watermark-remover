@@ -19,7 +19,7 @@ class MaskErosionDilationView(DisplayInterface):
         self.model = model
 
     def setup_window(self):
-        cv2.namedWindow('Mask processing')
+        cv2.namedWindow(self.model.title)
 
     def display_image(self):
         displayed_image = self.model.final_mask.copy()
@@ -28,7 +28,7 @@ class MaskErosionDilationView(DisplayInterface):
                                                  self.texts,
                                                  self.text_pos,
                                                  self.text_color)
-        cv2.imshow('Mask processing', displayed_image)
+        cv2.imshow(self.model.title, displayed_image)
 
     def toggle_text(self):
         self.is_text_shown = not self.is_text_shown

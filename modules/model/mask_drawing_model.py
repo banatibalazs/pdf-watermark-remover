@@ -13,6 +13,7 @@ class MaskDrawingModel(RedoUndoInterface):
         self.is_text_shown = True
         self.undo_stack = []
         self.redo_stack = []
+        self.title = "Mask processing"
 
 
     def save_state(self):

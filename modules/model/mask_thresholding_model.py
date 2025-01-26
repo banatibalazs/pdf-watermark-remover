@@ -7,6 +7,7 @@ class MaskThresholdingModel:
         self.final_mask = input_mask.copy()
         self.threshold_min = 0
         self.threshold_max = 195
+        self.title = "Mask processing"
 
     def update_mask(self):
         self.final_mask = cv2.inRange(self.input_mask, self.threshold_min, self.threshold_max)
