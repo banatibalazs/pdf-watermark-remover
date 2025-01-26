@@ -4,7 +4,7 @@ from modules.utils import sharpen_image, fill_masked_area, inpaint_image
 from modules.color_adjuster import ColorAdjusterParameters
 
 
-class ColorAdjusterModel:
+class ParameterAdjusterModel:
     def __init__(self, images, mask):
         self.images = images
         self.mask = mask

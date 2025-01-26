@@ -4,7 +4,7 @@ from modules.utils import add_texts_to_image
 
 
 
-class ColorAdjusterView(DisplayInterface):
+class ParameterAdjusterView(DisplayInterface):
     TEXTS = ["Set the color range with trackbars.",
              "Press 'A'/'D' to go to the previous/next page.",
              "Press 'T' to set different parameters for each image.",
@@ -13,8 +13,8 @@ class ColorAdjusterView(DisplayInterface):
     TEXT_COLOR = (255, 255, 255)
 
     def __init__(self, model):
-        self.texts = ColorAdjusterView.TEXTS
-        self.text_color = ColorAdjusterView.TEXT_COLOR
+        self.texts = ParameterAdjusterView.TEXTS
+        self.text_color = ParameterAdjusterView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
         self.title = 'watermark remover'
