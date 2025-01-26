@@ -1,11 +1,11 @@
 import argparse
 
+from modules.median_mask_making import MedianMaskMaking
+from modules.pdf_image_extractor import PDFImageExtractor
 from modules.controller.mask_drawing_controller import MaskDrawing
 from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
 from modules.controller.mask_thresholding_controller import MaskThresholding
-from modules.median_mask_making import MedianMaskMaking
-from modules.pdf_image_extractor import PDFImageExtractor
-from modules.mask_selector import MaskSelector
+from modules.controller.mask_selector_controller import MaskSelector
 from modules.color_adjuster import ColorAdjuster
 from modules.watermark_remover import WatermarkRemover
 

@@ -29,7 +29,7 @@ class MaskDrawingView(DisplayInterface):
     def display_image(self):
         displayed_image = self.model.final_mask.copy()
         cv2.circle(displayed_image,self.model.cursor_pos,
-                   self.model.cursor_size, (255),
+                   self.model.cursor_size, [255],
                    self.model.cursor_thickness)
         if self.model.is_text_shown:
             displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
