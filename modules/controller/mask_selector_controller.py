@@ -1,15 +1,34 @@
 import cv2
 import numpy as np
 from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
+from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_selector_model import MaskSelectorModel
 from modules.view.mask_selector_view import MaskSelectorView
 
 
 
-class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
+class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface):
     def __init__(self, images):
         self.model = MaskSelectorModel(images)
         self.view: DisplayInterface = MaskSelectorView(self.model)
+
+    def undo(self) -> None:
+        if not self.model.undo_stack:
+            return
+        self.model.redo_stack.append(self.model.mask.copy())
+        self.model.mask = self.model.undo_stack.pop()
+        self.view.display_image()
+
+    def redo(self) -> None:
+        if not self.model.redo_stack:
+            return
+        self.model.undo_stack.append(self.model.mask.copy())
+        self.model.mask = self.model.redo_stack.pop()
+        self.view.display_image()
+
+    def save_state(self) -> None:
+        self.model.undo_stack.append(self.model.mask.copy())
+        self.model.redo_stack.clear()
 
     def handle_key(self, key):
         if key == ord('a'):
@@ -22,6 +41,10 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
             self.model.reset_mask()
         elif key == ord('c'):
             self.view.is_text_shown = not self.view.is_text_shown
+        elif key == ord('u'):
+            self.undo()
+        elif key == ord('y'):
+            self.redo()
         elif key == 32:
             return False
         if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
@@ -29,6 +52,9 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface):
         return True
 
     def handle_mouse(self, event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.save_state()
+
         if event == cv2.EVENT_LBUTTONDOWN:
             self.model.drawing = True
             self.model.ix, self.model.iy = x, y
