@@ -6,7 +6,7 @@ from modules.controller.mask_drawing_controller import MaskDrawing
 from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
 from modules.controller.mask_thresholding_controller import MaskThresholding
 from modules.controller.mask_selector_controller import MaskSelector
-from modules.controller.color_adjuster_controller import ColorAdjuster
+from modules.controller.parameter_adjuster_controller import ParameterAdjuster
 from modules.watermark_remover import WatermarkRemover
 
 # Global variables
@@ -62,7 +62,7 @@ def main():
     bgr_mask = mask_eroder_dilater.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    color_adjuster = ColorAdjuster(images_for_mask_making, bgr_mask)
+    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask)
     color_adjuster.run()
     parameters = color_adjuster.get_parameters()
 

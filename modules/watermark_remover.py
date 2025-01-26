@@ -15,7 +15,6 @@ class WatermarkRemover:
     def __init__(self, images, bgr_mask, parameters):
         self.images = images
         self.mask = cv2.resize(bgr_mask, (images[0].shape[1], images[0].shape[0]), interpolation=cv2.INTER_AREA)
-        # self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = parameters
         self.parameters = parameters
         self.processed_images = []
 

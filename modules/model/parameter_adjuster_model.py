@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from modules.utils import sharpen_image, fill_masked_area, inpaint_image
-from modules.color_adjuster import ColorAdjusterParameters
+from modules.utils import AdjusterParameters
 
 
 class ParameterAdjusterModel:
@@ -9,7 +9,7 @@ class ParameterAdjusterModel:
         self.images = images
         self.mask = mask
         self.current_index = 0
-        self.parameters = [ColorAdjusterParameters() for _ in images]
+        self.parameters = [AdjusterParameters() for _ in images]
         self.current_parameters = self.parameters[self.current_index]
         self.apply_same_parameters = True
 
