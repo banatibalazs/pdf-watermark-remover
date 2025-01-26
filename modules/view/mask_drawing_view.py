@@ -5,12 +5,10 @@ import cv2
 
 class MaskDrawingView(DisplayInterface):
     TEXTS = ["Draw on the mask.",
-             "L mouse: erase",
-             "R mouse: draw",
+             "LMouse/RMouse: erase/draw",
              "Mouse wheel: cursor size",
+             "Press 'U'/'Y' to undo/redo.",
              "Press 'R' to reset the mask.",
-             "Press 'U' to undo.",
-             "Press 'Y' to redo.",
              "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)

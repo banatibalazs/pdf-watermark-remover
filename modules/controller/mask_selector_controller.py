@@ -39,6 +39,8 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.model.current_image = self.model.images[self.model.current_page_index].copy()
         elif key == ord('r'):
             self.model.reset_mask()
+            self.model.undo_stack.clear()
+            self.model.redo_stack.clear()
         elif key == ord('c'):
             self.view.is_text_shown = not self.view.is_text_shown
         elif key == ord('u'):

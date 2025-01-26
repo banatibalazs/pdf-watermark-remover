@@ -45,7 +45,7 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
             return False
         return True
 
-    def process_mask(self):
+    def run(self):
         self.view.setup_window(self.handle_mouse)
         self.view.display_image()
         while True:

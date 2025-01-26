@@ -26,7 +26,7 @@ class MaskThresholding(KeyHandlerInterface):
             self.view.display_image()
         return True
 
-    def process_mask(self):
+    def run(self):
         self.view.setup_window(self.on_threshold_trackbar_min, self.on_threshold_trackbar_max,
                                self.model.threshold_min, self.model.threshold_max)
         self.view.display_image()
