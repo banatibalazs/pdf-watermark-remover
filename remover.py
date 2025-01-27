@@ -1,12 +1,12 @@
 import argparse
 
-from modules.mask_processing.mask_drawing import MaskDrawing
-from modules.mask_processing.mask_erosion_dilation import MaskErosionDilation
-from modules.mask_processing.mask_thresholding import MaskThresholding
 from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
-from modules.mask_selector import MaskSelector
-from modules.color_adjuster import ColorAdjuster
+from modules.controller.mask_drawing_controller import MaskDrawing
+from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
+from modules.controller.mask_thresholding_controller import MaskThresholding
+from modules.controller.mask_selector_controller import MaskSelector
+from modules.controller.parameter_adjuster_controller import ParameterAdjuster
 from modules.watermark_remover import WatermarkRemover
 
 # Global variables
@@ -42,7 +42,7 @@ def main():
 
     # Draw the initial mask
     selector = MaskSelector(images_for_mask_making)
-    selector.draw_mask()
+    selector.run()
     drawn_mask = selector.get_gray_mask()
 
     # Create a median mask
@@ -50,20 +50,20 @@ def main():
 
     # Threshold the mask
     mask_thresholder = MaskThresholding(median_mask_maker.get_gray_mask())
-    mask_thresholder.process_mask()
+    mask_thresholder.run()
 
     # Draw on the mask
     mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask())
-    mask_drawer.process_mask()
+    mask_drawer.run()
 
     # Erode and dilate the mask
     mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask())
-    mask_eroder_dilater.process_mask()
+    mask_eroder_dilater.run()
     bgr_mask = mask_eroder_dilater.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    color_adjuster = ColorAdjuster(images_for_mask_making, bgr_mask)
-    color_adjuster.adjust_parameters()
+    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask)
+    color_adjuster.run()
     parameters = color_adjuster.get_parameters()
 
     # Remove the watermark and save the final PDF
