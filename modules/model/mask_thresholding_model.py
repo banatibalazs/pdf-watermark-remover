@@ -1,10 +1,13 @@
 import cv2
 
+from modules.utils import calc_median_image
+
 
 class MaskThresholdingModel:
-    def __init__(self, input_mask):
-        self.input_mask = input_mask
-        self.final_mask = input_mask.copy()
+    def __init__(self, images, mask):
+        gray_image = cv2.cvtColor(calc_median_image(images), cv2.COLOR_BGR2GRAY)
+        self.input_mask = cv2.bitwise_and(gray_image, mask)
+        self.final_mask = self.input_mask.copy()
         self.threshold_min = 0
         self.threshold_max = 195
 

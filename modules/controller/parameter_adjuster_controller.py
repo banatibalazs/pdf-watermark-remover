@@ -9,7 +9,6 @@ class ParameterAdjuster(KeyHandlerInterface):
     def __init__(self, images, mask):
         self.model = ParameterAdjusterModel(images, mask)
         self.view = ParameterAdjusterView()
-        self.window_name = 'watermark remover'
 
     def update_parameter(self, attr, val):
         setattr(self.model.current_parameters, attr, val)
@@ -37,7 +36,7 @@ class ParameterAdjuster(KeyHandlerInterface):
         self.update_parameter('b_max', val)
 
     def on_w_changed(self, pos):
-        self.update_parameter('w', pos / 10)
+        self.update_parameter('w', pos)
 
     def on_mode_changed(self, pos):
         self.update_parameter('mode', bool(pos))
@@ -57,13 +56,26 @@ class ParameterAdjuster(KeyHandlerInterface):
             return False
         self.model.current_parameters = self.model.parameters[self.model.current_index]
         self.view.display_image(self.model.get_processed_current_image())
-        self.view.update_trackbars(self.model.current_parameters)
+        self.view.update_trackbars({
+            'values': self.model.current_parameters.get_parameters(),
+            'names': self.model.current_parameters.get_parameter_names()
+        })
         return True
 
     def run(self):
-        self.view.setup_window(self.model.current_parameters, self.on_r_min_changed, self.on_r_max_changed, self.on_g_min_changed,
-                               self.on_g_max_changed, self.on_b_min_changed, self.on_b_max_changed, self.on_w_changed,
-                               self.on_mode_changed)
+        params = {
+            'trackbars': {
+                'r_min': {'value': 0, 'callback': self.on_r_min_changed},
+                'r_max': {'value': 255, 'callback': self.on_r_max_changed},
+                'g_min': {'value': 0, 'callback': self.on_g_min_changed},
+                'g_max': {'value': 255, 'callback': self.on_g_max_changed},
+                'b_min': {'value': 0, 'callback': self.on_b_min_changed},
+                'b_max': {'value': 255, 'callback': self.on_b_max_changed},
+                'w': {'value': 0, 'callback': self.on_w_changed},
+                'mode': {'value': 1, 'callback': self.on_mode_changed}
+            }
+        }
+        self.view.setup_window(**params)
         self.view.display_image(self.model.get_processed_current_image())
 
         while True:

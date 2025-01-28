@@ -6,8 +6,8 @@ from modules.view.mask_thresholding_view import MaskThresholdingView
 
 
 class MaskThresholding(KeyHandlerInterface):
-    def __init__(self, input_mask):
-        self.model = MaskThresholdingModel(input_mask)
+    def __init__(self, images, input_mask):
+        self.model = MaskThresholdingModel(images, input_mask)
         self.view = MaskThresholdingView()
 
     def on_threshold_trackbar_min(self, pos):
@@ -27,8 +27,14 @@ class MaskThresholding(KeyHandlerInterface):
         return True
 
     def run(self):
-        self.view.setup_window(self.on_threshold_trackbar_min, self.on_threshold_trackbar_max,
-                               self.model.threshold_min, self.model.threshold_max)
+        params = {
+            'trackbars': {
+                'th_min': {'value': self.model.threshold_min, 'callback': self.on_threshold_trackbar_min},
+                'th_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
+
+            }
+        }
+        self.view.setup_window(**params)
         self.view.display_image(self.model.final_mask)
         while True:
             key = cv2.waitKey(1) & 0xFF

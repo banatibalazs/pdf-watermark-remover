@@ -75,7 +75,10 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         self.view.display_image(self.model.mask, self.model.current_image)
 
     def run(self):
-        self.view.setup_window(self.handle_mouse)
+        params = {
+            'mouse': self.handle_mouse
+        }
+        self.view.setup_window(**params)
         self.view.display_image(self.model.mask, self.model.current_image)
 
         while True:

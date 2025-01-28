@@ -44,7 +44,10 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
         return True
 
     def run(self):
-        self.view.setup_window(self.handle_mouse)
+        params = {
+            'mouse': self.handle_mouse
+        }
+        self.view.setup_window(**params)
         self.view.display_image(self.model)
         while True:
             key = cv2.waitKey(1) & 0xFF

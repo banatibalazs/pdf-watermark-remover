@@ -1,6 +1,4 @@
 import argparse
-
-from modules.median_mask_making import MedianMaskMaking
 from modules.pdf_image_extractor import PDFImageExtractor
 from modules.controller.mask_drawing_controller import MaskDrawing
 from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
@@ -45,11 +43,8 @@ def main():
     selector.run()
     drawn_mask = selector.get_gray_mask()
 
-    # Create a median mask
-    median_mask_maker = MedianMaskMaking(images_for_mask_making, drawn_mask)
-
     # Threshold the mask
-    mask_thresholder = MaskThresholding(median_mask_maker.get_gray_mask())
+    mask_thresholder = MaskThresholding(images_for_mask_making, drawn_mask)
     mask_thresholder.run()
 
     # Draw on the mask

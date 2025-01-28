@@ -2,8 +2,10 @@ from modules.interfaces.gui_interfaces import DisplayInterface
 from modules.utils import add_texts_to_image
 import cv2
 
+from modules.view.base_view import BaseView
 
-class MaskDrawingView(DisplayInterface):
+
+class MaskDrawingView(BaseView):
     TEXTS = ["Draw on the mask.",
              "LMouse/RMouse: erase/draw",
              "Mouse wheel: cursor size",
@@ -12,17 +14,14 @@ class MaskDrawingView(DisplayInterface):
              "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
+    TITLE = "Mask processing"
 
     def __init__(self):
-        self.texts = MaskDrawingView.TEXTS
-        self.text_color = MaskDrawingView.TEXT_COLOR
-        self.text_pos = (10, 40)
-        self.is_text_shown = True
-        self.title = "Mask processing"
+        super().__init__(MaskDrawingView.TEXTS, MaskDrawingView.TEXT_COLOR, MaskDrawingView.TITLE)
 
-    def setup_window(self, *args, **kwargs):
-        cv2.namedWindow(self.title)
-        cv2.setMouseCallback(self.title, *args, **kwargs)
+    # def setup_window(self, *args, **kwargs):
+    #     cv2.namedWindow(self.title)
+    #     cv2.setMouseCallback(self.title, *args, **kwargs)
 
     def display_image(self, model):
         displayed_image = model.final_mask.copy()
@@ -33,5 +32,3 @@ class MaskDrawingView(DisplayInterface):
             displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
         cv2.imshow(self.title, displayed_image)
 
-    def close_window(self):
-        cv2.destroyAllWindows()
