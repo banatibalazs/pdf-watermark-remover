@@ -17,14 +17,3 @@ class MaskSelectorView(BaseView):
     def __init__(self):
         super().__init__(MaskSelectorView.TEXTS, MaskSelectorView.TEXT_COLOR, MaskSelectorView.TITLE)
 
-    # def setup_window(self, handle_mouse):
-    #     cv2.namedWindow(self.title)
-    #     cv2.setMouseCallback(self.title, handle_mouse)
-
-    def display_image(self, mask, image):
-        displayed_image = image.copy()
-        mask = mask.copy()
-        if self.is_text_shown:
-            displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
-        cv2.imshow(self.title, cv2.addWeighted(displayed_image, 0.7, mask, 0.3, 0))
-

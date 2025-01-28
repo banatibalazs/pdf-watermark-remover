@@ -25,7 +25,7 @@ class ParameterAdjusterModel:
             processed_current_image = fill_masked_area(current_image, gray_mask)
         else:
             processed_current_image = inpaint_image(current_image, gray_mask)
-        processed_current_image = sharpen_image(processed_current_image, self.current_parameters.w)
+        processed_current_image = sharpen_image(processed_current_image, self.current_parameters.w / 10 )
         return processed_current_image
 
     def set_all_parameters_the_same_as_current(self):

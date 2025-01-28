@@ -15,9 +15,9 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
             self.model.save_state()
 
         if event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON):
-            self.model.draw_circle(x, y, erase=True)
+            self.model.draw_circle(x, y, erase=True, fill=True)
         elif event == cv2.EVENT_RBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_RBUTTON):
-            self.model.draw_circle(x, y, erase=False)
+            self.model.draw_circle(x, y, erase=False, fill=True)
         elif event == cv2.EVENT_MOUSEWHEEL:
             if flags > 0:
                 self.model.adjust_cursor_size(increase=True)
@@ -47,7 +47,7 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
         params = {
             'mouse': self.handle_mouse
         }
-        self.view.setup_window(**params)
+        self.view.setup_window(params)
         self.view.display_image(self.model)
         while True:
             key = cv2.waitKey(1) & 0xFF

@@ -17,9 +17,3 @@ class ParameterAdjusterView(BaseView):
         super().__init__(ParameterAdjusterView.TEXTS,
                          ParameterAdjusterView.TEXT_COLOR,
                          ParameterAdjusterView.TITLE)
-
-    def update_trackbars(self, params):
-        for i in range(len(params['names'])):
-            cv2.setTrackbarPos(params['names'][i], self.title, int(params['values'][i]))
-
-

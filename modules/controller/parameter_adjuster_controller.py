@@ -75,7 +75,7 @@ class ParameterAdjuster(KeyHandlerInterface):
                 'mode': {'value': 1, 'callback': self.on_mode_changed}
             }
         }
-        self.view.setup_window(**params)
+        self.view.setup_window(params)
         self.view.display_image(self.model.get_processed_current_image())
 
         while True:

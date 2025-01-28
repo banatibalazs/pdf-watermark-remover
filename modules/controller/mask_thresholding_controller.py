@@ -34,7 +34,7 @@ class MaskThresholding(KeyHandlerInterface):
 
             }
         }
-        self.view.setup_window(**params)
+        self.view.setup_window(params)
         self.view.display_image(self.model.final_mask)
         while True:
             key = cv2.waitKey(1) & 0xFF

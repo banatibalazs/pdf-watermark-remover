@@ -17,14 +17,14 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             return
         self.model.redo_stack.append(self.model.mask.copy())
         self.model.mask = self.model.undo_stack.pop()
-        self.view.display_image(self.model.mask, self.model.current_image)
+        self.view.display_image(self.model.get_weighted_image())
 
     def redo(self) -> None:
         if not self.model.redo_stack:
             return
         self.model.undo_stack.append(self.model.mask.copy())
         self.model.mask = self.model.redo_stack.pop()
-        self.view.display_image(self.model.mask, self.model.current_image)
+        self.view.display_image(self.model.get_weighted_image())
 
     def save_state(self) -> None:
         self.model.undo_stack.append(self.model.mask.copy())
@@ -50,7 +50,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         elif key == 32:
             return False
         if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
-            self.view.display_image(self.model.mask, self.model.current_image)
+            self.view.display_image(self.model.get_weighted_image())
         return True
 
     def handle_mouse(self, event, x, y, flags, param):
@@ -72,14 +72,14 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.model.points.append((x, y))
             cv2.fillPoly(self.model.mask, [np.array(self.model.points)], (255, 255, 255))
             self.model.points.clear()
-        self.view.display_image(self.model.mask, self.model.current_image)
+        self.view.display_image(self.model.get_weighted_image())
 
     def run(self):
         params = {
             'mouse': self.handle_mouse
         }
-        self.view.setup_window(**params)
-        self.view.display_image(self.model.mask, self.model.current_image)
+        self.view.setup_window(params)
+        self.view.display_image(self.model.get_weighted_image())
 
         while True:
             key = cv2.waitKey(1) & 0xFF

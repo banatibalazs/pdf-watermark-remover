@@ -31,9 +31,12 @@ class MaskDrawingModel(RedoUndoInterface):
             self.undo_stack.append(self.final_mask.copy())
             self.final_mask = self.redo_stack.pop()
 
-    def draw_circle(self, x, y, erase=False):
+    def draw_circle(self, x, y, erase=False, fill=True):
         color = 0 if erase else 255
-        cv2.circle(self.final_mask, (x, y), self.cursor_size, (color), -1)
+        if fill:
+            cv2.circle(self.final_mask, (x, y), self.cursor_size, (color), -1)
+        else:
+            cv2.circle(self.final_mask, (x, y), self.cursor_size, (color), 1)
 
     def adjust_cursor_size(self, increase=True):
         if increase:

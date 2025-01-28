@@ -17,8 +17,3 @@ class MaskThresholdingView(BaseView):
                          MaskThresholdingView.TEXT_COLOR,
                          MaskThresholdingView.TITLE)
 
-    # def setup_window(self, on_threshold_trackbar_min, on_threshold_trackbar_max, threshold_min, threshold_max):
-    #     cv2.namedWindow(self.title)
-    #     cv2.createTrackbar('th_min', self.title, threshold_min, 255, on_threshold_trackbar_min)
-    #     cv2.createTrackbar('th_max', self.title, threshold_max, 255, on_threshold_trackbar_max)
-
