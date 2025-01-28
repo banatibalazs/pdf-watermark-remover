@@ -2,7 +2,7 @@ import cv2
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 
 
-class MaskDrawingModel():
+class MaskDrawingModel:
     def __init__(self, input_mask):
         self.input_mask = input_mask
         self.final_mask = input_mask.copy()
