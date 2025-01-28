@@ -8,28 +8,26 @@ from modules.interfaces.gui_interfaces import KeyHandlerInterface
 class MaskErosionDilation(KeyHandlerInterface):
     def __init__(self, input_mask):
         self.model = MaskErosionDilationModel(input_mask)
-        self.view = MaskErosionDilationView(self.model)
+        self.view = MaskErosionDilationView()
 
     def handle_key(self, key):
         if key == ord('d'):
             self.model.dilate()
-            self.view.display_image()
         elif key == ord('e'):
             self.model.erode()
-            self.view.display_image()
         elif key == ord('r'):
             self.model.reset()
-            self.view.display_image()
         elif key == ord('c'):
             self.view.toggle_text()
-            self.view.display_image()
         elif key == 32:
             return False
+        if key in [ord('d'), ord('e'), ord('r'), ord('c')]:
+            self.view.display_image(self.model.final_mask)
         return True
 
     def run(self):
         self.view.setup_window()
-        self.view.display_image()
+        self.view.display_image(self.model.final_mask)
 
         while True:
             key = cv2.waitKey(1) & 0xFF

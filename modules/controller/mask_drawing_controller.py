@@ -1,53 +1,78 @@
 from modules.interfaces.gui_interfaces import MouseHandlerInterface, KeyHandlerInterface, DisplayInterface
+from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_drawing_model import MaskDrawingModel
+from modules.view.base_view import BaseView
 from modules.view.mask_drawing_view import MaskDrawingView
 import cv2
 
 
 
-class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
+class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface):
     def __init__(self, input_mask):
         self.model = MaskDrawingModel(input_mask)
-        self.view: DisplayInterface = MaskDrawingView(self.model)
+        self.view: BaseView = MaskDrawingView()
+
+    def undo(self) -> None:
+        if not self.model.undo_stack:
+            return
+        self.model.redo_stack.append(self.model.final_mask.copy())
+        self.model.final_mask = self.model.undo_stack.pop()
+        self.view.display_image(self.model.final_mask)
+
+    def redo(self) -> None:
+        if not self.model.redo_stack:
+            return
+        self.model.undo_stack.append(self.model.final_mask.copy())
+        self.model.final_mask = self.model.redo_stack.pop()
+        self.view.display_image(self.model.final_mask)
+
+    def save_state(self) -> None:
+        self.model.undo_stack.append(self.model.final_mask.copy())
+        self.model.redo_stack.clear()
 
     def handle_mouse(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN:
-            self.model.save_state()
+            self.save_state()
 
         if event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON):
-            self.model.draw_circle(x, y, erase=True)
+            self.model.draw_circle(x, y, erase=True, fill=True)
         elif event == cv2.EVENT_RBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_RBUTTON):
-            self.model.draw_circle(x, y, erase=False)
+            self.model.draw_circle(x, y, erase=False, fill=True)
         elif event == cv2.EVENT_MOUSEWHEEL:
             if flags > 0:
                 self.model.adjust_cursor_size(increase=True)
             else:
                 self.model.adjust_cursor_size(increase=False)
         self.model.cursor_pos = (x, y)
-        self.view.display_image()
+        mask = self.model.final_mask.copy()
+        cv2.circle(mask, self.model.cursor_pos,
+                   self.model.cursor_size, [128],
+                   self.model.cursor_thickness)
+        self.view.display_image(mask)
 
     def handle_key(self, key):
         if key == ord('r'):
             self.model.final_mask = self.model.input_mask.copy()
             self.model.undo_stack.clear()
             self.model.redo_stack.clear()
-            self.view.display_image()
         elif key == ord('c'):
-            self.model.is_text_shown = not self.model.is_text_shown
-            self.view.display_image()
+            self.view.toggle_text()
         elif key == ord('u'):
-            self.model.undo()
-            self.view.display_image()
+            self.undo()
         elif key == ord('y'):
-            self.model.redo()
-            self.view.display_image()
+            self.redo()
         elif key == 32:
             return False
+        if key in [ord('r'), ord('c'), ord('u'), ord('y')]:
+            self.view.display_image(self.model.final_mask)
         return True
 
     def run(self):
-        self.view.setup_window(self.handle_mouse)
-        self.view.display_image()
+        params = {
+            'mouse': self.handle_mouse
+        }
+        self.view.setup_window(params)
+        self.view.display_image(self.model.final_mask)
         while True:
             key = cv2.waitKey(1) & 0xFF
             if not self.handle_key(key):

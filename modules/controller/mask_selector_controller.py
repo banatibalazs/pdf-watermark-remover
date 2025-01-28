@@ -3,6 +3,7 @@ import numpy as np
 from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_selector_model import MaskSelectorModel
+from modules.view.base_view import BaseView
 from modules.view.mask_selector_view import MaskSelectorView
 
 
@@ -10,21 +11,21 @@ from modules.view.mask_selector_view import MaskSelectorView
 class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface):
     def __init__(self, images):
         self.model = MaskSelectorModel(images)
-        self.view: DisplayInterface = MaskSelectorView(self.model)
+        self.view: BaseView = MaskSelectorView()
 
     def undo(self) -> None:
         if not self.model.undo_stack:
             return
         self.model.redo_stack.append(self.model.mask.copy())
         self.model.mask = self.model.undo_stack.pop()
-        self.view.display_image()
+        self.view.display_image(self.model.get_weighted_image())
 
     def redo(self) -> None:
         if not self.model.redo_stack:
             return
         self.model.undo_stack.append(self.model.mask.copy())
         self.model.mask = self.model.redo_stack.pop()
-        self.view.display_image()
+        self.view.display_image(self.model.get_weighted_image())
 
     def save_state(self) -> None:
         self.model.undo_stack.append(self.model.mask.copy())
@@ -42,7 +43,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.model.undo_stack.clear()
             self.model.redo_stack.clear()
         elif key == ord('c'):
-            self.view.is_text_shown = not self.view.is_text_shown
+            self.view.toggle_text()
         elif key == ord('u'):
             self.undo()
         elif key == ord('y'):
@@ -50,7 +51,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         elif key == 32:
             return False
         if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
-            self.view.display_image()
+            self.view.display_image(self.model.get_weighted_image())
         return True
 
     def handle_mouse(self, event, x, y, flags, param):
@@ -72,11 +73,14 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.model.points.append((x, y))
             cv2.fillPoly(self.model.mask, [np.array(self.model.points)], (255, 255, 255))
             self.model.points.clear()
-        self.view.display_image()
+        self.view.display_image(self.model.get_weighted_image())
 
     def run(self):
-        self.view.setup_window(self.handle_mouse)
-        self.view.display_image()
+        params = {
+            'mouse': self.handle_mouse
+        }
+        self.view.setup_window(params)
+        self.view.display_image(self.model.get_weighted_image())
 
         while True:
             key = cv2.waitKey(1) & 0xFF

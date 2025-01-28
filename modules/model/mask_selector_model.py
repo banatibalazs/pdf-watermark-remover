@@ -21,3 +21,6 @@ class MaskSelectorModel:
 
     def get_gray_mask(self):
         return cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY)
+
+    def get_weighted_image(self):
+        return cv2.addWeighted(self.current_image, 0.7, self.mask, 0.3, 0)

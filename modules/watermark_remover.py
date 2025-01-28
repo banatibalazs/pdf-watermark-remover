@@ -46,7 +46,7 @@ class WatermarkRemover:
                 image = fill_masked_area(img, gray_mask)
             else:
                 image = inpaint_image(img, gray_mask)
-            image = sharpen_image(image, self.parameters[i].w)
+            image = sharpen_image(image, self.parameters[i].w / 10)
 
             # Convert the image to bytes and append it to the list
             is_success, im_buf_arr = cv2.imencode(".jpg", image)

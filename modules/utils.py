@@ -2,6 +2,14 @@ import cv2
 import numpy as np
 
 
+def calc_median_image(images, length=40):
+    length = min(length, len(images))
+    stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
+    median_image = np.median(stacked_images, axis=-1)
+    median_image = np.uint8(median_image)
+    return median_image
+
+
 def convert_images(images):
     return [cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR) for image in images]
 
@@ -63,3 +71,5 @@ class AdjusterParameters:
     def set_parameters(self, args):
         self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = args
 
+    def get_parameter_names(self):
+        return ['r_min', 'r_max', 'g_min', 'g_max', 'b_min', 'b_max', 'w', 'mode']
