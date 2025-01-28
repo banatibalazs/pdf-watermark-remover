@@ -2,7 +2,7 @@ import cv2
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 
 
-class MaskDrawingModel(RedoUndoInterface):
+class MaskDrawingModel():
     def __init__(self, input_mask):
         self.input_mask = input_mask
         self.final_mask = input_mask.copy()
@@ -14,29 +14,12 @@ class MaskDrawingModel(RedoUndoInterface):
         self.undo_stack = []
         self.redo_stack = []
 
-
-    def save_state(self):
-        self.undo_stack.append(self.final_mask.copy())
-        self.redo_stack.clear()
-
-    def undo(self):
-        if self.undo_stack:
-            self.redo_stack.append(self.final_mask.copy())
-            self.final_mask = self.undo_stack.pop()
-        else:
-            self.final_mask = self.input_mask.copy()
-
-    def redo(self):
-        if self.redo_stack:
-            self.undo_stack.append(self.final_mask.copy())
-            self.final_mask = self.redo_stack.pop()
-
     def draw_circle(self, x, y, erase=False, fill=True):
         color = 0 if erase else 255
         if fill:
-            cv2.circle(self.final_mask, (x, y), self.cursor_size, (color), -1)
+            cv2.circle(self.final_mask, (x, y), self.cursor_size, [color], -1)
         else:
-            cv2.circle(self.final_mask, (x, y), self.cursor_size, (color), 1)
+            cv2.circle(self.final_mask, (x, y), self.cursor_size, [color], 1)
 
     def adjust_cursor_size(self, increase=True):
         if increase:

@@ -15,5 +15,7 @@ class MaskSelectorView(BaseView):
     TITLE = "Mask selector"
 
     def __init__(self):
-        super().__init__(MaskSelectorView.TEXTS, MaskSelectorView.TEXT_COLOR, MaskSelectorView.TITLE)
+        super().__init__(MaskSelectorView.TEXTS,
+                         MaskSelectorView.TEXT_COLOR,
+                         MaskSelectorView.TITLE)
 

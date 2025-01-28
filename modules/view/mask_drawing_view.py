@@ -17,14 +17,7 @@ class MaskDrawingView(BaseView):
     TITLE = "Mask processing"
 
     def __init__(self):
-        super().__init__(MaskDrawingView.TEXTS, MaskDrawingView.TEXT_COLOR, MaskDrawingView.TITLE)
-
-    def display_image(self, model):
-        displayed_image = model.final_mask.copy()
-        cv2.circle(displayed_image, model.cursor_pos,
-                   model.cursor_size, [128],
-                   model.cursor_thickness)
-        if self.is_text_shown:
-            displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
-        cv2.imshow(self.title, displayed_image)
+        super().__init__(MaskDrawingView.TEXTS,
+                         MaskDrawingView.TEXT_COLOR,
+                         MaskDrawingView.TITLE)
 
