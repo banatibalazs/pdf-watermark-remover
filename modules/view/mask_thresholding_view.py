@@ -10,16 +10,15 @@ class MaskThresholdingView(DisplayInterface):
              "Press 'C' to hide/show this text."]
     TEXT_COLOR = (0, 0, 0)
 
-    def __init__(self, model):
+    def __init__(self):
         self.texts = MaskThresholdingView.TEXTS
         self.text_color = MaskThresholdingView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
-        self.model = model
         self.title = "Mask processing"
 
-    def display_image(self):
-        display_image = self.model.final_mask.copy()
+    def display_image(self, mask):
+        display_image = mask.copy()
         if self.is_text_shown:
             display_image = add_texts_to_image(display_image, self.texts, self.text_pos, self.text_color)
         cv2.imshow(self.title, display_image)

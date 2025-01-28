@@ -8,7 +8,7 @@ import cv2
 class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
     def __init__(self, input_mask):
         self.model = MaskDrawingModel(input_mask)
-        self.view: DisplayInterface = MaskDrawingView(self.model)
+        self.view: DisplayInterface = MaskDrawingView()
 
     def handle_mouse(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN:
@@ -24,30 +24,28 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface):
             else:
                 self.model.adjust_cursor_size(increase=False)
         self.model.cursor_pos = (x, y)
-        self.view.display_image()
+        self.view.display_image(self.model)
 
     def handle_key(self, key):
         if key == ord('r'):
             self.model.final_mask = self.model.input_mask.copy()
             self.model.undo_stack.clear()
             self.model.redo_stack.clear()
-            self.view.display_image()
         elif key == ord('c'):
             self.model.is_text_shown = not self.model.is_text_shown
-            self.view.display_image()
         elif key == ord('u'):
             self.model.undo()
-            self.view.display_image()
         elif key == ord('y'):
             self.model.redo()
-            self.view.display_image()
         elif key == 32:
             return False
+        if key in [ord('r'), ord('c'), ord('u'), ord('y')]:
+            self.view.display_image(self.model)
         return True
 
     def run(self):
         self.view.setup_window(self.handle_mouse)
-        self.view.display_image()
+        self.view.display_image(self.model)
         while True:
             key = cv2.waitKey(1) & 0xFF
             if not self.handle_key(key):

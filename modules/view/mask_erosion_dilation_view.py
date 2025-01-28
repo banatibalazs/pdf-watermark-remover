@@ -11,19 +11,18 @@ class MaskErosionDilationView(DisplayInterface):
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
 
-    def __init__(self, model):
+    def __init__(self):
         self.texts = MaskErosionDilationView.TEXTS
         self.text_color = MaskErosionDilationView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
-        self.model = model
         self.title = "Mask processing"
 
     def setup_window(self):
         cv2.namedWindow(self.title)
 
-    def display_image(self):
-        displayed_image = self.model.final_mask.copy()
+    def display_image(self, mask):
+        displayed_image = mask.copy()
         if self.is_text_shown:
             displayed_image = add_texts_to_image(displayed_image,
                                                  self.texts,

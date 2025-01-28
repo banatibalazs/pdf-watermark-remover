@@ -13,24 +13,23 @@ class MaskDrawingView(DisplayInterface):
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
 
-    def __init__(self, model=None):
+    def __init__(self):
         self.texts = MaskDrawingView.TEXTS
         self.text_color = MaskDrawingView.TEXT_COLOR
         self.text_pos = (10, 40)
         self.is_text_shown = True
-        self.model = model
         self.title = "Mask processing"
 
     def setup_window(self, *args, **kwargs):
         cv2.namedWindow(self.title)
         cv2.setMouseCallback(self.title, *args, **kwargs)
 
-    def display_image(self):
-        displayed_image = self.model.final_mask.copy()
-        cv2.circle(displayed_image,self.model.cursor_pos,
-                   self.model.cursor_size, [255],
-                   self.model.cursor_thickness)
-        if self.model.is_text_shown:
+    def display_image(self, model):
+        displayed_image = model.final_mask.copy()
+        cv2.circle(displayed_image, model.cursor_pos,
+                   model.cursor_size, [255],
+                   model.cursor_thickness)
+        if self.is_text_shown:
             displayed_image = add_texts_to_image(displayed_image, self.texts, self.text_pos, self.text_color)
         cv2.imshow(self.title, displayed_image)
 

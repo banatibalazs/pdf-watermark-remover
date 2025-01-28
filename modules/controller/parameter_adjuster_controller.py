@@ -8,7 +8,7 @@ from modules.interfaces.gui_interfaces import KeyHandlerInterface
 class ParameterAdjuster(KeyHandlerInterface):
     def __init__(self, images, mask):
         self.model = ParameterAdjusterModel(images, mask)
-        self.view = ParameterAdjusterView(self.model)
+        self.view = ParameterAdjusterView()
         self.window_name = 'watermark remover'
 
     def update_parameter(self, attr, val):
@@ -16,7 +16,7 @@ class ParameterAdjuster(KeyHandlerInterface):
         if self.model.apply_same_parameters:
             for param in self.model.parameters:
                 setattr(param, attr, val)
-        self.view.display_image()
+        self.view.display_image(self.model.get_processed_current_image())
 
     def on_r_min_changed(self, val):
         self.update_parameter('r_min', val)
@@ -56,15 +56,15 @@ class ParameterAdjuster(KeyHandlerInterface):
         elif key == 32:
             return False
         self.model.current_parameters = self.model.parameters[self.model.current_index]
-        self.view.display_image()
-        self.view.update_trackbars()
+        self.view.display_image(self.model.get_processed_current_image())
+        self.view.update_trackbars(self.model.current_parameters)
         return True
 
     def run(self):
-        self.view.setup_window(self.on_r_min_changed, self.on_r_max_changed, self.on_g_min_changed,
+        self.view.setup_window(self.model.current_parameters, self.on_r_min_changed, self.on_r_max_changed, self.on_g_min_changed,
                                self.on_g_max_changed, self.on_b_min_changed, self.on_b_max_changed, self.on_w_changed,
                                self.on_mode_changed)
-        self.view.display_image()
+        self.view.display_image(self.model.get_processed_current_image())
 
         while True:
             key = cv2.waitKey(1) & 0xFF
