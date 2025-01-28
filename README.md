@@ -126,14 +126,6 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 
    The reading of large PDF files can be slow, especially if the resolution is high. If the process is too slow, try decreasing the `dpi` parameter.
 
-## TODOs/Ideas
-
-- Put median image calculation into the thresholding class
-- Make a trackbar for median image calc.
-- Unify the controller classes, maybe all of them should get prev/next page functionality.
-- Decouple the model and view classes, dependency injection instead.
-- Create base classes
-
 ## Disclaimer
 
 This script is for educational purposes only. The watermark removal process may not be perfect and may not work for all types of watermarks. The script may also remove parts of the image that are not watermarks. Use this script at your own risk.
