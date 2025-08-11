@@ -88,9 +88,19 @@ The script requires the following Python libraries:
 
 3. **Install poppler-utils**
 
-    - **Windows**: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.
-    - **Ubuntu/Debian**: Install `poppler-utils` with the following command: `sudo apt-get install -y poppler-utils`
-    - **macOS**: If you have Homebrew installed, you can install `poppler` with the following command: `brew install poppler`
+   - **Windows**: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.
+
+   - **Ubuntu/Debian**: Install `poppler-utils` with the following command: 
+
+      ```bash 
+       sudo apt-get install -y poppler-utils
+      ```
+
+   - **macOS**: If you have Homebrew installed, you can install poppler with the following command:
+
+      ```bash 
+      brew install poppler
+       ```
    
 
 ## Running the Script
