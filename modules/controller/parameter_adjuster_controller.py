@@ -2,20 +2,20 @@ import cv2
 from modules.model.parameter_adjuster_model import ParameterAdjusterModel
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
 from modules.view.opencv_view import OpencvView
+from modules.view.tkinter_view import TkinterView
 
 
 class ParameterAdjuster(KeyHandlerInterface):
     TEXTS = ["Set the color range with trackbars.",
             "Press 'A'/'D' to go to the previous/next page.",
             "Press 'T' to set different parameters for each image.",
-            "Press 'C' to hide/show this text.",
             "Press 'space' to finish."]
     TEXT_COLOR = (255, 255, 255)
     TITLE = "Parameter adjuster"
 
     def __init__(self, images, mask):
         self.model = ParameterAdjusterModel(images, mask)
-        self.view : OpencvView = OpencvView(ParameterAdjuster.TEXTS,
+        self.view = TkinterView(ParameterAdjuster.TEXTS,
                                             ParameterAdjuster.TEXT_COLOR,
                                             ParameterAdjuster.TITLE)
 
@@ -72,6 +72,10 @@ class ParameterAdjuster(KeyHandlerInterface):
         return True
 
     def run(self):
+        def on_key(event):
+            key = ord(event.char) if event.char else 255
+            if not self.handle_key(key):
+                self.view.close_window()
         params = {
             'trackbars': {
                 'r_min': {'value': 0, 'callback': self.on_r_min_changed},
@@ -82,17 +86,13 @@ class ParameterAdjuster(KeyHandlerInterface):
                 'b_max': {'value': 255, 'callback': self.on_b_max_changed},
                 'w': {'value': 0, 'callback': self.on_w_changed},
                 'mode': {'value': 1, 'callback': self.on_mode_changed}
-            }
+            },
+            'key': on_key
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_processed_current_image())
 
-        while True:
-            key = cv2.waitKey(1) & 0xFF
-            if not self.handle_key(key):
-                break
-
-        self.view.close_window()
+        self.view.root.mainloop()
 
     def get_parameters(self):
         return self.model.get_parameters()

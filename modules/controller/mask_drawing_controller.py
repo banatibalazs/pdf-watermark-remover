@@ -2,8 +2,10 @@ from modules.interfaces.gui_interfaces import MouseHandlerInterface, KeyHandlerI
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_drawing_model import MaskDrawingModel
 from modules.view.opencv_view import OpencvView
+import tkinter
 import cv2
 
+from modules.view.tkinter_view import TkinterView
 
 
 class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface):
@@ -12,16 +14,15 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
              "Mouse wheel: cursor size",
              "Press 'U'/'Y' to undo/redo.",
              "Press 'R' to reset the mask.",
-             "Press 'C' to hide/show this text.",
              "Press 'space' to finish."]
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
     def __init__(self, input_mask):
         self.model = MaskDrawingModel(input_mask)
-        self.view: OpencvView = OpencvView(MaskDrawing.TEXTS,
-                                           MaskDrawing.TEXT_COLOR,
-                                           MaskDrawing.TITLE)
+        self.view = TkinterView(MaskDrawing.TEXTS,
+                               MaskDrawing.TEXT_COLOR,
+                               MaskDrawing.TITLE)
 
     def undo(self) -> None:
         if not self.model.undo_stack:
@@ -41,19 +42,26 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
         self.model.undo_stack.append(self.model.final_mask.copy())
         self.model.redo_stack.clear()
 
-    def handle_mouse(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN:
+
+    def handle_mouse(self, event):
+        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
+        print(event)
+        type = event.type
+        x, y = event.x, event.y
+        flags = event.state
+
+        if type == tkinter.EventType.ButtonPress:
             self.save_state()
 
-        if event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON):
+        if event.state == 8464:
             self.model.draw_circle(x, y, erase=True, fill=True)
-        elif event == cv2.EVENT_RBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_RBUTTON):
+        elif event.state == 9232:
             self.model.draw_circle(x, y, erase=False, fill=True)
-        elif event == cv2.EVENT_MOUSEWHEEL:
-            if flags > 0:
-                self.model.adjust_cursor_size(increase=True)
-            else:
-                self.model.adjust_cursor_size(increase=False)
+        elif event.num == 4:
+            self.model.adjust_cursor_size(increase=True)
+        elif event.num == 5:
+            self.model.adjust_cursor_size(increase=False)
+
         self.model.cursor_pos = (x, y)
         mask = self.model.final_mask.copy()
         cv2.circle(mask, self.model.cursor_pos,
@@ -79,17 +87,18 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
         return True
 
     def run(self):
+        def on_key(event):
+            key = ord(event.char) if event.char else 255
+            if not self.handle_key(key):
+                self.view.close_window()
+
         params = {
-            'mouse': self.handle_mouse
+            'mouse': self.handle_mouse,
+            'key': on_key
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.final_mask)
-        while True:
-            key = cv2.waitKey(1) & 0xFF
-            if not self.handle_key(key):
-                break
-
-        self.view.close_window()
+        self.view.root.mainloop()
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

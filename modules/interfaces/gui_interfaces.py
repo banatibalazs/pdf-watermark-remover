@@ -24,5 +24,5 @@ class KeyHandlerInterface(ABC):
 
 class MouseHandlerInterface(ABC):
     @abstractmethod
-    def handle_mouse(self, event, x, y, flags, param):
+    def handle_mouse(self, event):
         pass

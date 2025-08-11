@@ -35,8 +35,8 @@ class WatermarkRemover:
             cv2.imshow('Removing watermark...', image_with_progress)
             cv2.waitKey(1)
 
-            lower = np.array([self.parameters[i].b_min, self.parameters[i].g_min, self.parameters[i].r_min])
-            upper = np.array([self.parameters[i].b_max, self.parameters[i].g_max, self.parameters[i].r_max])
+            lower = np.array([self.parameters[i].b_min, self.parameters[i].g_min, self.parameters[i].r_min], dtype=np.uint8)
+            upper = np.array([self.parameters[i].b_max, self.parameters[i].g_max, self.parameters[i].r_max], dtype=np.uint8)
 
             masked_image_part = cv2.bitwise_and(img, self.mask)
             gray_mask = cv2.inRange(masked_image_part, lower, upper)

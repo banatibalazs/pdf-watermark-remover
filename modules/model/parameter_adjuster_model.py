@@ -16,8 +16,8 @@ class ParameterAdjusterModel:
 
     def get_processed_current_image(self):
         current_image = self.images[self.current_index]
-        lower = np.array([self.current_parameters.b_min, self.current_parameters.g_min, self.current_parameters.r_min])
-        upper = np.array([self.current_parameters.b_max, self.current_parameters.g_max, self.current_parameters.r_max])
+        lower = np.array([self.current_parameters.b_min, self.current_parameters.g_min, self.current_parameters.r_min], dtype=np.uint8)
+        upper = np.array([self.current_parameters.b_max, self.current_parameters.g_max, self.current_parameters.r_max], dtype=np.uint8)
         mask = cv2.bitwise_and(current_image, self.mask)
         gray_mask = cv2.inRange(mask, lower, upper)
         gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))

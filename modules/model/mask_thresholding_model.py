@@ -1,5 +1,5 @@
 import cv2
-
+import numpy as np
 from modules.utils import calc_median_image
 
 
@@ -12,7 +12,8 @@ class MaskThresholdingModel:
         self.threshold_max = 195
 
     def update_mask(self):
-        self.final_mask = cv2.inRange(self.input_mask, self.threshold_min, self.threshold_max)
+        self.final_mask = cv2.inRange(self.input_mask, np.array(self.threshold_min, dtype=np.uint8),
+                                      np.array(self.threshold_max, dtype=np.uint8))
         self.final_mask = cv2.bitwise_and(self.final_mask, cv2.inRange(self.input_mask, 1, 255))
 
     def set_threshold_min(self, value):
@@ -20,6 +21,7 @@ class MaskThresholdingModel:
         self.update_mask()
 
     def set_threshold_max(self, value):
+        value = np.array(value, dtype=np.uint8)
         self.threshold_max = value
         self.update_mask()
 

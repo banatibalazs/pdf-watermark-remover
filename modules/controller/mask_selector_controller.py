@@ -1,10 +1,12 @@
+import tkinter
+
 import cv2
 import numpy as np
 from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_selector_model import MaskSelectorModel
 from modules.view.opencv_view import OpencvView
-
+from modules.view.tkinter_view import TkinterView
 
 
 class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface):
@@ -13,7 +15,6 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         "Press 'A'/'D' to go to the previous/next page.",
         "Press 'U'/'Y' to undo/redo.",
         "Press 'R' to reset the mask.",
-        "Press 'C' to hide/show this text.",
         "Press 'space' to finish."
     ]
     TEXT_COLOR = (255, 255, 255)
@@ -21,7 +22,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
 
     def __init__(self, images):
         self.model = MaskSelectorModel(images)
-        self.view: OpencvView = OpencvView(MaskSelector.TEXTS,
+        self.view = TkinterView(MaskSelector.TEXTS,
                                            MaskSelector.TEXT_COLOR,
                                            MaskSelector.TITLE)
 
@@ -44,6 +45,8 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         self.model.redo_stack.clear()
 
     def handle_key(self, key):
+        if key != 255:
+            print("Key pressed:", key)
         if key == ord('a'):
             self.model.current_page_index = max(0, self.model.current_page_index - 1)
             self.model.current_image = self.model.images[self.model.current_page_index].copy()
@@ -66,20 +69,25 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.view.display_image(self.model.get_weighted_image())
         return True
 
-    def handle_mouse(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
+    def handle_mouse(self, event):
+        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
+        # get the type of tkinter event
+        type = event.type
+        x,y = event.x, event.y
+        if type == tkinter.EventType.ButtonPress:
             self.save_state()
 
-        if event == cv2.EVENT_LBUTTONDOWN:
+
+        if type == tkinter.EventType.ButtonPress:
             self.model.drawing = True
             self.model.ix, self.model.iy = x, y
             self.model.points.append((x, y))
-        elif event == cv2.EVENT_MOUSEMOVE:
+        elif type == tkinter.EventType.Motion:
             if self.model.drawing:
                 cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
                 self.model.ix, self.model.iy = x, y
                 self.model.points.append((x, y))
-        elif event == cv2.EVENT_LBUTTONUP:
+        elif type == tkinter.EventType.ButtonRelease:
             self.model.drawing = False
             cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
             self.model.points.append((x, y))
@@ -88,18 +96,22 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         self.view.display_image(self.model.get_weighted_image())
 
     def run(self):
+        def on_key(event):
+            key = ord(event.char) if event.char else 255
+            if not self.handle_key(key):
+                self.view.close_window()
+
         params = {
-            'mouse': self.handle_mouse
+            'mouse': self.handle_mouse,
+            'key': on_key,
+            'buttons': {
+                'undo': {'text': 'Undo', 'callback': self.undo},
+                'redo': {'text': 'Redo', 'callback': self.redo}
+            }
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_weighted_image())
-
-        while True:
-            key = cv2.waitKey(1) & 0xFF
-            if not self.handle_key(key):
-                break
-
-        self.view.close_window()
+        self.view.root.mainloop()
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()
