@@ -3,6 +3,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from modules.utils import add_texts_to_image
 from modules.interfaces.gui_interfaces import DisplayInterface
+import cv2
 
 class TkinterView(DisplayInterface):
     def __init__(self, texts, text_color, title):
@@ -17,8 +18,6 @@ class TkinterView(DisplayInterface):
     def setup_window(self, params=None):
         self.root = tk.Tk()
         self.root.title(self.title)
-        # self.label = tk.Label(self.root)
-        # self.label.pack()
 
         # Main layout: image left, sidebar right
         main_frame = tk.Frame(self.root)
@@ -38,14 +37,8 @@ class TkinterView(DisplayInterface):
         button_frame = tk.Frame(self.sidebar)
         button_frame.pack(anchor='n', pady=5)
 
-        toggle_text_button = tk.Button(button_frame, text='Toggle Text', command=self.toggle_text)
-        toggle_text_button.pack(side=tk.LEFT, padx=5)
         close_button = tk.Button(button_frame, text='Close', command=self.close_window)
         close_button.pack(side=tk.LEFT, padx=5)
-        redo_button = tk.Button(button_frame, text='Redo', command=lambda: self.update_trackbars(params))
-        redo_button.pack(side=tk.LEFT, padx=5)
-        undo_button = tk.Button(button_frame, text='Undo', command=lambda: self.update_trackbars(params))
-        undo_button.pack(side=tk.LEFT, padx=5)
 
         if params and 'key' in params:
             self.root.bind('<Key>', params['key'])
@@ -80,7 +73,8 @@ class TkinterView(DisplayInterface):
 
 
     def display_image(self, image):
-
+        # Convert the image to RGB from BGR
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(image)
         imgtk = ImageTk.PhotoImage(image=img)
         self.image_label.imgtk = imgtk
@@ -95,10 +89,12 @@ class TkinterView(DisplayInterface):
             self.root = None
 
     def update_trackbars(self, params):
-        # for i in range(len(params['names'])):
-        #     scale = self.root.nametowidget(f'!scale{i}')
-        #     scale.set(int(params['values'][i]))
-        pass
+        for i in range(len(params['names'])):
+            # Find the scale widget by label
+            scale = next((widget for widget in self.sidebar.winfo_children() if isinstance(widget, tk.Scale) and
+                          widget.cget('label') == params['names'][i]), None)
+            if scale:
+                scale.set(int(params['values'][i]))
 
     def toggle_text(self):
         self.is_text_shown = not self.is_text_shown

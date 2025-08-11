@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+
 from modules.model.parameter_adjuster_model import ParameterAdjusterModel
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
 from modules.view.opencv_view import OpencvView
@@ -20,6 +22,7 @@ class ParameterAdjuster(KeyHandlerInterface):
                                             ParameterAdjuster.TITLE)
 
     def update_parameter(self, attr, val):
+        val = int(val)
         setattr(self.model.current_parameters, attr, val)
         if self.model.apply_same_parameters:
             for param in self.model.parameters:
@@ -48,7 +51,8 @@ class ParameterAdjuster(KeyHandlerInterface):
         self.update_parameter('w', pos)
 
     def on_mode_changed(self, pos):
-        self.update_parameter('mode', bool(pos))
+        print("Mode changed to:", pos)
+        self.update_parameter('mode', pos)
 
     def handle_key(self, key):
         if key == ord('a'):

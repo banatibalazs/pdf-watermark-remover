@@ -21,10 +21,15 @@ class ParameterAdjusterModel:
         mask = cv2.bitwise_and(current_image, self.mask)
         gray_mask = cv2.inRange(mask, lower, upper)
         gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY))
+        print(f"Current parameters: {self.current_parameters.mode}")
         if self.current_parameters.mode:
+            print("Filling masked area with most frequent color")
             processed_current_image = fill_masked_area(current_image, gray_mask)
         else:
+            print("Inpainting masked area")
             processed_current_image = inpaint_image(current_image, gray_mask)
+
+
         processed_current_image = sharpen_image(processed_current_image, self.current_parameters.w / 10 )
         return processed_current_image
 
