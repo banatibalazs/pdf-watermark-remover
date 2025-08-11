@@ -1,7 +1,7 @@
 import cv2
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
 from modules.model.mask_thresholding_model import MaskThresholdingModel
-
+from tkinter import filedialog
 from modules.view.opencv_view import OpencvView
 from modules.view.tkinter_view import TkinterView
 
@@ -49,11 +49,32 @@ class MaskThresholding(KeyHandlerInterface):
                 'th_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
 
             },
-            'key': on_key
+            'key': on_key,
+            'buttons': {
+                'save_mask': {
+                    'text': 'Save mask', 'callback': self.save_mask},
+                'reset_mask': {'text': 'Reset mask', 'callback': self.reset_mask},
+                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
+            }
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
+
+    def save_mask(self):
+        self.model.save_mask()
+
+    def load_mask(self):
+        path = filedialog.askopenfilename(
+            title="Load mask",
+            filetypes=[("All files", "*.*")]
+        )
+        self.model.load_mask(path)
+        self.view.display_image(self.model.final_mask)
+
+    def reset_mask(self):
+        self.model.reset_mask()
+        self.view.display_image(self.model.final_mask)
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

@@ -1,6 +1,6 @@
 from modules.model.mask_erosion_dilation_model import MaskErosionDilationModel
 import cv2
-
+from tkinter import filedialog
 from modules.interfaces.gui_interfaces import KeyHandlerInterface, DisplayInterface
 from modules.view.opencv_view import OpencvView
 from modules.view.tkinter_view import TkinterView
@@ -44,11 +44,29 @@ class MaskErosionDilation(KeyHandlerInterface):
 
         params = {
             'key': on_key
+            , 'buttons': {
+                'save_mask': {
+                    'text': 'Save mask', 'callback': self.save_mask},
+                'reset_mask': {'text': 'Reset mask', 'callback': self.reset_mask},
+                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
+            }
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
 
+    def save_mask(self):
+        self.model.save_mask()
+
+    def load_mask(self):
+        path = filedialog.askopenfilename(
+            title="Load mask",
+            filetypes=[("All files", "*.*")])
+        self.model.load_mask(path)
+
+    def reset_mask(self):
+        self.model.reset()
+        self.view.display_image(self.model.final_mask)
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

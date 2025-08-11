@@ -1,5 +1,5 @@
 import tkinter
-
+from tkinter import filedialog
 import cv2
 import numpy as np
 from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
@@ -31,6 +31,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             return
         self.model.redo_stack.append(self.model.mask.copy())
         self.model.mask = self.model.undo_stack.pop()
+
         self.view.display_image(self.model.get_weighted_image())
 
     def redo(self) -> None:
@@ -54,9 +55,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.model.current_page_index = min(len(self.model.images) - 1, self.model.current_page_index + 1)
             self.model.current_image = self.model.images[self.model.current_page_index].copy()
         elif key == ord('r'):
-            self.model.reset_mask()
-            self.model.undo_stack.clear()
-            self.model.redo_stack.clear()
+            self.reset_mask()
         elif key == ord('c'):
             self.view.toggle_text()
         elif key == ord('u'):
@@ -78,7 +77,7 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             self.save_state()
 
 
-        if type == tkinter.EventType.ButtonPress:
+        if type == tkinter.EventType.ButtonPress and event.num == 1:
             self.model.drawing = True
             self.model.ix, self.model.iy = x, y
             self.model.points.append((x, y))
@@ -106,12 +105,32 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             'key': on_key,
             'buttons': {
                 'undo': {'text': 'Undo', 'callback': self.undo},
-                'redo': {'text': 'Redo', 'callback': self.redo}
+                'redo': {'text': 'Redo', 'callback': self.redo},
+                'save_mask': {
+                    'text': 'Save mask', 'callback': self.model.save_mask},
+                'reset_mask': {'text': 'Reset mask', 'callback': self.model.reset_mask},
+                'load_mask': {
+                    'text': 'Load mask', 'callback': self.load_mask},
             }
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_weighted_image())
         self.view.root.mainloop()
+
+    def load_mask(self):
+        path = filedialog.askopenfilename(
+            title="Select mask file",
+            filetypes=[("All files", "*.*")]
+        )
+        self.model.load_mask(path)
+        self.view.display_image(self.model.get_weighted_image())
+
+    def reset_mask(self):
+        self.model.reset_mask()
+        self.view.display_image(self.model.get_weighted_image())
+
+    def save_mask(self):
+        self.model.save_mask()
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

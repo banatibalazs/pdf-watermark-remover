@@ -2,6 +2,24 @@ import cv2
 import numpy as np
 from modules.utils import sharpen_image, fill_masked_area, inpaint_image
 from modules.utils import AdjusterParameters
+# At the top of your file
+from diffusers import StableDiffusionInpaintPipeline
+import torch
+from PIL import Image
+
+# Load the pipeline once (ideally outside the class, e.g., as a global or singleton)
+# pipe = StableDiffusionInpaintPipeline.from_pretrained(
+#     "runwayml/stable-diffusion-inpainting", torch_dtype=torch.float16
+# )
+#
+# def stable_diffusion_inpaint(image, mask):
+#     # Convert numpy arrays to PIL Images
+#     image_pil = Image.fromarray(image)
+#     mask_pil = Image.fromarray(mask)
+#     # Run the pipeline
+#     result = pipe(prompt="", image=image_pil, mask_image=mask_pil).images[0]
+#     # Convert back to numpy
+#     return np.array(result)
 
 
 class ParameterAdjusterModel:
@@ -26,9 +44,9 @@ class ParameterAdjusterModel:
             print("Filling masked area with most frequent color")
             processed_current_image = fill_masked_area(current_image, gray_mask)
         else:
-            print("Inpainting masked area")
+            # print("Inpainting masked area")
             processed_current_image = inpaint_image(current_image, gray_mask)
-
+            # processed_current_image = stable_diffusion_inpaint(current_image, gray_mask)
 
         processed_current_image = sharpen_image(processed_current_image, self.current_parameters.w / 10 )
         return processed_current_image

@@ -4,6 +4,7 @@ from modules.model.mask_drawing_model import MaskDrawingModel
 from modules.view.opencv_view import OpencvView
 import tkinter
 import cv2
+from tkinter import filedialog
 
 from modules.view.tkinter_view import TkinterView
 
@@ -94,11 +95,33 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
 
         params = {
             'mouse': self.handle_mouse,
-            'key': on_key
+            'key': on_key,
+            'buttons': {
+                'save_mask': {
+                    'text': 'Save mask', 'callback': self.model.save_mask},
+                'reset_mask': {'text': 'Reset mask', 'callback': lambda: self.model.final_mask.copy()},
+                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
+            }
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
+
+    def save_mask(self):
+        self.model.save_mask()
+
+    def load_mask(self):
+        path = tkinter.filedialog.askopenfilename(
+            title="Load mask",
+            filetypes=[("All files", "*.*")])
+        self.model.load_mask(path)
+        self.view.display_image(self.model.final_mask)
+
+    def reset_mask(self):
+        self.model.final_mask = self.model.input_mask.copy()
+        self.model.undo_stack.clear()
+        self.model.redo_stack.clear()
+        self.view.display_image(self.model.final_mask)
 
     def get_gray_mask(self):
         return self.model.get_gray_mask()

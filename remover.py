@@ -13,7 +13,7 @@ SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
 # The final PDF will have the same dimensions as the original PDF
-MAX_WIDTH = 1400
+MAX_WIDTH = 900
 MAX_HEIGHT = 800
 
 # Set the DPI for the images, this affects the quality of the final PDF

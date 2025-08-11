@@ -1,5 +1,6 @@
 # modules/view/tkinter_view.py
 import tkinter as tk
+from tkinter import filedialog
 from PIL import Image, ImageTk
 from modules.utils import add_texts_to_image
 from modules.interfaces.gui_interfaces import DisplayInterface
