@@ -1,14 +1,23 @@
 import cv2
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
 from modules.model.mask_thresholding_model import MaskThresholdingModel
-from modules.view.mask_thresholding_view import MaskThresholdingView
 
+from modules.view.opencv_view import OpencvView
 
 
 class MaskThresholding(KeyHandlerInterface):
+    TEXTS = ["Use the trackbars to",
+             "adjust the thresholding.",
+             "Press 'space' to finish.",
+             "Press 'C' to hide/show this text."]
+    TEXT_COLOR = (0, 0, 0)
+    TITLE = "Mask processing"
+
     def __init__(self, images, input_mask):
         self.model = MaskThresholdingModel(images, input_mask)
-        self.view = MaskThresholdingView()
+        self.view: OpencvView = OpencvView(MaskThresholding.TEXTS,
+                                           MaskThresholding.TEXT_COLOR,
+                                           MaskThresholding.TITLE)
 
     def on_threshold_trackbar_min(self, pos):
         self.model.set_threshold_min(pos)

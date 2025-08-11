@@ -1,14 +1,25 @@
 from modules.model.mask_erosion_dilation_model import MaskErosionDilationModel
-from modules.view.mask_erosion_dilation_view import MaskErosionDilationView
 import cv2
 
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
+from modules.view.opencv_view import OpencvView
 
 
 class MaskErosionDilation(KeyHandlerInterface):
+    TEXTS = ["Press 'D' to dilate the mask.",
+             "Press 'E' to erode the mask.",
+             "Press 'R' to reset the mask.",
+             "Press 'C' to hide/show this text.",
+             "Press 'space' to finish."]
+    TEXT_COLOR = (0, 0, 0)
+    TITLE = "Mask processing"
+
+
     def __init__(self, input_mask):
         self.model = MaskErosionDilationModel(input_mask)
-        self.view = MaskErosionDilationView()
+        self.view: OpencvView = OpencvView(MaskErosionDilation.TEXTS,
+                                           MaskErosionDilation.TEXT_COLOR,
+                                           MaskErosionDilation.TITLE)
 
     def handle_key(self, key):
         if key == ord('d'):

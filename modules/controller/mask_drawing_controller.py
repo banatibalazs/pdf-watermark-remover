@@ -1,16 +1,27 @@
 from modules.interfaces.gui_interfaces import MouseHandlerInterface, KeyHandlerInterface, DisplayInterface
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_drawing_model import MaskDrawingModel
-from modules.view.base_view import BaseView
-from modules.view.mask_drawing_view import MaskDrawingView
+from modules.view.opencv_view import OpencvView
 import cv2
 
 
 
 class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface):
+    TEXTS = ["Draw on the mask.",
+             "LMouse/RMouse: erase/draw",
+             "Mouse wheel: cursor size",
+             "Press 'U'/'Y' to undo/redo.",
+             "Press 'R' to reset the mask.",
+             "Press 'C' to hide/show this text.",
+             "Press 'space' to finish."]
+    TEXT_COLOR = (0, 0, 0)
+    TITLE = "Mask processing"
+
     def __init__(self, input_mask):
         self.model = MaskDrawingModel(input_mask)
-        self.view: BaseView = MaskDrawingView()
+        self.view: OpencvView = OpencvView(MaskDrawing.TEXTS,
+                                           MaskDrawing.TEXT_COLOR,
+                                           MaskDrawing.TITLE)
 
     def undo(self) -> None:
         if not self.model.undo_stack:

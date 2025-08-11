@@ -3,15 +3,27 @@ import numpy as np
 from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
 from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_selector_model import MaskSelectorModel
-from modules.view.base_view import BaseView
-from modules.view.mask_selector_view import MaskSelectorView
+from modules.view.opencv_view import OpencvView
 
 
 
 class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface):
+    TEXTS = [
+        "Draw a circle around the object you want to remove.",
+        "Press 'A'/'D' to go to the previous/next page.",
+        "Press 'U'/'Y' to undo/redo.",
+        "Press 'R' to reset the mask.",
+        "Press 'C' to hide/show this text.",
+        "Press 'space' to finish."
+    ]
+    TEXT_COLOR = (255, 255, 255)
+    TITLE = "Mask selector"
+
     def __init__(self, images):
         self.model = MaskSelectorModel(images)
-        self.view: BaseView = MaskSelectorView()
+        self.view: OpencvView = OpencvView(MaskSelector.TEXTS,
+                                           MaskSelector.TEXT_COLOR,
+                                           MaskSelector.TITLE)
 
     def undo(self) -> None:
         if not self.model.undo_stack:

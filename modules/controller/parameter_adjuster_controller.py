@@ -1,14 +1,23 @@
 import cv2
 from modules.model.parameter_adjuster_model import ParameterAdjusterModel
-from modules.view.parameter_adjuster_view import ParameterAdjusterView
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
-
+from modules.view.opencv_view import OpencvView
 
 
 class ParameterAdjuster(KeyHandlerInterface):
+    TEXTS = ["Set the color range with trackbars.",
+            "Press 'A'/'D' to go to the previous/next page.",
+            "Press 'T' to set different parameters for each image.",
+            "Press 'C' to hide/show this text.",
+            "Press 'space' to finish."]
+    TEXT_COLOR = (255, 255, 255)
+    TITLE = "Parameter adjuster"
+
     def __init__(self, images, mask):
         self.model = ParameterAdjusterModel(images, mask)
-        self.view = ParameterAdjusterView()
+        self.view : OpencvView = OpencvView(ParameterAdjuster.TEXTS,
+                                            ParameterAdjuster.TEXT_COLOR,
+                                            ParameterAdjuster.TITLE)
 
     def update_parameter(self, attr, val):
         setattr(self.model.current_parameters, attr, val)
