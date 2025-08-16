@@ -1,12 +1,8 @@
-import cv2
-from modules.interfaces.gui_interfaces import KeyHandlerInterface
+from modules.controller.base_controller import BaseController
 from modules.model.mask_thresholding_model import MaskThresholdingModel
-from tkinter import filedialog
-from modules.view.opencv_view import OpencvView
-from modules.view.tkinter_view import TkinterView
 
 
-class MaskThresholding(KeyHandlerInterface):
+class MaskThresholding(BaseController):
     TEXTS = ["Use the trackbars to",
              "adjust the thresholding.",
              "Press 'space' to finish.",
@@ -14,11 +10,11 @@ class MaskThresholding(KeyHandlerInterface):
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
-    def __init__(self, images, input_mask):
+    def __init__(self, images, input_mask, view):
+        super().__init__()
         self.model = MaskThresholdingModel(images, input_mask)
-        self.view = TkinterView(MaskThresholding.TEXTS,
-                                           MaskThresholding.TEXT_COLOR,
-                                           MaskThresholding.TITLE)
+        self.view = view
+        self.view.set_texts(MaskThresholding.TEXTS, MaskThresholding.TEXT_COLOR, MaskThresholding.TITLE)
 
     def on_threshold_trackbar_min(self, pos):
         print("Threshold min changed to:", pos)
@@ -61,23 +57,3 @@ class MaskThresholding(KeyHandlerInterface):
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
 
-    def save_mask(self):
-        self.model.save_mask()
-
-    def load_mask(self):
-        path = filedialog.askopenfilename(
-            title="Load mask",
-            filetypes=[("All files", "*.*")]
-        )
-        self.model.load_mask(path)
-        self.view.display_image(self.model.final_mask)
-
-    def reset_mask(self):
-        self.model.reset_mask()
-        self.view.display_image(self.model.final_mask)
-
-    def get_gray_mask(self):
-        return self.model.get_gray_mask()
-
-    def get_bgr_mask(self):
-        return self.model.get_bgr_mask()

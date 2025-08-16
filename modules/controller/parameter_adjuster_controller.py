@@ -1,10 +1,5 @@
-import cv2
-import numpy as np
-
 from modules.model.parameter_adjuster_model import ParameterAdjusterModel
 from modules.interfaces.gui_interfaces import KeyHandlerInterface
-from modules.view.opencv_view import OpencvView
-from modules.view.tkinter_view import TkinterView
 
 
 class ParameterAdjuster(KeyHandlerInterface):
@@ -15,11 +10,11 @@ class ParameterAdjuster(KeyHandlerInterface):
     TEXT_COLOR = (255, 255, 255)
     TITLE = "Parameter adjuster"
 
-    def __init__(self, images, mask):
+    def __init__(self, images, mask, view):
         self.model = ParameterAdjusterModel(images, mask)
-        self.view = TkinterView(ParameterAdjuster.TEXTS,
-                                            ParameterAdjuster.TEXT_COLOR,
-                                            ParameterAdjuster.TITLE)
+        self.view = view
+        self.view.set_texts(ParameterAdjuster.TEXTS, ParameterAdjuster.TEXT_COLOR, ParameterAdjuster.TITLE)
+
 
     def update_parameter(self, attr, val):
         val = int(val)

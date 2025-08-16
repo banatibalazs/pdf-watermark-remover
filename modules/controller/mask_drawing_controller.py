@@ -1,15 +1,11 @@
+from modules.controller.base_controller import BaseController
 from modules.interfaces.gui_interfaces import MouseHandlerInterface, KeyHandlerInterface, DisplayInterface
-from modules.interfaces.redo_undo_interface import RedoUndoInterface
 from modules.model.mask_drawing_model import MaskDrawingModel
-from modules.view.opencv_view import OpencvView
 import tkinter
 import cv2
-from tkinter import filedialog
-
-from modules.view.tkinter_view import TkinterView
 
 
-class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface):
+class MaskDrawing(BaseController):
     TEXTS = ["Draw on the mask.",
              "LMouse/RMouse: erase/draw",
              "Mouse wheel: cursor size",
@@ -19,29 +15,12 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
-    def __init__(self, input_mask):
+
+    def __init__(self, input_mask, view: DisplayInterface):
+        super().__init__()
+        self.view = view
+        self.view.set_texts(MaskDrawing.TEXTS, MaskDrawing.TEXT_COLOR, MaskDrawing.TITLE)
         self.model = MaskDrawingModel(input_mask)
-        self.view = TkinterView(MaskDrawing.TEXTS,
-                               MaskDrawing.TEXT_COLOR,
-                               MaskDrawing.TITLE)
-
-    def undo(self) -> None:
-        if not self.model.undo_stack:
-            return
-        self.model.redo_stack.append(self.model.final_mask.copy())
-        self.model.final_mask = self.model.undo_stack.pop()
-        self.view.display_image(self.model.final_mask)
-
-    def redo(self) -> None:
-        if not self.model.redo_stack:
-            return
-        self.model.undo_stack.append(self.model.final_mask.copy())
-        self.model.final_mask = self.model.redo_stack.pop()
-        self.view.display_image(self.model.final_mask)
-
-    def save_state(self) -> None:
-        self.model.undo_stack.append(self.model.final_mask.copy())
-        self.model.redo_stack.clear()
 
 
     def handle_mouse(self, event):
@@ -49,17 +28,20 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
         print(event)
         type = event.type
         x, y = event.x, event.y
-        flags = event.state
 
         if type == tkinter.EventType.ButtonPress:
             self.save_state()
 
+        # On left mouse button press, draw a black filled circle
         if event.state == 8464:
             self.model.draw_circle(x, y, erase=True, fill=True)
+        #  On right mouse button press, draw a white filled circle
         elif event.state == 9232:
             self.model.draw_circle(x, y, erase=False, fill=True)
+        # When scrolling the mouse wheel up increase the cursor size
         elif event.num == 4:
             self.model.adjust_cursor_size(increase=True)
+        # When scrolling the mouse wheel down decrease the cursor size
         elif event.num == 5:
             self.model.adjust_cursor_size(increase=False)
 
@@ -84,7 +66,7 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
         elif key == 32:
             return False
         if key in [ord('r'), ord('c'), ord('u'), ord('y')]:
-            self.view.display_image(self.model.final_mask)
+            self.update_view()
         return True
 
     def run(self):
@@ -107,22 +89,4 @@ class MaskDrawing(MouseHandlerInterface, KeyHandlerInterface, RedoUndoInterface)
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
 
-    def save_mask(self):
-        self.model.save_mask()
-
-    def load_mask(self):
-        path = tkinter.filedialog.askopenfilename(
-            title="Load mask",
-            filetypes=[("All files", "*.*")])
-        self.model.load_mask(path)
-        self.view.display_image(self.model.final_mask)
-
-    def reset_mask(self):
-        self.model.final_mask = self.model.input_mask.copy()
-        self.model.undo_stack.clear()
-        self.model.redo_stack.clear()
-        self.view.display_image(self.model.final_mask)
-
-    def get_gray_mask(self):
-        return self.model.get_gray_mask()
 

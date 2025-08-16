@@ -5,6 +5,7 @@ from modules.controller.mask_erosion_dilation_controller import MaskErosionDilat
 from modules.controller.mask_thresholding_controller import MaskThresholding
 from modules.controller.mask_selector_controller import MaskSelector
 from modules.controller.parameter_adjuster_controller import ParameterAdjuster
+from modules.view.tkinter_view import TkinterView
 from modules.watermark_remover import WatermarkRemover
 
 # Global variables
@@ -38,26 +39,29 @@ def main():
     images_for_mask_making = image_extractor.get_images_for_mask_making()
     images_for_watermark_removal = image_extractor.get_images_for_watermark_removal()
 
+    view_instance = TkinterView()
+
     # Draw the initial mask
-    selector = MaskSelector(images_for_mask_making)
+    selector = MaskSelector(images_for_mask_making, view_instance)
     selector.run()
     drawn_mask = selector.get_gray_mask()
 
+
     # Threshold the mask
-    mask_thresholder = MaskThresholding(images_for_mask_making, drawn_mask)
+    mask_thresholder = MaskThresholding(images_for_mask_making, drawn_mask, view_instance)
     mask_thresholder.run()
 
     # Draw on the mask
-    mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask())
+    mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask(), view_instance)
     mask_drawer.run()
 
     # Erode and dilate the mask
-    mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask())
+    mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask(), view_instance)
     mask_eroder_dilater.run()
     bgr_mask = mask_eroder_dilater.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask)
+    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
     color_adjuster.run()
     parameters = color_adjuster.get_parameters()
 

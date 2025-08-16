@@ -1,15 +1,12 @@
 import tkinter
-from tkinter import filedialog
+from modules.controller.base_controller import BaseController
 import cv2
 import numpy as np
-from modules.interfaces.gui_interfaces import DisplayInterface, MouseHandlerInterface, KeyHandlerInterface
-from modules.interfaces.redo_undo_interface import RedoUndoInterface
+
 from modules.model.mask_selector_model import MaskSelectorModel
-from modules.view.opencv_view import OpencvView
-from modules.view.tkinter_view import TkinterView
 
 
-class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface):
+class MaskSelector(BaseController):
     TEXTS = [
         "Draw a circle around the object you want to remove.",
         "Press 'A'/'D' to go to the previous/next page.",
@@ -20,34 +17,44 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
     TEXT_COLOR = (255, 255, 255)
     TITLE = "Mask selector"
 
-    def __init__(self, images):
+    def __init__(self, images, view_instance):
+        super().__init__()
         self.model = MaskSelectorModel(images)
-        self.view = TkinterView(MaskSelector.TEXTS,
-                                           MaskSelector.TEXT_COLOR,
-                                           MaskSelector.TITLE)
+        self.view = view_instance
+        self.view.set_texts(self.TEXTS, self.TEXT_COLOR, self.TITLE)
+        self.drawing = False
+        self.ix = 0
+        self.iy = 0
+        self.points: List[Tuple[int, int]] = []
 
-    def undo(self) -> None:
-        if not self.model.undo_stack:
-            return
-        self.model.redo_stack.append(self.model.mask.copy())
-        self.model.mask = self.model.undo_stack.pop()
+        self.points.clear()
 
-        self.view.display_image(self.model.get_weighted_image())
+    def handle_mouse(self, event):
+        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
+        # get the type of tkinter event
+        type = event.type
+        x, y = event.x, event.y
+        if type == tkinter.EventType.ButtonPress:
+            self.save_state()
 
-    def redo(self) -> None:
-        if not self.model.redo_stack:
-            return
-        self.model.undo_stack.append(self.model.mask.copy())
-        self.model.mask = self.model.redo_stack.pop()
-        self.view.display_image(self.model.get_weighted_image())
-
-    def save_state(self) -> None:
-        self.model.undo_stack.append(self.model.mask.copy())
-        self.model.redo_stack.clear()
+        if type == tkinter.EventType.ButtonPress and event.num == 1:
+            self.model.drawing = True
+            self.model.ix, self.model.iy = x, y
+            self.model.points.append((x, y))
+        elif type == tkinter.EventType.Motion:
+            if self.model.drawing:
+                cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
+                self.model.ix, self.model.iy = x, y
+                self.model.points.append((x, y))
+        elif type == tkinter.EventType.ButtonRelease:
+            self.model.drawing = False
+            cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
+            self.model.points.append((x, y))
+            cv2.fillPoly(self.model.final_mask, [np.array(self.model.points)], (255, 255, 255))
+            self.model.points.clear()
+        self.view.display_image(self.model.get_image_shown())
 
     def handle_key(self, key):
-        if key != 255:
-            print("Key pressed:", key)
         if key == ord('a'):
             self.model.current_page_index = max(0, self.model.current_page_index - 1)
             self.model.current_image = self.model.images[self.model.current_page_index].copy()
@@ -65,34 +72,8 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
         elif key == 32:
             return False
         if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
-            self.view.display_image(self.model.get_weighted_image())
+            self.update_view()
         return True
-
-    def handle_mouse(self, event):
-        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
-        # get the type of tkinter event
-        type = event.type
-        x,y = event.x, event.y
-        if type == tkinter.EventType.ButtonPress:
-            self.save_state()
-
-
-        if type == tkinter.EventType.ButtonPress and event.num == 1:
-            self.model.drawing = True
-            self.model.ix, self.model.iy = x, y
-            self.model.points.append((x, y))
-        elif type == tkinter.EventType.Motion:
-            if self.model.drawing:
-                cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
-                self.model.ix, self.model.iy = x, y
-                self.model.points.append((x, y))
-        elif type == tkinter.EventType.ButtonRelease:
-            self.model.drawing = False
-            cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
-            self.model.points.append((x, y))
-            cv2.fillPoly(self.model.mask, [np.array(self.model.points)], (255, 255, 255))
-            self.model.points.clear()
-        self.view.display_image(self.model.get_weighted_image())
 
     def run(self):
         def on_key(event):
@@ -114,23 +95,6 @@ class MaskSelector(KeyHandlerInterface, MouseHandlerInterface, RedoUndoInterface
             }
         }
         self.view.setup_window(params)
-        self.view.display_image(self.model.get_weighted_image())
+        self.view.display_image(self.model.get_image_shown())
         self.view.root.mainloop()
 
-    def load_mask(self):
-        path = filedialog.askopenfilename(
-            title="Select mask file",
-            filetypes=[("All files", "*.*")]
-        )
-        self.model.load_mask(path)
-        self.view.display_image(self.model.get_weighted_image())
-
-    def reset_mask(self):
-        self.model.reset_mask()
-        self.view.display_image(self.model.get_weighted_image())
-
-    def save_mask(self):
-        self.model.save_mask()
-
-    def get_gray_mask(self):
-        return self.model.get_gray_mask()

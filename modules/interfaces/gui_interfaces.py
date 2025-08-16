@@ -15,6 +15,10 @@ class DisplayInterface(ABC):
     def setup_window(self, *args, **kwargs):
         pass
 
+    @abstractmethod
+    def set_texts(self, texts, text_color, title):
+        pass
+
 
 class KeyHandlerInterface(ABC):
     @abstractmethod

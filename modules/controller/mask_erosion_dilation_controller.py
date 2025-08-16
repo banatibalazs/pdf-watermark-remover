@@ -1,12 +1,9 @@
+from modules.controller.base_controller import BaseController
 from modules.model.mask_erosion_dilation_model import MaskErosionDilationModel
-import cv2
-from tkinter import filedialog
-from modules.interfaces.gui_interfaces import KeyHandlerInterface, DisplayInterface
-from modules.view.opencv_view import OpencvView
-from modules.view.tkinter_view import TkinterView
 
 
-class MaskErosionDilation(KeyHandlerInterface):
+
+class MaskErosionDilation(BaseController):
     TEXTS = ["Press 'D' to dilate the mask.",
              "Press 'E' to erode the mask.",
              "Press 'R' to reset the mask.",
@@ -14,12 +11,11 @@ class MaskErosionDilation(KeyHandlerInterface):
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
-
-    def __init__(self, input_mask):
+    def __init__(self, input_mask, view):
+        super().__init__()
         self.model = MaskErosionDilationModel(input_mask)
-        self.view = TkinterView(MaskErosionDilation.TEXTS,
-                                           MaskErosionDilation.TEXT_COLOR,
-                                           MaskErosionDilation.TITLE)
+        self.view = view
+        self.view.set_texts(MaskErosionDilation.TEXTS, MaskErosionDilation.TEXT_COLOR, MaskErosionDilation.TITLE)
 
     def handle_key(self, key):
         if key == ord('d'):
@@ -55,21 +51,3 @@ class MaskErosionDilation(KeyHandlerInterface):
         self.view.display_image(self.model.final_mask)
         self.view.root.mainloop()
 
-    def save_mask(self):
-        self.model.save_mask()
-
-    def load_mask(self):
-        path = filedialog.askopenfilename(
-            title="Load mask",
-            filetypes=[("All files", "*.*")])
-        self.model.load_mask(path)
-
-    def reset_mask(self):
-        self.model.reset()
-        self.view.display_image(self.model.final_mask)
-
-    def get_gray_mask(self):
-        return self.model.get_gray_mask()
-
-    def get_bgr_mask(self):
-        return self.model.get_bgr_mask()

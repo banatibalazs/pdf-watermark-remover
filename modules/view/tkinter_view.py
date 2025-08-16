@@ -7,7 +7,7 @@ from modules.interfaces.gui_interfaces import DisplayInterface
 import cv2
 
 class TkinterView(DisplayInterface):
-    def __init__(self, texts, text_color, title):
+    def __init__(self, texts='', text_color=(0,0,0), title='Tkinter View'):
         self.texts = texts
         self.text_color = text_color
         self.text_pos = (10, 40)
@@ -15,6 +15,12 @@ class TkinterView(DisplayInterface):
         self.title = title
         self.root = None
         self.label = None
+
+    def set_texts(self, texts, text_color=None, title=None):
+        self.text_color = text_color
+        self.texts = texts
+        self.title = title
+
 
     def setup_window(self, params=None):
         self.root = tk.Tk()
@@ -60,6 +66,10 @@ class TkinterView(DisplayInterface):
             self.image_label.bind('<Button-1>', params['mouse'])
             # add button release event
             self.image_label.bind('<ButtonRelease-1>', params['mouse'])
+            # add button press event
+            self.image_label.bind('<Button-3>', params['mouse'])
+            # add button release event
+            self.image_label.bind('<ButtonRelease-3>', params['mouse'])
             # add mouse motion event
             self.image_label.bind('<Motion>', params['mouse'])
             # add every mouse movement event in one line
