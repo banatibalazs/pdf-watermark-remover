@@ -1,37 +1,65 @@
 from modules.controller.base_controller import BaseController
 from modules.model.mask_thresholding_model import MaskThresholdingModel
+import cv2
+import numpy as np
+
+
+class MaskThresholdingGUIConfig:
+    WINDOW_TITLE = "Mask Thresholding"
+    TEXTS = [
+        "Use the trackbars to adjust the thresholding.",
+        "Press 'space' to finish."
+    ]
+    TEXT_COLOR = (0, 0, 0)
+
+    @staticmethod
+    def get_params(model):
+        return {
+            'save_mask': {'text': 'Save mask', 'callback': model.save_mask},
+            'reset_mask': {'text': 'Reset mask', 'callback': model.reset_mask},
+            'load_mask': {'text': 'Load mask', 'callback': model.load_mask}
+        }
+
 
 
 class MaskThresholding(BaseController):
-    TEXTS = ["Use the trackbars to",
-             "adjust the thresholding.",
-             "Press 'space' to finish.",
-             ]
-    TEXT_COLOR = (0, 0, 0)
-    TITLE = "Mask processing"
-
     def __init__(self, images, input_mask, view):
         super().__init__()
         self.model = MaskThresholdingModel(images, input_mask)
         self.view = view
-        self.view.set_texts(MaskThresholding.TEXTS, MaskThresholding.TEXT_COLOR, MaskThresholding.TITLE)
+        self.view.set_texts(MaskThresholdingGUIConfig.TEXTS,
+                             MaskThresholdingGUIConfig.TEXT_COLOR,
+                             MaskThresholdingGUIConfig.WINDOW_TITLE)
 
     def on_threshold_trackbar_min(self, pos):
         print("Threshold min changed to:", pos)
-        self.model.set_threshold_min(pos)
-        self.view.display_image(self.model.final_mask)
+        self.model.threshold_min = pos
+        self.update_thresholds()
 
     def on_threshold_trackbar_max(self, pos):
         print("Threshold max changed to:", pos)
-        self.model.set_threshold_max(pos)
-        self.view.display_image(self.model.final_mask)
+        self.model.threshold_max = pos
+        self.update_thresholds()
+
+    def update_thresholds(self):
+        self.model.final_mask = cv2.inRange(self.model.input_mask, np.array(self.model.threshold_min, dtype=np.uint8),
+                                            np.array(self.model.threshold_max, dtype=np.uint8))
+        self.model.final_mask = cv2.bitwise_and(self.model.final_mask, cv2.inRange(self.model.input_mask, 1, 255))
+        self.view.display_image(self.model.get_image_shown())
+
+    def on_median_img_number_changed(self, pos):
+        '''It sets the number of images used to calculate the median image.'''
+        self.model.set_median_img_number(pos)
+        self.model.calc_median_image()
+        self.update_thresholds()
+        self.view.display_image(self.model.get_image_shown())
 
     def handle_key(self, key):
         if key == 32:
             return False
         elif key == ord('c'):
             self.view.toggle_text()
-            self.view.display_image(self.model.final_mask)
+            self.view.display_image(self.model.get_image_shown())
         return True
 
     def run(self):
@@ -43,17 +71,14 @@ class MaskThresholding(BaseController):
             'trackbars': {
                 'th_min': {'value': self.model.threshold_min, 'callback': self.on_threshold_trackbar_min},
                 'th_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
+                'median_img_number': {
+                    'value': self.model.median_img_number, 'callback': self.on_median_img_number_changed}
 
             },
             'key': on_key,
-            'buttons': {
-                'save_mask': {
-                    'text': 'Save mask', 'callback': self.save_mask},
-                'reset_mask': {'text': 'Reset mask', 'callback': self.reset_mask},
-                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
-            }
+            'buttons': MaskThresholdingGUIConfig.get_params(self)
         }
         self.view.setup_window(params)
-        self.view.display_image(self.model.final_mask)
+        self.view.display_image(self.model.get_image_shown())
         self.view.root.mainloop()
 

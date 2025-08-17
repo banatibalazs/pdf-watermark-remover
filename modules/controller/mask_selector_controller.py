@@ -6,7 +6,8 @@ import numpy as np
 from modules.model.mask_selector_model import MaskSelectorModel
 
 
-class MaskSelector(BaseController):
+class MaskSelectorGUIConfig:
+    WINDOW_TITLE = "Mask Selector"
     TEXTS = [
         "Draw a circle around the object you want to remove.",
         "Press 'A'/'D' to go to the previous/next page.",
@@ -15,13 +16,26 @@ class MaskSelector(BaseController):
         "Press 'space' to finish."
     ]
     TEXT_COLOR = (255, 255, 255)
-    TITLE = "Mask selector"
 
+    @staticmethod
+    def get_buttons(model):
+        return {
+        'undo': {'text': 'Undo', 'callback': model.undo},
+        'redo': {'text': 'Redo', 'callback': model.redo},
+        'save_mask': {'text': 'Save mask', 'callback': model.save_mask},
+        'reset_mask': {'text': 'Reset mask', 'callback': model.reset_mask},
+        'load_mask': {'text': 'Load mask', 'callback': model.load_mask}
+    }
+
+
+class MaskSelector(BaseController):
     def __init__(self, images, view_instance):
         super().__init__()
         self.model = MaskSelectorModel(images)
         self.view = view_instance
-        self.view.set_texts(self.TEXTS, self.TEXT_COLOR, self.TITLE)
+        self.view.set_texts(MaskSelectorGUIConfig.TEXTS,
+                            MaskSelectorGUIConfig.TEXT_COLOR,
+                            MaskSelectorGUIConfig.WINDOW_TITLE)
         self.drawing = False
         self.ix = 0
         self.iy = 0
@@ -84,15 +98,7 @@ class MaskSelector(BaseController):
         params = {
             'mouse': self.handle_mouse,
             'key': on_key,
-            'buttons': {
-                'undo': {'text': 'Undo', 'callback': self.undo},
-                'redo': {'text': 'Redo', 'callback': self.redo},
-                'save_mask': {
-                    'text': 'Save mask', 'callback': self.model.save_mask},
-                'reset_mask': {'text': 'Reset mask', 'callback': self.model.reset_mask},
-                'load_mask': {
-                    'text': 'Load mask', 'callback': self.load_mask},
-            }
+            'buttons': MaskSelectorGUIConfig.get_buttons(self)
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_image_shown())

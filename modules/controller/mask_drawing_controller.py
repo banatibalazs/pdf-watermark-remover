@@ -1,11 +1,12 @@
 from modules.controller.base_controller import BaseController
 from modules.interfaces.gui_interfaces import MouseHandlerInterface, KeyHandlerInterface, DisplayInterface
-from modules.model.mask_drawing_model import MaskDrawingModel
+from modules.model.base_model import ModelWithDrawing
 import tkinter
 import cv2
+from typing import List, Tuple
 
 
-class MaskDrawing(BaseController):
+class MaskDrawingGUIConfig:
     TEXTS = ["Draw on the mask.",
              "LMouse/RMouse: erase/draw",
              "Mouse wheel: cursor size",
@@ -15,17 +16,33 @@ class MaskDrawing(BaseController):
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
+    @staticmethod
+    def get_buttons(model):
+        return {
+        'save_mask': {
+            'text': 'Save mask',
+            'callback': model.save_mask
+        },
+        'reset_mask': {
+            'text': 'Reset mask',
+            'callback': model.reset_mask
+        },
+        'load_mask': {
+            'text': 'Load mask',
+            'callback': model.load_mask
+        }
+    }
 
+
+class MaskDrawing(BaseController):
     def __init__(self, input_mask, view: DisplayInterface):
         super().__init__()
         self.view = view
-        self.view.set_texts(MaskDrawing.TEXTS, MaskDrawing.TEXT_COLOR, MaskDrawing.TITLE)
-        self.model = MaskDrawingModel(input_mask)
+        self.view.set_texts(MaskDrawingGUIConfig.TEXTS, MaskDrawingGUIConfig.TEXT_COLOR, MaskDrawingGUIConfig.TITLE)
+        self.model = ModelWithDrawing(input_mask)
 
 
     def handle_mouse(self, event):
-        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
-        print(event)
         type = event.type
         x, y = event.x, event.y
 
@@ -34,19 +51,19 @@ class MaskDrawing(BaseController):
 
         # On left mouse button press, draw a black filled circle
         if event.state == 8464:
-            self.model.draw_circle(x, y, erase=True, fill=True)
+            cv2.circle(self.model.final_mask, (x, y), self.model.cursor_size, [0], -1)
         #  On right mouse button press, draw a white filled circle
         elif event.state == 9232:
-            self.model.draw_circle(x, y, erase=False, fill=True)
+            cv2.circle(self.model.final_mask, (x, y), self.model.cursor_size, [255], -1)
         # When scrolling the mouse wheel up increase the cursor size
         elif event.num == 4:
-            self.model.adjust_cursor_size(increase=True)
+            self.model.cursor_size = min(self.model.cursor_size + 1, 50)
         # When scrolling the mouse wheel down decrease the cursor size
         elif event.num == 5:
-            self.model.adjust_cursor_size(increase=False)
+            self.model.cursor_size = max(self.model.cursor_size - 1, 1)
 
         self.model.cursor_pos = (x, y)
-        mask = self.model.final_mask.copy()
+        mask = self.model.get_image_shown()
         cv2.circle(mask, self.model.cursor_pos,
                    self.model.cursor_size, [128],
                    self.model.cursor_thickness)
@@ -78,15 +95,10 @@ class MaskDrawing(BaseController):
         params = {
             'mouse': self.handle_mouse,
             'key': on_key,
-            'buttons': {
-                'save_mask': {
-                    'text': 'Save mask', 'callback': self.model.save_mask},
-                'reset_mask': {'text': 'Reset mask', 'callback': lambda: self.model.final_mask.copy()},
-                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
-            }
+            'buttons': MaskDrawingGUIConfig.get_buttons(self)
         }
         self.view.setup_window(params)
-        self.view.display_image(self.model.final_mask)
+        self.view.display_image(self.model.get_image_shown())
         self.view.root.mainloop()
 
 

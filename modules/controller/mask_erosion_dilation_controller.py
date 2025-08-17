@@ -1,35 +1,59 @@
+import numpy as np
+
 from modules.controller.base_controller import BaseController
-from modules.model.mask_erosion_dilation_model import MaskErosionDilationModel
+from modules.model.base_model import BaseModel
+import cv2
 
 
+class MaskErosionDilationGUIConfig:
+    WINDOW_TITLE = "Mask Erosion and Dilation"
+    TEXTS = [
+        "Press 'D' to dilate the mask.",
+        "Press 'E' to erode the mask.",
+        "Press 'R' to reset the mask.",
+        "Press 'space' to finish."
+    ]
+    TEXT_COLOR = (0, 0, 0)
+
+    @staticmethod
+    def get_buttons(model):
+        return {
+            'save_mask': {
+            'text': 'Save mask',
+            'callback': model.save_mask,
+        },
+        'reset_mask':    {
+            'text': 'Reset mask',
+            'callback': model.reset_mask,
+        },
+        'load_mask': {
+            'text': 'Load mask',
+            'callback': model.load_mask,
+        }
+    }
 
 class MaskErosionDilation(BaseController):
-    TEXTS = ["Press 'D' to dilate the mask.",
-             "Press 'E' to erode the mask.",
-             "Press 'R' to reset the mask.",
-             "Press 'space' to finish."]
-    TEXT_COLOR = (0, 0, 0)
-    TITLE = "Mask processing"
-
     def __init__(self, input_mask, view):
         super().__init__()
-        self.model = MaskErosionDilationModel(input_mask)
+        self.model = BaseModel(input_mask)
         self.view = view
-        self.view.set_texts(MaskErosionDilation.TEXTS, MaskErosionDilation.TEXT_COLOR, MaskErosionDilation.TITLE)
+        self.view.set_texts(MaskErosionDilationGUIConfig.TEXTS,
+                            MaskErosionDilationGUIConfig.TEXT_COLOR,
+                            MaskErosionDilationGUIConfig.WINDOW_TITLE)
 
     def handle_key(self, key):
         if key == ord('d'):
-            self.model.dilate()
+            self.model.final_mask = cv2.dilate(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
         elif key == ord('e'):
-            self.model.erode()
+            self.model.final_mask = cv2.erode(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
         elif key == ord('r'):
-            self.model.reset()
+            self.reset_mask()
         elif key == ord('c'):
             self.view.toggle_text()
         elif key == 32:
             return False
         if key in [ord('d'), ord('e'), ord('r'), ord('c')]:
-            self.view.display_image(self.model.final_mask)
+            self.view.display_image(self.model.get_image_shown())
         return True
 
     def run(self):
@@ -39,15 +63,10 @@ class MaskErosionDilation(BaseController):
                 self.view.close_window()
 
         params = {
-            'key': on_key
-            , 'buttons': {
-                'save_mask': {
-                    'text': 'Save mask', 'callback': self.save_mask},
-                'reset_mask': {'text': 'Reset mask', 'callback': self.reset_mask},
-                'load_mask': {'text': 'Load mask', 'callback': self.load_mask}
-            }
+            'key': on_key,
+            'buttons': MaskErosionDilationGUIConfig.get_buttons(self)
         }
         self.view.setup_window(params)
-        self.view.display_image(self.model.final_mask)
+        self.view.display_image(self.model.get_image_shown())
         self.view.root.mainloop()
 

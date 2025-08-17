@@ -15,18 +15,17 @@ class TkinterView(DisplayInterface):
         self.title = title
         self.root = None
         self.label = None
-
-    def set_texts(self, texts, text_color=None, title=None):
-        self.text_color = text_color
-        self.texts = texts
-        self.title = title
-
+        self.sidebar = None
+        self.image_label = None
 
     def setup_window(self, params=None):
         self.root = tk.Tk()
         self.root.title(self.title)
+        self._create_main_layout()
+        self._setup_sidebar_content(params)
+        self._bind_events(params)
 
-        # Main layout: image left, sidebar right
+    def _create_main_layout(self):
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -36,63 +35,77 @@ class TkinterView(DisplayInterface):
         self.sidebar = tk.Frame(main_frame)
         self.sidebar.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
 
-        # Texts in sidebar
+    def _setup_sidebar_content(self, params):
+        # Text label
         self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
         self.text_label.pack(anchor='n', pady=5)
 
-        # Add a buttons in a line
+        # Close button
         button_frame = tk.Frame(self.sidebar)
         button_frame.pack(anchor='n', pady=5)
+        tk.Button(button_frame, text='Close', command=self.close_window).pack(side=tk.LEFT, padx=5)
 
-        close_button = tk.Button(button_frame, text='Close', command=self.close_window)
-        close_button.pack(side=tk.LEFT, padx=5)
-
-        if params and 'key' in params:
-            self.root.bind('<Key>', params['key'])
+        # Trackbars
         if params and 'trackbars' in params:
-            for name, value in params['trackbars'].items():
-                if name == 'mode':
-                    scale = tk.Scale(self.sidebar, from_=0, to=1, orient='horizontal', label=name,
-                                     command=value['callback'], length=200)
-                elif name == 'w':
-                    scale = tk.Scale(self.sidebar, from_=0, to=25, orient='horizontal', label=name,
-                                     command=value['callback'], length=200)
-                else:
-                    scale = tk.Scale(self.sidebar, from_=0, to=255, orient='horizontal', label=name,
-                                     command=value['callback'], length=200)
-                scale.set(value['value'])
-                scale.pack()
-        if params and 'mouse' in params:
-            self.image_label.bind('<Button-1>', params['mouse'])
-            # add button release event
-            self.image_label.bind('<ButtonRelease-1>', params['mouse'])
-            # add button press event
-            self.image_label.bind('<Button-3>', params['mouse'])
-            # add button release event
-            self.image_label.bind('<ButtonRelease-3>', params['mouse'])
-            # add mouse motion event
-            self.image_label.bind('<Motion>', params['mouse'])
-            # add every mouse movement event in one line
-            self.image_label.bind('<Button-4>', params['mouse'])
-            self.image_label.bind('<Button-5>', params['mouse'])
+            self._create_trackbars(params['trackbars'])
 
-        if "buttons" in params:
-            for name, button in params['buttons'].items():
-                btn = tk.Button(self.sidebar, text=name, command=button['callback'])
-                btn.pack(anchor='n', pady=5)
+        # Additional buttons
+        if params and "buttons" in params:
+            self._create_buttons(params['buttons'])
 
+    def _create_trackbars(self, trackbars):
+        trackbar_configs = {
+            'mode': {'range': (0, 1)},
+            'w': {'range': (0, 25)},
+            'default': {'range': (0, 255)}
+        }
 
+        for name, value in trackbars.items():
+            config = trackbar_configs.get(name, trackbar_configs['default'])
+            scale = tk.Scale(
+                self.sidebar,
+                from_=config['range'][0],
+                to=config['range'][1],
+                orient='horizontal',
+                label=name,
+                command=value['callback'],
+                length=200
+            )
+            scale.set(value['value'])
+            scale.pack()
+
+    def _create_buttons(self, buttons):
+        for name, button in buttons.items():
+            tk.Button(self.sidebar, text=name, command=button['callback']).pack(anchor='n', pady=5)
+
+    def _bind_events(self, params):
+        if not params:
+            return
+
+        if 'key' in params:
+            self.root.bind('<Key>', params['key'])
+
+        if 'mouse' in params:
+            mouse_events = [
+                '<Button-1>', '<ButtonRelease-1>',
+                '<Button-3>', '<ButtonRelease-3>',
+                '<Motion>', '<Button-4>', '<Button-5>'
+            ]
+            for event in mouse_events:
+                self.image_label.bind(event, params['mouse'])
 
     def display_image(self, image):
-        # Convert the image to RGB from BGR
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(image)
         imgtk = ImageTk.PhotoImage(image=img)
         self.image_label.imgtk = imgtk
         self.image_label.config(image=imgtk)
-        self.root.update_idletasks()
         self.root.update()
 
+    def set_texts(self, texts, text_color, title):
+        self.texts = texts
+        self.text_color = text_color
+        self.title = title
 
     def close_window(self):
         if self.root:
@@ -100,12 +113,7 @@ class TkinterView(DisplayInterface):
             self.root = None
 
     def update_trackbars(self, params):
-        for i in range(len(params['names'])):
-            # Find the scale widget by label
-            scale = next((widget for widget in self.sidebar.winfo_children() if isinstance(widget, tk.Scale) and
-                          widget.cget('label') == params['names'][i]), None)
+        for name, value in params['trackbars'].items():
+            scale = self.sidebar.nametowidget(name)
             if scale:
-                scale.set(int(params['values'][i]))
-
-    def toggle_text(self):
-        self.is_text_shown = not self.is_text_shown
+                scale.set(value['value'])

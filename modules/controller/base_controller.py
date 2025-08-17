@@ -53,7 +53,7 @@ class BaseController(ABC):
             self.model.reset_mask()
             self.update_view()
 
-    def save_mask(self, path: str) -> None:
+    def save_mask(self, path: str = 'saved_mask.png') -> None:
         """Save the current mask to the specified path"""
         if self.model:
             self.model.save_mask(path)

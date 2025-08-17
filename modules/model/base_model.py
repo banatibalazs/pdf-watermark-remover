@@ -5,10 +5,9 @@ from typing import List, Optional
 
 
 class BaseModel(ABC):
-    def __init__(self):
-        self.current_image: Optional[np.ndarray] = None
-        self.input_mask: Optional[np.ndarray] = None
-        self.final_mask: Optional[np.ndarray] = None
+    def __init__(self, mask=None):
+        self.input_mask: Optional[np.ndarray] = mask
+        self.final_mask: Optional[np.ndarray] = mask.copy() if mask is not None else None
         self.undo_stack: List[np.ndarray] = []
         self.redo_stack: List[np.ndarray] = []
 
@@ -58,8 +57,33 @@ class BaseModel(ABC):
             print(f"Error loading mask from {path}. Using default mask.")
             self.reset_mask()
 
+    def get_image_shown(self):
+        """Return the image to be displayed, which is the final mask."""
+        if self.final_mask is None:
+            raise ValueError("Final mask is not set.")
+        return self.final_mask.copy()
 
     def reset_mask(self):
         self.final_mask = self.input_mask.copy()
-        self.update_mask()
+        self.undo_stack.clear()
+        self.redo_stack.clear()
         print("Mask reset to initial state.")
+
+
+class ModelWithDrawing(BaseModel):
+    def __init__(self, input_mask=None):
+        super().__init__(input_mask)
+        self.cursor_size = 10
+        self.cursor_pos = (0, 0)
+        self.cursor_thickness = 1
+        self.drawing = False
+        self.ix, self.iy = -1, -1
+        self.points = []
+
+    def set_cursor_size(self, size: int):
+        """Set the size of the cursor."""
+        self.cursor_size = size
+
+    def set_cursor_pos(self, pos: tuple):
+        """Set the position of the cursor."""
+        self.cursor_pos = pos
