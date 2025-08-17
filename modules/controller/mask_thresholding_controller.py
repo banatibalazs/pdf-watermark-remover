@@ -1,25 +1,8 @@
 from modules.controller.base_controller import BaseController
+from modules.controller.gui_config import MaskThresholdingGUIConfig
 from modules.model.mask_thresholding_model import MaskThresholdingModel
 import cv2
 import numpy as np
-
-
-class MaskThresholdingGUIConfig:
-    WINDOW_TITLE = "Mask Thresholding"
-    TEXTS = [
-        "Use the trackbars to adjust the thresholding.",
-        "Press 'space' to finish."
-    ]
-    TEXT_COLOR = (0, 0, 0)
-
-    @staticmethod
-    def get_params(model):
-        return {
-            'save_mask': {'text': 'Save mask', 'callback': model.save_mask},
-            'reset_mask': {'text': 'Reset mask', 'callback': model.reset_mask},
-            'load_mask': {'text': 'Load mask', 'callback': model.load_mask}
-        }
-
 
 
 class MaskThresholding(BaseController):
@@ -68,6 +51,7 @@ class MaskThresholding(BaseController):
             if not self.handle_key(key):
                 self.view.close_window()
         params = {
+            'mouse': self.handle_mouse,
             'trackbars': {
                 'th_min': {'value': self.model.threshold_min, 'callback': self.on_threshold_trackbar_min},
                 'th_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
@@ -76,7 +60,7 @@ class MaskThresholding(BaseController):
 
             },
             'key': on_key,
-            'buttons': MaskThresholdingGUIConfig.get_params(self)
+            'buttons': MaskThresholdingGUIConfig.get_base_buttons(self)
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_image_shown())

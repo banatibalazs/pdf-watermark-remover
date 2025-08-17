@@ -1,31 +1,12 @@
 import tkinter
+from typing import List, Tuple
+
 from modules.controller.base_controller import BaseController
 import cv2
 import numpy as np
 
 from modules.model.mask_selector_model import MaskSelectorModel
-
-
-class MaskSelectorGUIConfig:
-    WINDOW_TITLE = "Mask Selector"
-    TEXTS = [
-        "Draw a circle around the object you want to remove.",
-        "Press 'A'/'D' to go to the previous/next page.",
-        "Press 'U'/'Y' to undo/redo.",
-        "Press 'R' to reset the mask.",
-        "Press 'space' to finish."
-    ]
-    TEXT_COLOR = (255, 255, 255)
-
-    @staticmethod
-    def get_buttons(model):
-        return {
-        'undo': {'text': 'Undo', 'callback': model.undo},
-        'redo': {'text': 'Redo', 'callback': model.redo},
-        'save_mask': {'text': 'Save mask', 'callback': model.save_mask},
-        'reset_mask': {'text': 'Reset mask', 'callback': model.reset_mask},
-        'load_mask': {'text': 'Load mask', 'callback': model.load_mask}
-    }
+from modules.controller.gui_config import MaskSelectorGUIConfig, MaskErosionDilationGUIConfig
 
 
 class MaskSelector(BaseController):
@@ -36,37 +17,7 @@ class MaskSelector(BaseController):
         self.view.set_texts(MaskSelectorGUIConfig.TEXTS,
                             MaskSelectorGUIConfig.TEXT_COLOR,
                             MaskSelectorGUIConfig.WINDOW_TITLE)
-        self.drawing = False
-        self.ix = 0
-        self.iy = 0
-        self.points: List[Tuple[int, int]] = []
 
-        self.points.clear()
-
-    def handle_mouse(self, event):
-        print("Mouse event:", event.type, "at", event.x, event.y, "with state", event.state)
-        # get the type of tkinter event
-        type = event.type
-        x, y = event.x, event.y
-        if type == tkinter.EventType.ButtonPress:
-            self.save_state()
-
-        if type == tkinter.EventType.ButtonPress and event.num == 1:
-            self.model.drawing = True
-            self.model.ix, self.model.iy = x, y
-            self.model.points.append((x, y))
-        elif type == tkinter.EventType.Motion:
-            if self.model.drawing:
-                cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
-                self.model.ix, self.model.iy = x, y
-                self.model.points.append((x, y))
-        elif type == tkinter.EventType.ButtonRelease:
-            self.model.drawing = False
-            cv2.line(self.model.current_image, (self.model.ix, self.model.iy), (x, y), (0, 0, 0), 2)
-            self.model.points.append((x, y))
-            cv2.fillPoly(self.model.final_mask, [np.array(self.model.points)], (255, 255, 255))
-            self.model.points.clear()
-        self.view.display_image(self.model.get_image_shown())
 
     def handle_key(self, key):
         if key == ord('a'):
@@ -98,7 +49,7 @@ class MaskSelector(BaseController):
         params = {
             'mouse': self.handle_mouse,
             'key': on_key,
-            'buttons': MaskSelectorGUIConfig.get_buttons(self)
+            'buttons': MaskSelectorGUIConfig.get_base_buttons(self)
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_image_shown())

@@ -25,6 +25,14 @@ class TkinterView(DisplayInterface):
         self._setup_sidebar_content(params)
         self._bind_events(params)
 
+    def change_window_setup(self, params):
+        if self.sidebar:
+            self.sidebar.destroy()
+        self.sidebar = tk.Frame(self.root)
+        self.sidebar.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
+        self._setup_sidebar_content(params)
+        self._bind_events(params)
+
     def _create_main_layout(self):
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True)
@@ -74,9 +82,15 @@ class TkinterView(DisplayInterface):
             scale.set(value['value'])
             scale.pack()
 
+
     def _create_buttons(self, buttons):
         for name, button in buttons.items():
-            tk.Button(self.sidebar, text=name, command=button['callback']).pack(anchor='n', pady=5)
+            tk.Button(
+                self.sidebar,
+                text=button['text'],  # Use the text from config
+                command=button['callback']  # Lambda already has the button name
+            ).pack(anchor='n', pady=5)
+
 
     def _bind_events(self, params):
         if not params:
@@ -113,7 +127,9 @@ class TkinterView(DisplayInterface):
             self.root = None
 
     def update_trackbars(self, params):
-        for name, value in params['trackbars'].items():
-            scale = self.sidebar.nametowidget(name)
+        for i in range(len(params['names'])):
+            trackbar_name = params['names'][i]
+            value = int(params['values'][i])
+            scale = self.sidebar.nametowidget(trackbar_name)
             if scale:
-                scale.set(value['value'])
+                scale.set(value)

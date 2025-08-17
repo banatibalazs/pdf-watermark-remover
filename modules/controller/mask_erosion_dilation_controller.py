@@ -1,36 +1,10 @@
 import numpy as np
 
 from modules.controller.base_controller import BaseController
+from modules.controller.gui_config import MaskErosionDilationGUIConfig
 from modules.model.base_model import BaseModel
 import cv2
 
-
-class MaskErosionDilationGUIConfig:
-    WINDOW_TITLE = "Mask Erosion and Dilation"
-    TEXTS = [
-        "Press 'D' to dilate the mask.",
-        "Press 'E' to erode the mask.",
-        "Press 'R' to reset the mask.",
-        "Press 'space' to finish."
-    ]
-    TEXT_COLOR = (0, 0, 0)
-
-    @staticmethod
-    def get_buttons(model):
-        return {
-            'save_mask': {
-            'text': 'Save mask',
-            'callback': model.save_mask,
-        },
-        'reset_mask':    {
-            'text': 'Reset mask',
-            'callback': model.reset_mask,
-        },
-        'load_mask': {
-            'text': 'Load mask',
-            'callback': model.load_mask,
-        }
-    }
 
 class MaskErosionDilation(BaseController):
     def __init__(self, input_mask, view):
@@ -64,7 +38,7 @@ class MaskErosionDilation(BaseController):
 
         params = {
             'key': on_key,
-            'buttons': MaskErosionDilationGUIConfig.get_buttons(self)
+            'buttons': MaskErosionDilationGUIConfig.get_base_buttons(self)
         }
         self.view.setup_window(params)
         self.view.display_image(self.model.get_image_shown())
