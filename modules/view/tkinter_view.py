@@ -77,7 +77,8 @@ class TkinterView(DisplayInterface):
         trackbar_configs = {
             'mode': {'range': (0, 1)},
             'w': {'range': (0, 25)},
-            'default': {'range': (0, 255)}
+            'default': {'range': (0, 255)},
+            'weight': {'range': (0, 100)}
         }
 
         for name, value in trackbars.items():
@@ -94,14 +95,28 @@ class TkinterView(DisplayInterface):
             scale.set(value['value'])
             scale.pack()
 
-
     def _create_buttons(self, buttons):
+        button_frame = tk.Frame(self.sidebar)
+        button_frame.pack(anchor='n', pady=5)
+
+        row = 0
+        col = 0
         for name, button in buttons.items():
-            tk.Button(
-                self.sidebar,
-                text=button['text'],  # Use the text from config
-                command=button['callback']  # Lambda already has the button name
-            ).pack(anchor='n', pady=5)
+            btn = tk.Button(
+                button_frame,
+                text=button['text'],
+                command=button['callback']
+            )
+            btn.grid(row=row, column=col, padx=2, pady=2, sticky='ew')
+
+            col += 1
+            if col >= 4:  # Move to next row after 4 columns
+                col = 0
+                row += 1
+
+        # Configure columns to expand equally
+        for i in range(4):
+            button_frame.columnconfigure(i, weight=1)
 
 
     def _bind_events(self, params):
@@ -140,9 +155,10 @@ class TkinterView(DisplayInterface):
             self.root = None
 
     def update_trackbars(self, params):
-        for i in range(len(params['names'])):
-            trackbar_name = params['names'][i]
-            value = int(params['values'][i])
-            scale = self.sidebar.nametowidget(trackbar_name)
-            if scale:
-                scale.set(value)
+        # for i in range(len(params['names'])):
+        #     trackbar_name = params['names'][i]
+        #     value = int(params['values'][i])
+        #     scale = self.sidebar.nametowidget(trackbar_name)
+        #     if scale:
+        #         scale.set(value)
+        pass

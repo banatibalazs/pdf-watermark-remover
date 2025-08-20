@@ -27,36 +27,21 @@ class BaseController:
         self.points: List[Tuple[int, int]] = []
         self.points.clear()
 
+    def on_weight_trackbar(self, pos):
+        pos = int(pos) / 100.0
+        self.model.weight = pos
+        self.update_view()
 
+    def on_key(self, event):
+        key = ord(event.char) if event.char else 255
+        if not self.handle_key(key):
+            self.view.close_window()
 
     def on_button_click(self, button_name):
         if button_name == 'selection':
             self.mode = MaskMode.SELECT
         elif button_name == 'drawing':
             self.mode = MaskMode.DRAW
-        elif button_name == 'erode':
-            self.mode = MaskMode.ERODE
-        elif button_name == 'threshold':
-            self.mode = MaskMode.THRESHOLD
-            print("Thresholding mode activated")
-
-            def on_key(event):
-                key = ord(event.char) if event.char else 255
-                if not self.handle_key(key):
-                    self.view.close_window()
-            params = {
-                'mouse': self.handle_mouse,
-                'trackbars': {
-                    'threshold_min': {'value': self.model.threshold_min, 'callback': self.on_threshold_trackbar_min},
-                    'threshold_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
-                },
-                'key': on_key,
-                'buttons': MaskSelectorGUIConfig.get_base_buttons(self)
-            }
-            self.view.change_window_setup(params)
-
-        print(f"Button clicked: {button_name}, mode set to {self.mode}")
-
 
     def handle_mouse(self, event):
         type = event.type
@@ -79,6 +64,7 @@ class BaseController:
             elif type == tkinter.EventType.ButtonRelease:
                 self.left_button_pressed = False
                 self.right_button_pressed = False
+                self.apply_thresholds()
 
             # On left mouse button press, draw a black filled circle
             if type == tkinter.EventType.Motion and self.left_button_pressed:
@@ -118,6 +104,7 @@ class BaseController:
                 self.model.points.append((x, y))
                 cv2.fillPoly(self.model.final_mask, [np.array(self.model.points)], (255, 255, 255))
                 self.model.points.clear()
+                self.apply_thresholds()
             self.update_view()
 
     def reset_current_image(self):
@@ -126,121 +113,56 @@ class BaseController:
         self.update_view()
 
     def handle_key(self, key):
-        if self.mode == MaskMode.SELECT:
-            if key == ord('a'):
-                self.model.current_page_index = max(0, self.model.current_page_index - 1)
-                self.reset_current_image()
-            elif key == ord('d'):
-                self.model.current_page_index = min(len(self.model.images) - 1, self.model.current_page_index + 1)
-                self.reset_current_image()
-            elif key == ord('r'):
-                self.reset_mask()
-            elif key == ord('c'):
-                self.view.toggle_text()
-            elif key == ord('u'):
-                self.undo()
-            elif key == ord('y'):
-                self.redo()
-            elif key == 32:
-                return False
+        if key == ord('a'):
+            self.model.current_page_index = max(0, self.model.current_page_index - 1)
+            self.reset_current_image()
+        elif key == ord('d'):
+            self.model.current_page_index = min(len(self.model.images) - 1, self.model.current_page_index + 1)
+            self.reset_current_image()
+        elif key == ord('r'):
+            self.reset_mask()
+        elif key == ord('c'):
+            self.view.toggle_text()
+        elif key == ord('u'):
+            self.undo()
+        elif key == ord('y'):
+            self.redo()
+        elif key == 32:
+            return False
 
-        elif self.mode == MaskMode.DRAW:
-            if key == ord('u'):
-                self.undo()
-            elif key == ord('y'):
-                self.redo()
-            elif key == ord('r'):
-                self.reset_mask()
-            elif key == ord('c'):
-                self.view.toggle_text()
-            elif key == 32:
-                return False
-
-        elif self.mode == MaskMode.ERODE:
-            if key == ord('d'):
-                self.model.final_mask = cv2.dilate(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
-            elif key == ord('e'):
-                self.model.final_mask = cv2.erode(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
-            elif key == ord('r'):
-                self.reset_mask()
-            elif key == ord('c'):
-                self.view.toggle_text()
-            elif key == 32:
-                return False
-
-        # if key in [ord('a'), ord('d'), ord('r'), ord('c')]:
         self.update_view()
         return True
 
+    def erode_mask(self):
+        """Erode the mask to remove small noise."""
+        self.model.final_mask = cv2.erode(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
+        self.save_state()
+        self.update_view()
+
+    def dilate_mask(self):
+        """Dilate the mask to fill small holes."""
+        self.model.final_mask = cv2.dilate(self.model.final_mask, np.ones((3, 3), np.uint8), iterations=1)
+        self.save_state()
+        self.update_view()
+
     def run(self):
-        def on_key(event):
-            key = ord(event.char) if event.char else 255
-            if not self.handle_key(key):
-                self.view.close_window()
-
-        if self.mode == MaskMode.SELECT:
-            params = {
-                'mouse': self.handle_mouse,
-                'key': on_key,
-                'buttons': {**MaskSelectorGUIConfig.get_base_buttons(self)}
-            }
-            self.view.setup_window(params)
-            self.update_view()
-
-        elif self.mode == MaskMode.DRAW:
-            params = {
-                'mouse': self.handle_mouse,
-                'trackbars': {
-                    'cursor_size': {'value': self.model.cursor_size, 'callback': None},
-                },
-                'key': on_key,
-                'buttons': MaskSelectorGUIConfig.get_base_buttons(self)
-            }
-            self.view.setup_window(params)
-            self.update_view()
-
-        elif self.mode == MaskMode.ERODE:
-            params = {
-                'mouse': self.handle_mouse,
-                'trackbars': {
-                    'cursor_size': {'value': self.model.cursor_size, 'callback': None},
-                },
-                'key': on_key,
-                'buttons': MaskSelectorGUIConfig.get_base_buttons(self)
-            }
-            self.view.setup_window(params)
-            self.update_view()
-
-        elif self.mode ==MaskMode.THRESHOLD:
-            print("Thresholding mode activated")
-            params = {
-                'mouse': self.handle_mouse,
-                'trackbars': {
-                    'threshold_min': {'value': self.model.threshold_min, 'callback': self.on_threshold_trackbar_min},
-                    'threshold_max': {'value': self.model.threshold_max, 'callback': self.on_threshold_trackbar_max},
-                },
-                'key': on_key,
-                'buttons': MaskSelectorGUIConfig.get_base_buttons(self)
-            }
-            self.view.change_window_setup(params)
-            self.update_view()
-
+        self.view.setup_window()
+        self.view.change_window_setup(MaskSelectorGUIConfig.get_params(self))
+        self.update_view()
 
         self.view.root.mainloop()
 
-
     def on_threshold_trackbar_min(self, pos):
-        print("Threshold min changed to:", pos)
         self.model.threshold_min = pos
-        self.update_thresholds()
+        self.apply_thresholds()
 
     def on_threshold_trackbar_max(self, pos):
-        print("Threshold max changed to:", pos)
+        """ Set the maximum threshold for the mask."""
         self.model.threshold_max = pos
-        self.update_thresholds()
+        self.apply_thresholds()
 
-    def update_thresholds(self):
-        print("mask color:", self.model.input_mask.shape)
+    def apply_thresholds(self):
+        """Filter the pixels by thresholds and update the final mask."""
         median_image = cv2.inRange(self.model.median_image, np.array(self.model.threshold_min, dtype=np.uint8),
                                             np.array(self.model.threshold_max, dtype=np.uint8))
         self.model.final_mask = cv2.bitwise_and(self.model.temp_mask, cv2.inRange(median_image, 1, 255))
@@ -300,10 +222,6 @@ class BaseController:
 
 
     def update_view(self):
-        # if self.mode == MaskMode.SELECT:
-        #     self.view.display_image(self.model.get_weighted_image())
-        # else:
-        #     self.view.display_image(self.model.get_image_shown())
         if self.mode == MaskMode.DRAW:
             image = self.model.get_weighted_image()
             cv2.circle(image, self.model.cursor_pos, self.model.cursor_size, (0,0,0), self.model.cursor_thickness)

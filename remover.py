@@ -45,17 +45,17 @@ def main():
     # Draw the initial mask
     selector = BaseController(images_for_mask_making, view_instance)
     selector.run()
-    drawn_mask = selector.get_gray_mask()
+    bgr_mask = selector.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    # color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
-    # color_adjuster.run()
-    # parameters = color_adjuster.get_parameters()
+    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
+    color_adjuster.run()
+    parameters = color_adjuster.get_parameters()
     #
     # Remove the watermark and save the final PDF
-    # remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
-    # remover.remove_watermark()
-    # remover.save_pdf(args.save_path)
+    remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
+    remover.remove_watermark()
+    remover.save_pdf(args.save_path)
 
 if __name__ == "__main__":
     main()

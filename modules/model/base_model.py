@@ -8,7 +8,7 @@ from modules.utils import calc_median_image
 class BaseModel:
     def __init__(self, mask=None, images=None):
 
-        self.median_image = cv2.cvtColor(calc_median_image(images), cv2.COLOR_BGR2GRAY)
+        self.median_image = cv2.cvtColor(calc_median_image(images, 1), cv2.COLOR_BGR2GRAY)
         self.temp_mask = mask
         self.mask = mask
         self.images = images
@@ -26,6 +26,7 @@ class BaseModel:
         self.cursor_thickness = 1
         self.ix, self.iy = -1, -1
         self.points = []
+        self.weight = 0.7
 
 
     def save_mask(self, path=None):
@@ -98,4 +99,4 @@ class BaseModel:
         """Return the current image with the mask applied."""
         if self.current_image is None or self.final_mask is None:
             raise ValueError("Current image or final mask is not set.")
-        return cv2.addWeighted(self.current_image, 0.7, self.get_bgr_mask(), 0.3, 0)
+        return cv2.addWeighted(self.current_image, self.weight, self.get_bgr_mask(), 0.8, 0)

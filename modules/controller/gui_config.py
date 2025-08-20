@@ -1,42 +1,59 @@
 
 
-
 class BaseGUIConfig:
     WINDOW_TITLE = ""
     TEXTS = []
     TEXT_COLOR = (0, 0, 0)
 
     @staticmethod
-    def get_base_buttons(model):
+    def get_base_params(controller):
         return {
             'Select': {
                 'text': 'Selection',
-                'callback': lambda btn_name='selection': model.on_button_click(btn_name)
-            },
-            'Threshold': {
-                'text': 'Thresholding',
-                'callback': lambda btn_name='threshold': model.on_button_click(btn_name)
+                'callback': lambda btn_name='selection': controller.on_button_click(btn_name)
             },
             'Draw': {
                 'text': 'Drawing',
-                'callback': lambda btn_name='drawing': model.on_button_click(btn_name)
+                'callback': lambda btn_name='drawing': controller.on_button_click(btn_name)
             },
             'Erode': {
                 'text': 'Erode',
-                'callback': lambda btn_name='erode': model.on_button_click(btn_name)
+                'callback': controller.erode_mask
+            },
+            'Dilate': {
+                'text': 'Dilate',
+                'callback': controller.dilate_mask
             },
             'Redo': {
                 'text': 'Redo',
-                'callback': lambda btn_name='redo': model.redo()
+                'callback': lambda btn_name='redo': controller.redo()
             },
             'Undo': {
                 'text': 'Undo',
-                'callback': lambda btn_name='undo': model.undo()
+                'callback': lambda btn_name='undo': controller.undo()
             },
             'Reset mask': {
                 'text': 'Reset',
-                'callback': lambda btn_name='reset': model.reset_mask()
+                'callback': lambda btn_name='reset': controller.reset_mask()
             },
+            'Save': {
+                'text': 'Save',
+                'callback': lambda btn_name='save': controller.save_mask()
+            },
+            'Load': {
+                'text': 'Load',
+                'callback': lambda btn_name='load': controller.load_mask()
+            }
+        }
+
+    @staticmethod
+    def get_base_trackbars(controller):
+        return {
+            'weight': {'value': controller.model.weight * 100, 'callback': controller.on_weight_trackbar},
+            'threshold_min': {'value': controller.model.threshold_min,
+                              'callback': controller.on_threshold_trackbar_min},
+            'threshold_max': {'value': controller.model.threshold_max,
+                              'callback': controller.on_threshold_trackbar_max},
         }
 
 
@@ -50,19 +67,14 @@ class MaskDrawingGUIConfig(BaseGUIConfig):
     TEXT_COLOR = (0, 0, 0)
     TITLE = "Mask processing"
 
-
-
-
-class MaskErosionDilationGUIConfig(BaseGUIConfig):
-    WINDOW_TITLE = "Mask Erosion and Dilation"
-    TEXTS = [
-        "Press 'D' to dilate the mask.",
-        "Press 'E' to erode the mask.",
-        "Press 'R' to reset the mask.",
-        "Press 'space' to finish."
-    ]
-    TEXT_COLOR = (0, 0, 0)
-
+    @staticmethod
+    def get_params(controller):
+        return  {
+            'mouse': controller.handle_mouse,
+            'key': controller.on_key,
+            'buttons': BaseGUIConfig.get_base_params(controller),
+            'trackbars': BaseGUIConfig.get_base_trackbars(controller)
+        }
 
 
 class MaskSelectorGUIConfig(BaseGUIConfig):
@@ -76,32 +88,14 @@ class MaskSelectorGUIConfig(BaseGUIConfig):
     ]
     TEXT_COLOR = (255, 255, 255)
 
-    # @staticmethod
-    # def get_buttons(model):
-    #     return {
-    #         'save_mask': {
-    #             'text': 'Selection',
-    #             'callback': lambda btn_name='selection': model.on_button_click(btn_name)
-    #         },
-    #         'reset_mask': {
-    #             'text': 'Drawing',
-    #             'callback': lambda btn_name='drawing': model.on_button_click(btn_name)
-    #         },
-    #         'load_mask': {
-    #             'text': 'Erode',
-    #             'callback': lambda btn_name='erode': model.on_button_click(btn_name)
-    #         }
-    #     }
-
-
-
-class MaskThresholdingGUIConfig(BaseGUIConfig):
-    WINDOW_TITLE = "Mask Thresholding"
-    TEXTS = [
-        "Use the trackbars to adjust the thresholding.",
-        "Press 'space' to finish."
-    ]
-    TEXT_COLOR = (0, 0, 0)
+    @staticmethod
+    def get_params(controller):
+        return {
+            'mouse': controller.handle_mouse,
+            'key': controller.on_key,
+            'buttons': BaseGUIConfig.get_base_params(controller),
+            'trackbars': BaseGUIConfig.get_base_trackbars(controller)
+        }
 
 
 
