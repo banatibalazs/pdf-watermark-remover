@@ -147,6 +147,7 @@ class BaseController:
 
     def run(self):
         self.view.setup_window()
+        self.view.set_texts(MaskSelectorGUIConfig.TEXTS, MaskSelectorGUIConfig.TEXT_COLOR, MaskSelectorGUIConfig.WINDOW_TITLE)
         self.view.change_window_setup(MaskSelectorGUIConfig.get_params(self))
         self.update_view()
 
