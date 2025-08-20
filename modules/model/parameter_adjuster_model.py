@@ -3,8 +3,8 @@ import numpy as np
 from modules.utils import sharpen_image, fill_masked_area, inpaint_image
 from modules.utils import AdjusterParameters
 # At the top of your file
-from diffusers import StableDiffusionInpaintPipeline
-import torch
+# from diffusers import StableDiffusionInpaintPipeline
+# import torch
 from PIL import Image
 
 # Load the pipeline once (ideally outside the class, e.g., as a global or singleton)

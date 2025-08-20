@@ -3,6 +3,8 @@ import numpy as np
 
 
 def calc_median_image(images, length=40):
+    print("image type:", type(images))
+
     length = min(length, len(images))
     stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
     # if length > 1:

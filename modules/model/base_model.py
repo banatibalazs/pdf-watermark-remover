@@ -1,15 +1,31 @@
-from abc import ABC, abstractmethod
 import cv2
 import numpy as np
 from typing import List, Optional
 
+from modules.utils import calc_median_image
 
-class BaseModel(ABC):
-    def __init__(self, mask=None):
-        self.input_mask: Optional[np.ndarray] = mask
-        self.final_mask: Optional[np.ndarray] = mask.copy() if mask is not None else None
+
+class BaseModel:
+    def __init__(self, mask=None, images=None):
+
+        self.median_image = cv2.cvtColor(calc_median_image(images), cv2.COLOR_BGR2GRAY)
+        self.temp_mask = mask
+        self.mask = mask
+        self.images = images
+        self.current_page_index = 0
+        self.current_image = self.images[self.current_page_index].copy()
+        self.input_mask = cv2.bitwise_and(self.median_image, mask)
+        self.final_mask = self.input_mask.copy()
+
+        self.threshold_min = 0
+        self.threshold_max = 195
         self.undo_stack: List[np.ndarray] = []
         self.redo_stack: List[np.ndarray] = []
+        self.cursor_size = 10
+        self.cursor_pos = (0, 0)
+        self.cursor_thickness = 1
+        self.ix, self.iy = -1, -1
+        self.points = []
 
 
     def save_mask(self, path=None):
@@ -67,18 +83,8 @@ class BaseModel(ABC):
         self.final_mask = self.input_mask.copy()
         self.undo_stack.clear()
         self.redo_stack.clear()
-        print("Mask reset to initial state.")
-
-
-class ModelWithDrawing(BaseModel):
-    def __init__(self, input_mask=None):
-        super().__init__(input_mask)
-        self.cursor_size = 10
-        self.cursor_pos = (0, 0)
-        self.cursor_thickness = 1
-        self.drawing = False
-        self.ix, self.iy = -1, -1
         self.points = []
+        print("Mask reset to initial state.")
 
     def set_cursor_size(self, size: int):
         """Set the size of the cursor."""
@@ -87,3 +93,9 @@ class ModelWithDrawing(BaseModel):
     def set_cursor_pos(self, pos: tuple):
         """Set the position of the cursor."""
         self.cursor_pos = pos
+
+    def get_weighted_image(self):
+        """Return the current image with the mask applied."""
+        if self.current_image is None or self.final_mask is None:
+            raise ValueError("Current image or final mask is not set.")
+        return cv2.addWeighted(self.current_image, 0.7, self.get_bgr_mask(), 0.3, 0)

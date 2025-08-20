@@ -26,12 +26,24 @@ class TkinterView(DisplayInterface):
         self._bind_events(params)
 
     def change_window_setup(self, params):
+        print("Changing window setup with params:", params)
+        # Clear existing sidebar content
         if self.sidebar:
-            self.sidebar.destroy()
-        self.sidebar = tk.Frame(self.root)
-        self.sidebar.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
+            for widget in self.sidebar.winfo_children():
+                widget.destroy()
+
+        # Recreate sidebar content with new params
         self._setup_sidebar_content(params)
+
+        # Rebind events with new params
         self._bind_events(params)
+
+        # Update window title if provided
+        if params and 'title' in params:
+            self.root.title(params['title'])
+
+        # Force window update
+        self.root.update()
 
     def _create_main_layout(self):
         main_frame = tk.Frame(self.root)
@@ -103,7 +115,8 @@ class TkinterView(DisplayInterface):
             mouse_events = [
                 '<Button-1>', '<ButtonRelease-1>',
                 '<Button-3>', '<ButtonRelease-3>',
-                '<Motion>', '<Button-4>', '<Button-5>'
+                '<Motion>', '<Button-4>', '<Button-5>',
+                '<MouseWheel>', '<Button-2>', '<ButtonRelease-2>'
             ]
             for event in mouse_events:
                 self.image_label.bind(event, params['mouse'])

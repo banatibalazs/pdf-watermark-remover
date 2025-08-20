@@ -1,11 +1,13 @@
 import argparse
+
+from modules.controller.base_controller import BaseController
 from modules.pdf_image_extractor import PDFImageExtractor
-from modules.controller.mask_erosion_dilation_controller import MaskErosionDilation
-from modules.controller.mask_thresholding_controller import MaskThresholding
-from modules.controller.mask_selector_controller import MaskSelector
 from modules.controller.parameter_adjuster_controller import ParameterAdjuster
 from modules.view.tkinter_view import TkinterView
 from modules.watermark_remover import WatermarkRemover
+
+import sys
+sys.setrecursionlimit(2000)  # Example: increase limit
 
 # Global variables
 PDF_PATH = 'input.pdf'
@@ -41,33 +43,19 @@ def main():
     view_instance = TkinterView()
 
     # Draw the initial mask
-    selector = MaskSelector(images_for_mask_making, view_instance)
+    selector = BaseController(images_for_mask_making, view_instance)
     selector.run()
     drawn_mask = selector.get_gray_mask()
 
-
-    # Threshold the mask
-    mask_thresholder = MaskThresholding(images_for_mask_making, drawn_mask, view_instance)
-    mask_thresholder.run()
-
-    # Draw on the mask
-    mask_drawer = MaskDrawing(mask_thresholder.get_gray_mask(), view_instance)
-    mask_drawer.run()
-
-    # Erode and dilate the mask
-    mask_eroder_dilater = MaskErosionDilation(mask_drawer.get_gray_mask(), view_instance)
-    mask_eroder_dilater.run()
-    bgr_mask = mask_eroder_dilater.get_bgr_mask()
-
     # Set the color range to be filtered/removed
-    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
-    color_adjuster.run()
-    parameters = color_adjuster.get_parameters()
-
+    # color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
+    # color_adjuster.run()
+    # parameters = color_adjuster.get_parameters()
+    #
     # Remove the watermark and save the final PDF
-    remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
-    remover.remove_watermark()
-    remover.save_pdf(args.save_path)
+    # remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
+    # remover.remove_watermark()
+    # remover.save_pdf(args.save_path)
 
 if __name__ == "__main__":
     main()
