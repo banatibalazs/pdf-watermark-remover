@@ -11,6 +11,36 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import random
 
+def create_gradient_background(canvas_obj, width, height, start_color, end_color):
+    """Create a gradient background transition between two colors."""
+    canvas_obj.saveState()
+
+    # Number of steps for smooth gradient
+    steps = 100
+
+    # Calculate color increments
+    r1, g1, b1 = start_color.red, start_color.green, start_color.blue
+    r2, g2, b2 = end_color.red, end_color.green, end_color.blue
+
+    r_step = (r2 - r1) / steps
+    g_step = (g2 - g1) / steps
+    b_step = (b2 - b1) / steps
+
+    # Draw gradient rectangles
+    rect_height = height / steps
+
+    for i in range(steps):
+        # Calculate current color
+        current_r = r1 + (r_step * i)
+        current_g = g1 + (g_step * i)
+        current_b = b1 + (b_step * i)
+
+        # Set color and draw rectangle
+        canvas_obj.setFillColorRGB(current_r, current_g, current_b)
+        canvas_obj.rect(0, height - (i + 1) * rect_height, width, rect_height, fill=1, stroke=0)
+
+    canvas_obj.restoreState()
+
 
 def create_sample_image(width=200, height=150, color="blue", text="Sample"):
     """Create a simple sample image with background using PIL."""
@@ -82,7 +112,7 @@ def draw_text_with_background(canvas_obj, x, y, text, font_size=11, bg_color=col
 
 def create_watermarked_pdf(filename="watermarked_document.pdf", num_pages=30):
     """
-    Generate a PDF with structured layout, organized text and images.
+    Generate a PDF with structured layout, organized text and gradient backgrounds.
 
     Args:
         filename (str): Output PDF filename
@@ -92,7 +122,7 @@ def create_watermarked_pdf(filename="watermarked_document.pdf", num_pages=30):
     c = canvas.Canvas(filename, pagesize=letter)
     width, height = letter
 
-    # Sample text content
+    # Sample text content (keep existing lorem_text array)
     lorem_text = [
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
@@ -106,10 +136,18 @@ def create_watermarked_pdf(filename="watermarked_document.pdf", num_pages=30):
         "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates."
     ]
 
-    background_colors = [
-        colors.lightblue, colors.lightgreen, colors.lightyellow,
-        colors.lightpink, colors.lightcyan, colors.lightgrey,
-        colors.lavender, colors.mistyrose, colors.honeydew
+    # Gradient color pairs for backgrounds
+    gradient_colors = [
+        (colors.lightblue, colors.white),
+        (colors.lightgreen, colors.lightyellow),
+        (colors.lightpink, colors.lightcyan),
+        (colors.lavender, colors.lightgrey),
+        (colors.mistyrose, colors.honeydew),
+        (colors.lightcyan, colors.lightblue),
+        (colors.lightyellow, colors.lightgreen),
+        (colors.lightgrey, colors.lightpink),
+        (colors.honeydew, colors.lavender),
+        (colors.white, colors.lightcyan)
     ]
 
     image_colors = ["lightblue", "lightgreen", "lightcoral", "lightyellow", "lightpink", "lightgray"]
@@ -118,13 +156,11 @@ def create_watermarked_pdf(filename="watermarked_document.pdf", num_pages=30):
         # Set random seed for consistent variety per page
         random.seed(page_num)
 
-        # Add subtle page background
-        page_bg_color = random.choice(background_colors)
-        c.setFillColor(page_bg_color)
-        c.setFillAlpha(0.05)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
-        c.setFillAlpha(1.0)
+        # Add gradient background - replace the simple background
+        start_color, end_color = gradient_colors[page_num % len(gradient_colors)]
+        create_gradient_background(c, width, height, start_color, end_color)
 
+        # Rest of your existing code remains the same...
         # Define layout margins
         left_margin = 60
         right_margin = width - 60
@@ -187,15 +223,15 @@ def create_watermarked_pdf(filename="watermarked_document.pdf", num_pages=30):
         col_width = (right_margin - left_margin - 20) // 2
 
         # Left column
-        for i in range(4):
+        for i in range(8):
             line_text = lorem_text[(page_num + i + 2) % len(lorem_text)][:50] + "..."
             draw_text_with_background(c, left_margin, current_y, line_text,
                                       font_size=10, bg_color=colors.lightcyan, width=col_width)
             current_y -= 18
 
         # Right column
-        current_y += 72  # Reset for right column
-        for i in range(4):
+        current_y += 82  # Reset for right column
+        for i in range(8):
             line_text = lorem_text[(page_num + i + 5) % len(lorem_text)][:50] + "..."
             draw_text_with_background(c, left_margin + col_width + 20, current_y, line_text,
                                       font_size=10, bg_color=colors.lightpink, width=col_width)
