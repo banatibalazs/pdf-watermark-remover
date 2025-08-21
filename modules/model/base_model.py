@@ -9,16 +9,16 @@ class BaseModel:
     def __init__(self, mask=None, images=None):
 
         self.median_image = cv2.cvtColor(calc_median_image(images, 1), cv2.COLOR_BGR2GRAY)
-        self.temp_mask = mask
         self.mask = mask
         self.images = images
         self.current_page_index = 0
         self.current_image = self.images[self.current_page_index].copy()
         self.input_mask = cv2.bitwise_and(self.median_image, mask)
         self.final_mask = self.input_mask.copy()
+        self.temp_mask = self.final_mask.copy()
 
-        self.threshold_min = 0
-        self.threshold_max = 195
+        self.threshold_min = 1
+        self.threshold_max = 255
         self.undo_stack: List[np.ndarray] = []
         self.redo_stack: List[np.ndarray] = []
         self.cursor_size = 10
@@ -26,7 +26,7 @@ class BaseModel:
         self.cursor_thickness = 1
         self.ix, self.iy = -1, -1
         self.points = []
-        self.weight = 0.7
+        self.weight = 0.3
 
 
     def save_mask(self, path=None):
@@ -95,8 +95,19 @@ class BaseModel:
         """Set the position of the cursor."""
         self.cursor_pos = pos
 
+    # def get_weighted_image(self):
+    #     """Return the current image with the mask applied."""
+    #     if self.current_image is None or self.final_mask is None:
+    #         raise ValueError("Current image or final mask is not set.")
+    #     return cv2.addWeighted(self.current_image, self.weight, self.get_bgr_mask(), 0.8, 0)
+
     def get_weighted_image(self):
-        """Return the current image with the mask applied."""
+        """Return the current image with the mask applied based on the weight."""
         if self.current_image is None or self.final_mask is None:
             raise ValueError("Current image or final mask is not set.")
-        return cv2.addWeighted(self.current_image, self.weight, self.get_bgr_mask(), 0.8, 0)
+        # Perform blending using NumPy
+        blended_image = (1 - self.weight) * self.current_image.astype(np.float32) + \
+                        self.weight * self.get_bgr_mask().astype(np.float32)
+        # Clip values to valid range and convert back to uint8
+        return np.clip(blended_image, 0, 255).astype(np.uint8)
+
