@@ -10,7 +10,7 @@ import sys
 sys.setrecursionlimit(2000)  # Example: increase limit
 
 # Global variables
-PDF_PATH = 'input.pdf'
+PDF_PATH = 'input_new.pdf'
 SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
@@ -51,10 +51,28 @@ def main():
     color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
     color_adjuster.run()
     parameters = color_adjuster.get_parameters()
-    #
+
     # Remove the watermark and save the final PDF
     remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
     remover.remove_watermark()
+    processed_images = remover.get_processed_images()
+    while True:
+        resized_processed_images = image_extractor.resize_images_for_mask_making(processed_images)
+        selector = BaseController(resized_processed_images, view_instance)
+        selector.run()
+        bgr_mask = selector.get_bgr_mask()
+
+        # Set the color range to be filtered/removed
+        color_adjuster = ParameterAdjuster(resized_processed_images, bgr_mask, view_instance)
+        color_adjuster.run()
+        parameters = color_adjuster.get_parameters()
+
+        # Remove the watermark and save the final PDF
+        remover = WatermarkRemover(processed_images, bgr_mask, parameters)
+        remover.remove_watermark()
+        processed_images = remover.get_processed_images()
+
+
     remover.save_pdf(args.save_path)
 
 if __name__ == "__main__":
