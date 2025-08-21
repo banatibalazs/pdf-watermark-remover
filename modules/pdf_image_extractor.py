@@ -28,5 +28,8 @@ class PDFImageExtractor:
     def get_images_for_watermark_removal(self):
         return self.images_for_watermark_removal
 
+    def resize_images_for_mask_making(self, images):
+        return [self.resize_image(image) for image in images]
+
     def get_original_size(self):
         return self.original_width, self.original_height

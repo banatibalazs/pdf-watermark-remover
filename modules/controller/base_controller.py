@@ -15,9 +15,7 @@ class BaseController:
     def __init__(self,  images, view):
         self.view = view
         self.width, self.height = images[0].shape[:2]
-        self.input_mask = np.zeros((self.width, self.height), np.uint8)
-        self.final_mask = self.input_mask.copy()
-        self.model = BaseModel(self.final_mask, images)
+        self.model = BaseModel(np.zeros((self.width, self.height), np.uint8), images)
         self.mode = MaskMode.SELECT
         self.drawing = False
         self.left_button_pressed = False
@@ -167,15 +165,14 @@ class BaseController:
         median_image = cv2.inRange(self.model.median_image, np.array(self.model.threshold_min, dtype=np.uint8),
                                             np.array(self.model.threshold_max, dtype=np.uint8))
         self.model.final_mask = cv2.bitwise_and(self.model.temp_mask, cv2.inRange(median_image, 1, 255))
-
-        self.view.display_image(self.model.get_weighted_image())
-
+        self.update_view()
 
     def undo(self) -> None:
         if not self.model.undo_stack:
             return
         self.model.redo_stack.append(self.model.final_mask.copy())
         self.model.final_mask = self.model.undo_stack.pop()
+        self.model.temp_mask = self.model.final_mask.copy()
         self.update_view()
 
     def redo(self) -> None:
@@ -183,13 +180,13 @@ class BaseController:
             return
         self.model.undo_stack.append(self.model.final_mask.copy())
         self.model.final_mask = self.model.redo_stack.pop()
+        self.model.temp_mask = self.model.final_mask.copy()
         self.update_view()
 
     def save_state(self) -> None:
         self.model.temp_mask = self.model.final_mask
         self.model.undo_stack.append(self.model.final_mask.copy())
         self.model.redo_stack.clear()
-
 
     def get_gray_mask(self) -> Optional[Any]:
         """Get the gray mask from the model"""
@@ -220,7 +217,6 @@ class BaseController:
         """Save the current mask to the specified path"""
         if self.model:
             self.model.save_mask(path)
-
 
     def update_view(self):
         if self.mode == MaskMode.DRAW:

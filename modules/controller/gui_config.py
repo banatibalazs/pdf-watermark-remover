@@ -8,6 +8,11 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_params(controller):
         return {
+            # 'Apply Thresholds': {
+            #     'text': 'Apply Thresholds',
+            #     'callback': controller.apply_thresholds
+            # },
+
             'Select': {
                 'text': 'Selection',
                 'callback': lambda btn_name='selection': controller.on_button_click(btn_name)

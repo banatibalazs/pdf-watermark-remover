@@ -18,7 +18,7 @@ class BaseModel:
         self.temp_mask = self.final_mask.copy()
 
         self.threshold_min = 1
-        self.threshold_max = 255
+        self.threshold_max = 225
         self.undo_stack: List[np.ndarray] = []
         self.redo_stack: List[np.ndarray] = []
         self.cursor_size = 10
@@ -26,7 +26,7 @@ class BaseModel:
         self.cursor_thickness = 1
         self.ix, self.iy = -1, -1
         self.points = []
-        self.weight = 0.3
+        self.weight = 0.45
 
 
     def save_mask(self, path=None):

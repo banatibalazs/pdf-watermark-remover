@@ -49,9 +49,10 @@ class WatermarkRemover:
             image = sharpen_image(image, self.parameters[i].w / 10)
 
             # Convert the image to bytes and append it to the list
-            is_success, im_buf_arr = cv2.imencode(".jpg", image)
-            byte_im = im_buf_arr.tobytes()
-            self.processed_images.append(byte_im)
+            # is_success, im_buf_arr = cv2.imencode(".jpg", image)
+            # byte_im = im_buf_arr.tobytes()
+            # self.processed_images.append(byte_im)
+            self.processed_images.append(image)
 
     def save_pdf(self, save_path):
         try:
@@ -61,3 +62,6 @@ class WatermarkRemover:
             print(f"Error: {e}")
             print("Please try again with a different path.")
             return
+
+    def get_processed_images(self):
+        return self.processed_images
