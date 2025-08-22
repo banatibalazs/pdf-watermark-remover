@@ -10,7 +10,7 @@ import sys
 sys.setrecursionlimit(2000)  # Example: increase limit
 
 # Global variables
-PDF_PATH = 'input_new.pdf'
+PDF_PATH = 'input.pdf'
 SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
