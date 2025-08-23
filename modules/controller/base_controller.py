@@ -1,15 +1,10 @@
 # base_controller.py
-import tkinter
-import cv2
 import numpy as np
-from typing import List, Tuple, Optional, Any
-from tkinter import filedialog
 
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
 from modules.model.base_model import BaseModel
-from modules.utils import calc_median_image
 
 from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator

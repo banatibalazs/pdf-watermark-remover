@@ -83,25 +83,8 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install pdf2image img2pdf opencv-contrib-python 
+    pip install pdf2image img2pdf opencv-contrib-python pymupdf
     ```
-
-3. **Install poppler-utils**
-
-   - **Windows**: Download a precompiled version of Poppler from [this link](https://github.com/oschwartz10612/poppler-windows/releases/). Extract the contents of the zip file and add the `bin` folder to your system's PATH environment variable.
-
-   - **Ubuntu/Debian**: Install `poppler-utils` with the following command: 
-
-      ```bash 
-       sudo apt-get install -y poppler-utils
-      ```
-
-   - **macOS**: If you have Homebrew installed, you can install poppler with the following command:
-
-      ```bash 
-      brew install poppler
-       ```
-   
 
 ## Running the Script
 
@@ -124,13 +107,6 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 
 
 ## Troubleshooting
-
-- **Trackbars not visible:**
-
-   If you cannot see the trackbar, try decreasing the `max_height` parameter.
-
-   **Note:** On Linux, the trackbars are displayed at the bottom of the window, while on Windows, they are displayed at the top.
-
 
 - **Process is too slow:**
 
