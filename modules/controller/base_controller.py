@@ -2,7 +2,7 @@
 import numpy as np
 
 from modules.controller.constants import MaskMode
-from modules.controller.gui_config import MaskSelectorGUIConfig
+from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
 from modules.model.base_model import BaseModel
 
@@ -10,6 +10,7 @@ from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
 from modules.controller.view_updater import ViewUpdater
+from modules.watermark_remover import WatermarkRemover
 
 
 class BaseController:
@@ -17,7 +18,6 @@ class BaseController:
         self.view = view
         self.width, self.height = images[0].shape[:2]
         self.model = BaseModel(np.zeros((self.width, self.height), np.uint8), images)
-        self.model.mode = MaskMode.SELECT
 
         # Initialize components
         self.view_updater = ViewUpdater(self.model, self.view)
@@ -26,30 +26,41 @@ class BaseController:
         self.mouse_handler = MouseHandler(self.model, self.state_manager, self.mask_manipulator, self.view_updater)
         self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator,
                                                 self.view_updater, self.view)
+        self.remover = WatermarkRemover(images, self.model.get_bgr_mask(), self.model.get_parameters())
+
 
     def on_weight_trackbar(self, pos):
         self.model.weight = int(pos) / 100.0
         self.view_updater.update_view()
 
     def on_key(self, event):
-        key = ord(event.char) if event.char else 255
-        if not self.keyboard_handler.handle_key(key):
-            # self.view.close_window()
-            self.model.mode = MaskMode.ADJUST
-            self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
+        self.keyboard_handler.handle_key(event)
 
     def on_button_click(self, button_name):
-        if button_name == 'selection':
-            self.model.mode = MaskMode.SELECT
-        elif button_name == 'drawing':
-            self.model.mode = MaskMode.DRAW
+        if button_name == 'select':
+            self.change_mode(MaskMode.SELECT)
+        elif button_name == 'draw':
+            self.change_mode(MaskMode.DRAW)
+        elif button_name == 'adjust':
+            self.change_mode(MaskMode.ADJUST)
+        elif button_name == 'remove':
+            self.remove_watermark()
+            self.change_mode(MaskMode.SELECT)
+
+    def change_mode(self, mode: MaskMode):
+        self.model.set_mode(mode)
+        self.change_window_setup()
+        self.view_updater.update_view()
+
+
+    def change_window_setup(self):
+        if self.model.mode == MaskMode.ADJUST:
+            self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
+        else:
+            self.view.change_window_setup(BaseGUIConfig.get_params(self))
 
     def handle_mouse(self, event):
-        if self.model.mode == MaskMode.DRAW:
-            self.mouse_handler.handle_draw_mode(event)
-        elif self.model.mode == MaskMode.SELECT:
-            self.mouse_handler.handle_select_mode(event)
-
+        self.mouse_handler.handle_mouse(event)
 
     def on_threshold_trackbar(self, pos, trackbar_name):
         if trackbar_name == "min":
@@ -60,6 +71,10 @@ class BaseController:
         self.view_updater.update_view()
 
     #####################################################################x
+
+    def on_parameter_changed(self, attr, val):
+        self.update_parameter(attr, val)
+
     def update_parameter(self, attr, val):
         val = int(val)
         setattr(self.model.current_parameters, attr, val)
@@ -67,13 +82,6 @@ class BaseController:
             for param in self.model.parameters:
                 setattr(param, attr, val)
         self.view.display_image(self.model.get_processed_current_image())
-
-    def on_parameter_changed(self, attr, val):
-        self.update_parameter(attr, val)
-
-    def on_mode_changed(self, pos):
-        print("Mode changed to:", pos)
-        self.update_parameter('mode', pos)
 
     def get_parameters(self):
         return self.model.get_parameters()
@@ -124,6 +132,12 @@ class BaseController:
     def undo(self):
         self.state_manager.undo()
         self.view_updater.update_view()
+
+    def remove_watermark(self):
+        self.remover.update_data(self.model.images, self.model.get_bgr_mask(), self.model.get_parameters())
+        self.remover.remove_watermark()
+        self.model.update_data(self.remover.get_processed_images())
+
 
     def exit(self):
         self.view.close_window()

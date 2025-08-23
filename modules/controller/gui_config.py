@@ -9,12 +9,16 @@ class BaseGUIConfig:
     def get_base_params(controller):
         return {
             'Select': {
-                'text': 'Selection',
-                'callback': lambda btn_name='selection': controller.on_button_click(btn_name)
+                'text': 'Select',
+                'callback': lambda btn_name='select': controller.on_button_click(btn_name)
             },
             'Draw': {
-                'text': 'Drawing',
-                'callback': lambda btn_name='drawing': controller.on_button_click(btn_name)
+                'text': 'Draw',
+                'callback': lambda btn_name='draw': controller.on_button_click(btn_name)
+            },
+            'Adjust': {
+                'text': 'Adjust',
+                'callback': lambda btn_name='adjust': controller.on_button_click(btn_name)
             },
             'Erode': {
                 'text': 'Erode',
@@ -60,6 +64,15 @@ class BaseGUIConfig:
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'max')}
         }
 
+    @staticmethod
+    def get_params(controller):
+        return {
+            'mouse': controller.handle_mouse,
+            'key': controller.on_key,
+            'buttons': BaseGUIConfig.get_base_params(controller),
+            'trackbars': BaseGUIConfig.get_base_trackbars(controller)
+        }
+
 
 
 class MaskSelectorGUIConfig(BaseGUIConfig):
@@ -93,10 +106,16 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
     @staticmethod
     def get_params(controller):
         return {
+            'buttons': {
+                'Remove': {
+                    'text': 'Remove watermark',
+                    'callback': lambda btn_name='remove': controller.on_button_click(btn_name)
+                }
+            },
             'key': controller.on_key,
             'trackbars': {
                 'mode': {'value': controller.model.current_parameters.mode,
-                         'callback': controller.on_mode_changed},
+                         'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val)},
                 'w': {'value': controller.model.current_parameters.w,
                       'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val)},
                 'r_min': {'value': controller.model.current_parameters.r_min,

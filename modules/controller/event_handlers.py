@@ -14,6 +14,12 @@ class MouseHandler:
         self.left_button_pressed = False
         self.right_button_pressed = False
 
+    def handle_mouse(self, event):
+        if self.model.mode == MaskMode.DRAW:
+            self.handle_draw_mode(event)
+        elif self.model.mode == MaskMode.SELECT:
+            self.handle_select_mode(event)
+
     def handle_draw_mode(self, event):
         type = event.type
         x, y = event.x, event.y
@@ -82,7 +88,8 @@ class KeyboardHandler:
         self.view_updater = view_updater
         self.view = view
 
-    def handle_key(self, key):
+    def handle_key(self, event):
+        key = ord(event.char) if event.char else 255
         if key == ord('a'):
             self.model.current_page_index = max(0, self.model.current_page_index - 1)
             self.reset_current_image()
@@ -98,7 +105,7 @@ class KeyboardHandler:
         elif key == ord('y'):
             self.state_manager.redo()
         elif key == 32:
-            return False
+            pass
 
         self.view_updater.update_view()
         return True

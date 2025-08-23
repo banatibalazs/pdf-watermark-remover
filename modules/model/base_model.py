@@ -35,6 +35,22 @@ class BaseModel:
         self.current_parameters = self.parameters[self.current_page_index]
         self.apply_same_parameters = True
 
+    def update_data(self, images):
+        self.images = images
+        self.median_image = cv2.cvtColor(calc_median_image(images, 1), cv2.COLOR_BGR2GRAY)
+        self.current_page_index = 0
+        self.current_image = self.images[self.current_page_index].copy()
+        self.input_mask = cv2.bitwise_and(self.median_image, self.mask)
+        self.final_mask = self.input_mask.copy()
+        self.temp_mask = self.final_mask.copy()
+        self.undo_stack.clear()
+        self.redo_stack.clear()
+        self.points = []
+        self.current_parameters = self.parameters[self.current_page_index]
+        if self.apply_same_parameters:
+            self.set_all_parameters_the_same_as_current()
+        print("Data updated. Number of images:", len(images))
+
 
     def get_image_size(self):
         if self.current_image is not None:
@@ -113,6 +129,11 @@ class BaseModel:
     def set_cursor_pos(self, pos: tuple):
         """Set the position of the cursor."""
         self.cursor_pos = pos
+
+    def set_mode(self, mode: MaskMode):
+        """Set the current mode of the model."""
+        self.mode = mode
+        print(f"Mode set to: {self.mode}")
 
     def get_weighted_image(self):
         """Return the current image with the mask applied based on the weight."""
