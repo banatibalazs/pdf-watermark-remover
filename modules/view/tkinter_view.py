@@ -60,11 +60,6 @@ class TkinterView(DisplayInterface):
         self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
         self.text_label.pack(anchor='n', pady=5)
 
-        # Close button
-        button_frame = tk.Frame(self.sidebar)
-        button_frame.pack(anchor='n', pady=5)
-        tk.Button(button_frame, text='Close', command=self.close_window).pack(side=tk.LEFT, padx=5)
-
         # Trackbars
         if params and 'trackbars' in params:
             self._create_trackbars(params['trackbars'])
@@ -110,7 +105,7 @@ class TkinterView(DisplayInterface):
             btn.grid(row=row, column=col, padx=2, pady=2, sticky='ew')
 
             col += 1
-            if col >= 4:  # Move to next row after 4 columns
+            if col >= 2:  # Move to next row after 4 columns
                 col = 0
                 row += 1
 
@@ -155,10 +150,7 @@ class TkinterView(DisplayInterface):
             self.root = None
 
     def update_trackbars(self, params):
-        # for i in range(len(params['names'])):
-        #     trackbar_name = params['names'][i]
-        #     value = int(params['values'][i])
-        #     scale = self.sidebar.nametowidget(trackbar_name)
-        #     if scale:
-        #         scale.set(value)
-        pass
+        for widget in self.sidebar.winfo_children():
+            if isinstance(widget, tk.Scale) and widget.cget('label') in params['names']:
+                index = params['names'].index(widget.cget('label'))
+                widget.set(params['values'][index])

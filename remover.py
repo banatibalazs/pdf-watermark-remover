@@ -15,8 +15,8 @@ SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
 # The final PDF will have the same dimensions as the original PDF
-MAX_WIDTH = 900
-MAX_HEIGHT = 800
+MAX_WIDTH = 800
+MAX_HEIGHT = 700
 
 # Set the DPI for the images, this affects the quality of the final PDF
 DPI = 200
@@ -45,35 +45,32 @@ def main():
     # Draw the initial mask
     selector = BaseController(images_for_mask_making, view_instance)
     selector.run()
-    bgr_mask = selector.get_bgr_mask()
+    # bgr_mask = selector.get_bgr_mask()
 
     # Set the color range to be filtered/removed
-    color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
-    color_adjuster.run()
-    parameters = color_adjuster.get_parameters()
-
-    # Remove the watermark and save the final PDF
-    remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
-    remover.remove_watermark()
-    processed_images = remover.get_processed_images()
-    while True:
-        resized_processed_images = image_extractor.resize_images_for_mask_making(processed_images)
-        selector = BaseController(resized_processed_images, view_instance)
-        selector.run()
-        bgr_mask = selector.get_bgr_mask()
-
-        # Set the color range to be filtered/removed
-        color_adjuster = ParameterAdjuster(resized_processed_images, bgr_mask, view_instance)
-        color_adjuster.run()
-        parameters = color_adjuster.get_parameters()
-
-        # Remove the watermark and save the final PDF
-        remover = WatermarkRemover(processed_images, bgr_mask, parameters)
-        remover.remove_watermark()
-        processed_images = remover.get_processed_images()
+    # color_adjuster = ParameterAdjuster(images_for_mask_making, bgr_mask, view_instance)
+    # color_adjuster.run()
+    # parameters = color_adjuster.get_parameters()
+    #
+    # remover = WatermarkRemover(images_for_watermark_removal, bgr_mask, parameters)
+    # remover.remove_watermark()
+    # processed_images = remover.get_processed_images()
+    # while True:
+    #     resized_processed_images = image_extractor.resize_images_for_mask_making(processed_images)
+    #     selector = BaseController(resized_processed_images, view_instance)
+    #     selector.run()
+    #     bgr_mask = selector.get_bgr_mask()
+    #
+    #     color_adjuster = ParameterAdjuster(resized_processed_images, bgr_mask, view_instance)
+    #     color_adjuster.run()
+    #     parameters = color_adjuster.get_parameters()
+    #
+    #     remover = WatermarkRemover(processed_images, bgr_mask, parameters)
+    #     remover.remove_watermark()
+    #     processed_images = remover.get_processed_images()
 
 
-    remover.save_pdf(args.save_path)
+    # remover.save_pdf(args.save_path)
 
 if __name__ == "__main__":
     main()

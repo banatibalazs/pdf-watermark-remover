@@ -7,6 +7,7 @@ from tkinter import filedialog
 
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig
+from modules.controller.gui_config import ParameterAdjusterGUIConfig
 from modules.model.base_model import BaseModel
 from modules.utils import calc_median_image
 
@@ -38,7 +39,9 @@ class BaseController:
     def on_key(self, event):
         key = ord(event.char) if event.char else 255
         if not self.keyboard_handler.handle_key(key):
-            self.view.close_window()
+            # self.view.close_window()
+            self.model.mode = MaskMode.ADJUST
+            self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
 
     def on_button_click(self, button_name):
         if button_name == 'selection':
@@ -52,13 +55,35 @@ class BaseController:
         elif self.model.mode == MaskMode.SELECT:
             self.mouse_handler.handle_select_mode(event)
 
-    def on_threshold_trackbar_min(self, pos):
-        self.model.threshold_min = pos
-        self.mask_manipulator.apply_thresholds()
 
-    def on_threshold_trackbar_max(self, pos):
-        self.model.threshold_max = pos
+    def on_threshold_trackbar(self, pos, trackbar_name):
+        if trackbar_name == "min":
+            self.model.threshold_min = pos
+        elif trackbar_name == "max":
+            self.model.threshold_max = pos
         self.mask_manipulator.apply_thresholds()
+        self.view_updater.update_view()
+
+    #####################################################################x
+    def update_parameter(self, attr, val):
+        val = int(val)
+        setattr(self.model.current_parameters, attr, val)
+        if self.model.apply_same_parameters:
+            for param in self.model.parameters:
+                setattr(param, attr, val)
+        self.view.display_image(self.model.get_processed_current_image())
+
+    def on_parameter_changed(self, attr, val):
+        self.update_parameter(attr, val)
+
+    def on_mode_changed(self, pos):
+        print("Mode changed to:", pos)
+        self.update_parameter('mode', pos)
+
+    def get_parameters(self):
+        return self.model.get_parameters()
+
+    #########################################################################
 
     def run(self):
         self.view.setup_window()
@@ -96,3 +121,14 @@ class BaseController:
 
     def save_mask(self, path: str = 'saved_mask.png'):
         self.mask_manipulator.save_mask(path)
+
+    def redo(self):
+        self.state_manager.redo()
+        self.view_updater.update_view()
+
+    def undo(self):
+        self.state_manager.undo()
+        self.view_updater.update_view()
+
+    def exit(self):
+        self.view.close_window()

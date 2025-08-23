@@ -31,9 +31,9 @@ class MouseHandler:
             self.mask_manipulator.apply_thresholds()
 
         if type == tkinter.EventType.Motion and self.left_button_pressed:
-            cv2.circle(self.model.final_mask, (x, y), self.model.cursor_size, [0], -1)
-        elif type == tkinter.EventType.Motion and self.right_button_pressed:
             cv2.circle(self.model.final_mask, (x, y), self.model.cursor_size, [255], -1)
+        elif type == tkinter.EventType.Motion and self.right_button_pressed:
+            cv2.circle(self.model.final_mask, (x, y), self.model.cursor_size, [0], -1)
 
         if getattr(event, 'num', None) == 4 or getattr(event, 'delta', 0) > 0:
             self.model.cursor_size = min(self.model.cursor_size + 1, 50)
