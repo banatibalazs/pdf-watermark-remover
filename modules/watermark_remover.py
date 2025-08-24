@@ -59,18 +59,6 @@ class WatermarkRemover:
             cv2.destroyWindow('Removing watermark...')
             self.processed_images.append(image)
 
-    # def save_pdf(self, save_path):
-    #     # Convert the image to bytes and append it to the list
-    #     is_success, im_buf_arr = cv2.imencode(".jpg", self.processed_images)
-    #     byte_im = im_buf_arr.tobytes()
-    #     self.processed_images.append(byte_im)
-    #     try:
-    #         with open(save_path, "wb") as f:
-    #             f.write(img2pdf.convert(self.processed_images))
-    #     except Exception as e:
-    #         print(f"Error: {e}")
-    #         print("Please try again with a different path.")
-    #         return
 
     def get_processed_images(self):
         return self.processed_images

@@ -41,8 +41,10 @@ class BaseController:
             self.change_mode(MaskMode.SELECT)
         elif button_name == 'draw':
             self.change_mode(MaskMode.DRAW)
-        elif button_name == 'adjust':
+        elif button_name == 'continue':
             self.change_mode(MaskMode.ADJUST)
+        elif button_name == 'back':
+            self.change_mode(MaskMode.SELECT)
         elif button_name == 'remove':
             self.remove_watermark()
             self.change_mode(MaskMode.SELECT)
@@ -124,6 +126,10 @@ class BaseController:
 
     def save_mask(self, path: str = 'saved_mask.png'):
         self.mask_manipulator.save_mask(path)
+
+    def save_images(self, path: str = 'output'):
+    #     save images from numpy array to the specified path via pymupdf
+        self.state_manager.save_images(path)
 
     def redo(self):
         self.state_manager.redo()

@@ -86,7 +86,6 @@ class KeyboardHandler:
         self.state_manager = state_manager
         self.mask_manipulator = mask_manipulator
         self.view_updater = view_updater
-        self.view = view
 
     def handle_key(self, event):
         key = ord(event.char) if event.char else 255
@@ -98,14 +97,13 @@ class KeyboardHandler:
             self.reset_current_image()
         elif key == ord('r'):
             self.mask_manipulator.reset_mask()
-        elif key == ord('c'):
-            self.view.toggle_text()
         elif key == ord('u'):
             self.state_manager.undo()
         elif key == ord('y'):
             self.state_manager.redo()
         elif key == 32:
             pass
+
 
         self.view_updater.update_view()
         return True

@@ -16,10 +16,6 @@ class BaseGUIConfig:
                 'text': 'Draw',
                 'callback': lambda btn_name='draw': controller.on_button_click(btn_name)
             },
-            'Adjust': {
-                'text': 'Adjust',
-                'callback': lambda btn_name='adjust': controller.on_button_click(btn_name)
-            },
             'Erode': {
                 'text': 'Erode',
                 'callback': controller.erode_mask
@@ -40,13 +36,21 @@ class BaseGUIConfig:
                 'text': 'Reset',
                 'callback': lambda btn_name='reset': controller.reset_mask()
             },
-            'Save': {
-                'text': 'Save',
+            'Save mask': {
+                'text': 'Save mask',
                 'callback': lambda btn_name='save': controller.save_mask()
+            },
+            'Save image': {
+                'text': 'Save image',
+                'callback': lambda btn_name='save_image': controller.save_images()
             },
             'Load': {
                 'text': 'Load',
                 'callback': lambda btn_name='load': controller.load_mask()
+            },
+            'Continue': {
+                'text': 'Continue',
+                'callback': lambda btn_name='continue': controller.on_button_click(btn_name)
             },
             'Exit': {
                 'text': 'Exit',
@@ -107,6 +111,10 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
     def get_params(controller):
         return {
             'buttons': {
+                'Back': {
+                    'text': 'Back',
+                    'callback': lambda btn_name='back': controller.on_button_click(btn_name)
+                },
                 'Remove': {
                     'text': 'Remove watermark',
                     'callback': lambda btn_name='remove': controller.on_button_click(btn_name)

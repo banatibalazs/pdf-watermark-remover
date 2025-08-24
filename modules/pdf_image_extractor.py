@@ -1,5 +1,4 @@
 import cv2
-from pdf2image import convert_from_path
 import fitz
 from modules.utils import convert_images
 import numpy as np

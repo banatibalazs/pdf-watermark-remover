@@ -391,7 +391,7 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    filename = os.path.join(output_dir, "structured_watermarked_30_pages.pdf")
+    filename = os.path.join(output_dir, "input_new.pdf")
 
     try:
         create_watermarked_pdf(filename, 30)
