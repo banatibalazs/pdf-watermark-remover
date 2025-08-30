@@ -1,35 +1,27 @@
 import cv2
-import fitz
-from modules.utils import convert_images
-import numpy as np
-
-
-def read_pdf(pdf_path, dpi=300):
-    doc = fitz.open(pdf_path)
-    images = []
-
-    for page_num in range(len(doc)):
-        page = doc.load_page(page_num)
-        pix = page.get_pixmap(dpi=dpi)
-        img_bytes = pix.tobytes('png')
-        img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
-        cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
-        images.append(img_array)
-    return images
+from modules.utils import convert_images, read_pdf
 
 
 class PDFImageExtractor:
     def __init__(self, pdf_path, dpi=300, max_width=1920, max_height=1080):
+        self.original_width = None
+        self.original_height = None
+        self.images_for_mask_making = None
+        self.images_for_watermark_removal = None
         self.pdf_path = pdf_path
         self.dpi = dpi
         self.max_width = max_width
         self.max_height = max_height
-        self.images = read_pdf(pdf_path, dpi)
+        self.images = []
+        self.load_pdf(pdf_path)
 
-
+    def load_pdf(self, pdf_path):
+        self.pdf_path = pdf_path
+        self.images = read_pdf(pdf_path, self.dpi)
         (self.original_height, self.original_width) = self.images[0].shape[:2]
         self.images_for_watermark_removal = convert_images(self.images)
         self.images_for_mask_making = [self.resize_image(image) for image in self.images_for_watermark_removal]
+
 
     def resize_image(self, img):
         width_ratio = self.max_width / float(self.original_width)

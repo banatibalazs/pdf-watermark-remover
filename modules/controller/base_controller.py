@@ -1,4 +1,6 @@
 # base_controller.py
+from tkinter import filedialog
+
 import numpy as np
 
 from modules.controller.constants import MaskMode
@@ -11,7 +13,7 @@ from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
 from modules.controller.view_updater import ViewUpdater
 from modules.pdf_image_extractor import PDFImageExtractor
-from modules.watermark_remover import WatermarkRemover
+from modules.utils import remove_watermark
 
 
 class BaseController:
@@ -30,7 +32,6 @@ class BaseController:
         self.mouse_handler = MouseHandler(self.model, self.state_manager, self.mask_manipulator, self.view_updater)
         self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator,
                                                 self.view_updater, self.view)
-        self.remover = WatermarkRemover(images, self.model.get_bgr_mask(), self.model.get_parameters())
 
 
     def on_weight_trackbar(self, pos):
@@ -133,11 +134,15 @@ class BaseController:
         self.view_updater.update_view()
 
     def load_images(self):
-        path = self.view.open_file_dialog()
+        path = filedialog.askopenfilename(
+            title="Load mask",
+            filetypes=[("All files", "*.*")]
+        )
         if path:
-            self.model.load_images(path)
-            self.remover.update_data(self.model.images, self.model.get_bgr_mask(), self.model.get_parameters())
-            self.view_updater.update_view()
+            self.image_loader.load_pdf(path)
+            images = self.image_loader.get_images_for_mask_making()
+            self.model.update_data(images)
+
 
 
     def reset_mask(self):
@@ -161,9 +166,11 @@ class BaseController:
         self.view_updater.update_view()
 
     def remove_watermark(self):
-        self.remover.update_data(self.model.images, self.model.get_bgr_mask(), self.model.get_parameters())
-        self.remover.remove_watermark()
-        self.model.update_data(self.remover.get_processed_images())
+        processed_images = remove_watermark(self.image_loader.images_for_watermark_removal,
+                                            self.model.get_bgr_mask(),
+                                            self.model.get_parameters())
+        # TODO resize processed_images to fit the model images size
+        self.model.update_data(processed_images)
 
 
     def exit(self):

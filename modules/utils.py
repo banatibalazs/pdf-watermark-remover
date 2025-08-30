@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import fitz  # PyMuPDF
 
 
 def calc_median_image(images, length=40):
@@ -86,3 +87,67 @@ class AdjusterParameters:
 
     def get_parameter_names(self):
         return ['r_min', 'r_max', 'g_min', 'g_max', 'b_min', 'b_max', 'w', 'mode']
+
+
+def draw_progress_bar(image, progress, bar_color=(255, 255, 255), bar_thickness=20):
+    height, width = image.shape[:2]
+    bar_length = int(width * progress)
+    cv2.rectangle(image, (0, height - bar_thickness), (bar_length, height), bar_color, -1)
+    return image
+
+
+def remove_watermark(images, mask, parameters):
+    # check if image and mask sizes are the same
+    if images[0].shape[:2] != mask.shape[:2]:
+        # raise ValueError(f"Image and mask sizes do not match. Image size: {images[0].shape[:2]}, Mask size:{mask.shape[:2]}")
+        mask = cv2.resize(mask, (images[0].shape[1], images[0].shape[0]), interpolation=cv2.INTER_AREA)
+        print(f"Resized mask to match image size. New mask size: {mask.shape[:]}")
+
+    total_images = len(images)
+    progressbar_bg_image = np.zeros((75, 800, 3), np.uint8)
+    processed_images = []
+    for i, img in enumerate(images):
+
+        # Calculate progress
+        progress = (i + 1) / total_images
+
+        # Draw progress bar on the blank image
+        image_with_progress = draw_progress_bar(progressbar_bg_image, progress)
+        image_with_progress = add_texts_to_image(image_with_progress, [f"Progress: {progress * 100:.2f}%"], (10, 30),
+                                                 (255, 255, 255))
+
+        # Show the image with progress bar
+        cv2.imshow('Removing watermark...', image_with_progress)
+        cv2.waitKey(1)
+
+        lower = np.array([parameters[i].b_min, parameters[i].g_min, parameters[i].r_min], dtype=np.uint8)
+        upper = np.array([parameters[i].b_max, parameters[i].g_max, parameters[i].r_max], dtype=np.uint8)
+
+        masked_image_part = cv2.bitwise_and(img, mask)
+        gray_mask = cv2.inRange(masked_image_part, lower, upper)
+        gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY))
+
+        if parameters[i].mode:
+            image = fill_masked_area(img, gray_mask)
+        else:
+            image = inpaint_image(img, gray_mask)
+        image = sharpen_image(image, parameters[i].w / 10)
+
+        cv2.destroyWindow('Removing watermark...')
+        processed_images.append(image)
+
+    return processed_images
+
+
+def read_pdf(pdf_path, dpi=300):
+    doc = fitz.open(pdf_path)
+    images = []
+
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        pix = page.get_pixmap(dpi=dpi)
+        img_bytes = pix.tobytes('png')
+        img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+        cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
+        images.append(img_array)
+    return images

@@ -87,7 +87,18 @@ class BaseModel:
             raise ValueError("Mask has an unexpected shape: " + str(self.final_mask.shape))
 
     def load_images(self, path):
-        pass
+        if path is None:
+            return
+        try:
+            loaded_images = [cv2.imread(p) for p in path]
+            loaded_images = [img for img in loaded_images if img is not None]
+            if not loaded_images:
+                print("No valid images found in the provided paths.")
+                return
+            self.update_data(loaded_images)
+            print(f"Loaded {len(loaded_images)} images.")
+        except Exception as e:
+            print(f"Error loading images: {e}")
 
     def load_mask(self, path=None):
         if path is None:
@@ -170,5 +181,6 @@ class BaseModel:
 
     def get_parameters(self):
         return self.parameters
+
 
 
