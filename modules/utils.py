@@ -133,9 +133,9 @@ def remove_watermark(images, mask, parameters):
             image = inpaint_image(img, gray_mask)
         image = sharpen_image(image, parameters[i].w / 10)
 
-        cv2.destroyWindow('Removing watermark...')
         processed_images.append(image)
 
+    cv2.destroyWindow('Removing watermark...')
     return processed_images
 
 
@@ -150,4 +150,19 @@ def read_pdf(pdf_path, dpi=300):
         img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
         cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
         images.append(img_array)
+    return images
+
+def resize_images(images, max_width=None, max_height=None):
+    img_width, img_height = images[0].shape[:2]
+    width_ratio = max_width / float(img_width)
+    height_ratio = max_height / float(img_height)
+    ratio = min(width_ratio, height_ratio)
+    new_width = int(img_width * ratio)
+    new_height = int(img_height * ratio)
+    return [cv2.resize(img, (new_height, new_width), interpolation=cv2.INTER_AREA) for img in images]
+
+
+def load_pdf(pdf_path, dpi=200):
+    images = read_pdf(pdf_path, dpi)
+    images = convert_images(images)
     return images
