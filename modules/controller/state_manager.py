@@ -1,37 +1,37 @@
 # state_manager.py
-import numpy as np
-from typing import List
 import fitz  # PyMuPDF
 import cv2
 import os
 
+from modules.model.base_model import BaseModel
+
 
 class MaskStateManager:
     def __init__(self, model):
-        self.model = model
+        self.model: BaseModel = model
 
     def save_state(self) -> None:
-        self.model.temp_mask = self.model.final_mask
-        self.model.undo_stack.append(self.model.final_mask.copy())
-        self.model.redo_stack.clear()
+        self.model.mask_data.temp_mask = self.model.mask_data.final_mask
+        self.model.mask_data.undo_stack.append(self.model.mask_data.final_mask.copy())
+        self.model.mask_data.redo_stack.clear()
 
     def undo(self) -> None:
-        if not self.model.undo_stack:
+        if not self.model.mask_data.undo_stack:
             return
-        self.model.redo_stack.append(self.model.final_mask.copy())
-        self.model.final_mask = self.model.undo_stack.pop()
-        self.model.temp_mask = self.model.final_mask.copy()
+        self.model.mask_data.redo_stack.append(self.model.mask_data.final_mask.copy())
+        self.model.mask_data.final_mask = self.model.mask_data.undo_stack.pop()
+        self.model.mask_data.temp_mask = self.model.mask_data.final_mask.copy()
 
     def redo(self) -> None:
-        if not self.model.redo_stack:
+        if not self.model.mask_data.redo_stack:
             return
-        self.model.undo_stack.append(self.model.final_mask.copy())
-        self.model.final_mask = self.model.redo_stack.pop()
-        self.model.temp_mask = self.model.final_mask.copy()
+        self.model.mask_data.undo_stack.append(self.model.mask_data.final_mask.copy())
+        self.model.mask_data.final_mask = self.model.mask_data.redo_stack.pop()
+        self.model.mask_data.temp_mask = self.model.mask_data.final_mask.copy()
 
     # modules/controller/state_manager.py
     def save_images(self, path: str = 'output') -> None:
-        images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in self.model.original_sized_images]
+        images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in self.model.image_data.original_sized_images]
         height, width = images[0].shape[:2]
         doc = fitz.open()
         rect = fitz.Rect(0, 0, width, height)

@@ -9,7 +9,6 @@ from modules.model.base_model import BaseModel
 from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
-from modules.controller.view_updater import ViewUpdater
 from modules.utils import remove_watermark, load_pdf
 
 
@@ -19,21 +18,23 @@ class BaseController:
         self.model = BaseModel(load_pdf(path, dpi), dpi, max_width, max_height)
 
         # Initialize components
-        self.view_updater = ViewUpdater(self.model, self.view)
         self.state_manager = MaskStateManager(self.model)
         self.mask_manipulator = MaskManipulator(self.model)
-        self.mouse_handler = MouseHandler(self.model, self.state_manager, self.mask_manipulator, self.view_updater)
-        self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator,
-                                                self.view_updater, self.view)
+        self.mouse_handler = MouseHandler(self.model, self.state_manager, self.mask_manipulator)
+        self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
 
+    def update_view(self):
+        image = self.model.get_weighted_image()
+        self.view.display_image(image)
 
     def on_weight_trackbar(self, pos):
-        self.model.weight = int(pos) / 100.0
-        self.view_updater.update_view()
+        self.model.set_weight(int(pos) / 100.0)
+        self.update_view()
 
     def on_key(self, event):
         if not self.keyboard_handler.handle_key(event):
             self.next_mode()
+        self.update_view()
 
     def on_button_click(self, button_name):
         if button_name == 'select':
@@ -49,35 +50,36 @@ class BaseController:
             self.change_mode(MaskMode.SELECT)
 
     def next_mode(self):
-        if self.model.mode == MaskMode.DRAW:
+        if self.model.get_mode() == MaskMode.DRAW:
             self.change_mode(MaskMode.ADJUST)
-        elif self.model.mode == MaskMode.SELECT:
+        elif self.model.get_mode() == MaskMode.SELECT:
             self.change_mode(MaskMode.ADJUST)
-        elif self.model.mode == MaskMode.ADJUST:
+        elif self.model.get_mode() == MaskMode.ADJUST:
             self.change_mode(MaskMode.SELECT)
 
     def change_mode(self, mode: MaskMode):
         self.model.set_mode(mode)
         self.change_window_setup()
-        self.view_updater.update_view()
+        self.update_view()
 
 
     def change_window_setup(self):
-        if self.model.mode == MaskMode.ADJUST:
+        if self.model.get_mode() == MaskMode.ADJUST:
             self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
         else:
             self.view.change_window_setup(BaseGUIConfig.get_params(self))
 
     def handle_mouse(self, event):
         self.mouse_handler.handle_mouse(event)
+        self.update_view()
 
     def on_threshold_trackbar(self, pos, trackbar_name):
         if trackbar_name == "min":
-            self.model.threshold_min = pos
+            self.model.set_threshold_min(pos)
         elif trackbar_name == "max":
-            self.model.threshold_max = pos
+            self.model.set_threshold_max(pos)
         self.mask_manipulator.apply_thresholds()
-        self.view_updater.update_view()
+        self.update_view()
 
     #####################################################################x
 
@@ -87,7 +89,7 @@ class BaseController:
     def update_parameter(self, attr, val):
         val = int(val)
         setattr(self.model.current_parameters, attr, val)
-        if self.model.apply_same_parameters:
+        if self.model.config_data.apply_same_parameters:
             for param in self.model.parameters:
                 setattr(param, attr, val)
         self.view.display_image(self.model.get_processed_current_image())
@@ -102,19 +104,19 @@ class BaseController:
         self.view.set_texts(MaskSelectorGUIConfig.TEXTS, MaskSelectorGUIConfig.TEXT_COLOR,
                             MaskSelectorGUIConfig.WINDOW_TITLE)
         self.view.change_window_setup(MaskSelectorGUIConfig.get_params(self))
-        self.view_updater.update_view()
+        self.update_view()
         self.view.root.mainloop()
 
     # Delegating methods to appropriate components
     def erode_mask(self):
         self.mask_manipulator.erode_mask()
         self.state_manager.save_state()
-        self.view_updater.update_view()
+        self.update_view()
 
     def dilate_mask(self):
         self.mask_manipulator.dilate_mask()
         self.state_manager.save_state()
-        self.view_updater.update_view()
+        self.update_view()
 
     def get_gray_mask(self):
         return self.mask_manipulator.get_gray_mask()
@@ -124,7 +126,7 @@ class BaseController:
 
     def load_mask(self):
         self.mask_manipulator.load_mask()
-        self.view_updater.update_view()
+        self.update_view()
 
     def load_images(self):
         path = filedialog.askopenfilename(
@@ -132,36 +134,40 @@ class BaseController:
             filetypes=[("All files", "*.*")]
         )
         if path:
-            images = load_pdf(path, self.model.dpi)
+            images = load_pdf(path, self.model.config_data.dpi)
             self.model.update_data(images)
 
+    def get_threshold_min(self):
+        return self.model.get_threshold_min()
+
+    def get_threshold_max(self):
+        return self.model.get_threshold_max()
 
 
     def reset_mask(self):
         self.mask_manipulator.reset_mask()
-        self.model.current_image = self.model.images[self.model.current_page_index].copy()
-        self.view_updater.update_view()
+        self.model.image_data.current_image = self.model.get_current_image().copy()
+        self.update_view()
 
-    def save_mask(self, path: str = 'saved_mask.png'):
-        self.mask_manipulator.save_mask(path)
+    def save_mask(self):
+        self.mask_manipulator.save_mask()
 
-    def save_images(self, path: str = 'output'):
+    def save_images(self):
     #     save images from numpy array to the specified path via pymupdf
-        self.state_manager.save_images(path)
+        self.state_manager.save_images()
 
     def redo(self):
         self.state_manager.redo()
-        self.view_updater.update_view()
+        self.update_view()
 
     def undo(self):
         self.state_manager.undo()
-        self.view_updater.update_view()
+        self.update_view()
 
     def remove_watermark(self):
-        processed_images = remove_watermark(self.model.original_sized_images,
+        processed_images = remove_watermark(self.model.get_original_sized_images(),
                                             self.model.get_bgr_mask(),
                                             self.model.get_parameters())
-        # TODO resize processed_images to fit the model images size
         self.model.update_data(processed_images)
 
 

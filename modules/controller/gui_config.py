@@ -78,10 +78,10 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'weight': {'value': controller.model.weight * 100, 'callback': controller.on_weight_trackbar},
-            'threshold_min': {'value': controller.model.threshold_min,
+            'weight': {'value': controller.model.get_weight() * 100, 'callback': controller.on_weight_trackbar},
+            'threshold_min': {'value': controller.model.get_threshold_min(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'min')},
-            'threshold_max': {'value': controller.model.threshold_max,
+            'threshold_max': {'value': controller.model.get_threshold_max(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'max')}
         }
 
