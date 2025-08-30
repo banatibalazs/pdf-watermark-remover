@@ -10,51 +10,68 @@ class BaseGUIConfig:
         return {
             'Select': {
                 'text': 'Select',
-                'callback': lambda btn_name='select': controller.on_button_click(btn_name)
+                'callback': lambda btn_name='select': controller.on_button_click(btn_name),
+                'position': (0, 0)
             },
             'Draw': {
                 'text': 'Draw',
-                'callback': lambda btn_name='draw': controller.on_button_click(btn_name)
+                'callback': lambda btn_name='draw': controller.on_button_click(btn_name),
+                'position': (0, 1)
             },
             'Erode': {
                 'text': 'Erode',
-                'callback': controller.erode_mask
+                'callback': controller.erode_mask,
+                'position': (1, 0)
             },
             'Dilate': {
                 'text': 'Dilate',
-                'callback': controller.dilate_mask
+                'callback': controller.dilate_mask,
+                'position': (1, 1)
             },
             'Redo': {
                 'text': 'Redo',
-                'callback': lambda btn_name='redo': controller.redo()
+                'callback': lambda btn_name='redo': controller.redo(),
+                'position': (2, 1)
             },
             'Undo': {
                 'text': 'Undo',
-                'callback': lambda btn_name='undo': controller.undo()
+                'callback': lambda btn_name='undo': controller.undo(),
+                'position': (2, 0)
             },
             'Reset mask': {
                 'text': 'Reset',
-                'callback': lambda btn_name='reset': controller.reset_mask()
+                'callback': lambda btn_name='reset': controller.reset_mask(),
+                'position': (2, 2)
             },
             'Save mask': {
                 'text': 'Save mask',
-                'callback': lambda btn_name='save': controller.save_mask()
+                'callback': lambda btn_name='save': controller.save_mask(),
+                'position': (3, 1)
+            },
+            'Load mask': {
+                'text': 'Load mask',
+                'callback': lambda btn_name='load_mask': controller.load_mask(),
+                'position': (3, 0)
+            },
+            'Load images': {
+                'text': 'Load images',
+                'callback': lambda btn_name='load_images': controller.load_images(),
+                'position': (4, 0)
             },
             'Save image': {
                 'text': 'Save image',
-                'callback': lambda btn_name='save_image': controller.save_images()
-            },
-            'Load': {
-                'text': 'Load',
-                'callback': lambda btn_name='load': controller.load_mask()
+                'callback': lambda btn_name='save_image': controller.save_images(),
+                'position': (4, 1)
             },
             'Continue': {
                 'text': 'Continue',
-                'callback': lambda btn_name='continue': controller.on_button_click(btn_name)
+                'callback': lambda btn_name='continue': controller.on_button_click(btn_name),
+                'position': (5, 0)
             },
             'Exit': {
                 'text': 'Exit',
-                'callback': lambda btn_name='exit': controller.exit()
+                'callback': lambda btn_name='exit': controller.exit(),
+                'position': (5, 1)
             }
         }
 

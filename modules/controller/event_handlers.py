@@ -102,7 +102,7 @@ class KeyboardHandler:
         elif key == ord('y'):
             self.state_manager.redo()
         elif key == 32:
-            pass
+            return False
 
 
         self.view_updater.update_view()

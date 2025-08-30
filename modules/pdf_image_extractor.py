@@ -24,8 +24,6 @@ class PDFImageExtractor:
         self.dpi = dpi
         self.max_width = max_width
         self.max_height = max_height
-        # self.images = convert_from_path(self.pdf_path, dpi=self.dpi)
-        doc = fitz.open(pdf_path)
         self.images = read_pdf(pdf_path, dpi)
 
 

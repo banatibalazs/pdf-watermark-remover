@@ -86,6 +86,8 @@ class BaseModel:
         else:
             raise ValueError("Mask has an unexpected shape: " + str(self.final_mask.shape))
 
+    def load_images(self, path):
+        pass
 
     def load_mask(self, path=None):
         if path is None:

@@ -10,12 +10,16 @@ from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
 from modules.controller.view_updater import ViewUpdater
+from modules.pdf_image_extractor import PDFImageExtractor
 from modules.watermark_remover import WatermarkRemover
 
 
 class BaseController:
-    def __init__(self, images, view):
+    def __init__(self, view, image_loader: PDFImageExtractor):
         self.view = view
+        self.image_loader = image_loader
+        images = self.image_loader.get_images_for_mask_making()
+
         self.width, self.height = images[0].shape[:2]
         self.model = BaseModel(np.zeros((self.width, self.height), np.uint8), images)
 
@@ -34,7 +38,8 @@ class BaseController:
         self.view_updater.update_view()
 
     def on_key(self, event):
-        self.keyboard_handler.handle_key(event)
+        if not self.keyboard_handler.handle_key(event):
+            self.next_mode()
 
     def on_button_click(self, button_name):
         if button_name == 'select':
@@ -47,6 +52,14 @@ class BaseController:
             self.change_mode(MaskMode.SELECT)
         elif button_name == 'remove':
             self.remove_watermark()
+            self.change_mode(MaskMode.SELECT)
+
+    def next_mode(self):
+        if self.model.mode == MaskMode.DRAW:
+            self.change_mode(MaskMode.ADJUST)
+        elif self.model.mode == MaskMode.SELECT:
+            self.change_mode(MaskMode.ADJUST)
+        elif self.model.mode == MaskMode.ADJUST:
             self.change_mode(MaskMode.SELECT)
 
     def change_mode(self, mode: MaskMode):
@@ -118,6 +131,14 @@ class BaseController:
     def load_mask(self):
         self.mask_manipulator.load_mask()
         self.view_updater.update_view()
+
+    def load_images(self):
+        path = self.view.open_file_dialog()
+        if path:
+            self.model.load_images(path)
+            self.remover.update_data(self.model.images, self.model.get_bgr_mask(), self.model.get_parameters())
+            self.view_updater.update_view()
+
 
     def reset_mask(self):
         self.mask_manipulator.reset_mask()

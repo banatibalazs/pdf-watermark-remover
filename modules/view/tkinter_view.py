@@ -94,20 +94,14 @@ class TkinterView(DisplayInterface):
         button_frame = tk.Frame(self.sidebar)
         button_frame.pack(anchor='n', pady=5)
 
-        row = 0
-        col = 0
         for name, button in buttons.items():
+            row, col = button.get('position', (0, 0))
             btn = tk.Button(
                 button_frame,
                 text=button['text'],
                 command=button['callback']
             )
             btn.grid(row=row, column=col, padx=2, pady=2, sticky='ew')
-
-            col += 1
-            if col >= 2:  # Move to next row after 4 columns
-                col = 0
-                row += 1
 
         # Configure columns to expand equally
         for i in range(4):

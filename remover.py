@@ -35,11 +35,8 @@ def main():
 
     # Extract images from the PDF
     image_extractor = PDFImageExtractor(args.pdf_path, args.dpi, args.max_width, args.max_height)
-    images_for_mask_making = image_extractor.get_images_for_mask_making()
-
     view_instance = TkinterView()
-
-    selector = BaseController(images_for_mask_making, view_instance)
+    selector = BaseController(view_instance, image_extractor)
     selector.run()
     # remover.save_pdf(args.save_path)
 
