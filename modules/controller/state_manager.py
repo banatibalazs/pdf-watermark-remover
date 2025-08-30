@@ -29,16 +29,20 @@ class MaskStateManager:
         self.model.final_mask = self.model.redo_stack.pop()
         self.model.temp_mask = self.model.final_mask.copy()
 
+    # modules/controller/state_manager.py
     def save_images(self, path: str = 'output') -> None:
-        images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in self.model.images]
+        images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in self.model.original_sized_images]
         height, width = images[0].shape[:2]
         doc = fitz.open()
         rect = fitz.Rect(0, 0, width, height)
         for image in images:
-            temp_img_path = 'temp_image.png'
-            cv2.imwrite(temp_img_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+            temp_img_path = 'temp_image.jpg'
+            # Save as JPEG with quality 90
+            cv2.imwrite(temp_img_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR), [int(cv2.IMWRITE_JPEG_QUALITY), 90])
             page = doc.new_page(width=width, height=height)
             page.insert_image(rect, filename=temp_img_path)
-        doc.save(f'{path}.pdf')
+        # Use compression options
+        doc.save(f'{path}.pdf', deflate=True, garbage=4)
         doc.close()
         os.remove(temp_img_path)
+        print(f"Images saved as {path}.pdf")
