@@ -1,8 +1,6 @@
 # base_controller.py
 from tkinter import filedialog
 
-import numpy as np
-
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
@@ -12,18 +10,13 @@ from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
 from modules.controller.view_updater import ViewUpdater
-from modules.pdf_image_extractor import PDFImageExtractor
-from modules.utils import remove_watermark
+from modules.utils import remove_watermark, load_pdf
 
 
 class BaseController:
-    def __init__(self, view, image_loader: PDFImageExtractor):
+    def __init__(self, view, path, dpi, max_width, max_height):
         self.view = view
-        self.image_loader = image_loader
-        images = self.image_loader.get_images_for_mask_making()
-
-        self.width, self.height = images[0].shape[:2]
-        self.model = BaseModel(np.zeros((self.width, self.height), np.uint8), images)
+        self.model = BaseModel(load_pdf(path, dpi), dpi, max_width, max_height)
 
         # Initialize components
         self.view_updater = ViewUpdater(self.model, self.view)
@@ -139,8 +132,7 @@ class BaseController:
             filetypes=[("All files", "*.*")]
         )
         if path:
-            self.image_loader.load_pdf(path)
-            images = self.image_loader.get_images_for_mask_making()
+            images = load_pdf(path, self.model.dpi)
             self.model.update_data(images)
 
 
@@ -166,7 +158,7 @@ class BaseController:
         self.view_updater.update_view()
 
     def remove_watermark(self):
-        processed_images = remove_watermark(self.image_loader.images_for_watermark_removal,
+        processed_images = remove_watermark(self.model.original_sized_images,
                                             self.model.get_bgr_mask(),
                                             self.model.get_parameters())
         # TODO resize processed_images to fit the model images size

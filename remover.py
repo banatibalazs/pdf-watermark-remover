@@ -1,7 +1,6 @@
 import argparse
 
 from modules.controller.base_controller import BaseController
-from modules.pdf_image_extractor import PDFImageExtractor
 from modules.view.tkinter_view import TkinterView
 
 import sys
@@ -13,11 +12,11 @@ SAVE_PATH = 'output.pdf'
 
 # Set the maximum width and height for the images during the masking process
 # The final PDF will have the same dimensions as the original PDF
-MAX_WIDTH = 1000
-MAX_HEIGHT = 900
+MAX_WIDTH = 900
+MAX_HEIGHT = 800
 
 # Set the DPI for the images, this affects the quality of the final PDF
-DPI = 200
+DPI = 175
 
 
 def parse_args():
@@ -33,10 +32,12 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # Extract images from the PDF
-    image_extractor = PDFImageExtractor(args.pdf_path, args.dpi, args.max_width, args.max_height)
     view_instance = TkinterView()
-    selector = BaseController(view_instance, image_extractor)
+    selector = BaseController(view_instance,
+                              args.pdf_path,
+                              args.dpi,
+                              args.max_width,
+                              args.max_height)
     selector.run()
     # remover.save_pdf(args.save_path)
 

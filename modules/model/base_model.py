@@ -3,41 +3,53 @@ import numpy as np
 from typing import List, Optional
 
 from modules.controller.constants import MaskMode
-from modules.utils import calc_median_image, AdjusterParameters, fill_masked_area, inpaint_image, sharpen_image
+from modules.utils import calc_median_image, AdjusterParameters, fill_masked_area, inpaint_image, sharpen_image, \
+    resize_images, load_pdf
 from web.utils import resize_image
 
 
 class BaseModel:
-    def __init__(self, mask=None, images=None):
+    def __init__(self, images=None, dpi=200, max_width=1920, max_height=1080):
 
-        self.median_image = cv2.cvtColor(calc_median_image(images, 1), cv2.COLOR_BGR2GRAY)
-        self.mask = mask
-        self.images = images
+        self.max_width = max_width
+        self.max_height = max_height
+        self.dpi = dpi
+
+        self.median_image = None
+        self.original_sized_images = None
+        self.mask = None
+        self.images = []
         self.current_page_index = 0
-        self.current_image = self.images[self.current_page_index].copy()
-        self.input_mask = cv2.bitwise_and(self.median_image, mask)
-        self.final_mask = self.input_mask.copy()
-        self.temp_mask = self.final_mask.copy()
-        self.mode = MaskMode.SELECT
-
-        self.threshold_min = 1
-        self.threshold_max = 225
+        self.current_image = None
+        self.input_mask = None
+        self.final_mask = None
+        self.temp_mask = None
         self.undo_stack: List[np.ndarray] = []
         self.redo_stack: List[np.ndarray] = []
+
+        self.points = []
+        self.parameters = []
+        self.current_parameters = None
+
+        self.mode = MaskMode.SELECT
+        self.threshold_min = 1
+        self.threshold_max = 225
         self.cursor_size = 10
         self.cursor_pos = (0, 0)
         self.cursor_thickness = 1
         self.ix, self.iy = -1, -1
-        self.points = []
         self.weight = 0.45
 
-        self.parameters = [AdjusterParameters() for _ in images]
-        self.current_parameters = self.parameters[self.current_page_index]
         self.apply_same_parameters = True
+        self.update_data(images)
+
 
     def update_data(self, images):
-        self.images = images
-        self.median_image = cv2.cvtColor(calc_median_image(images, 1), cv2.COLOR_BGR2GRAY)
+        self.original_sized_images = images
+        self.images = resize_images(images, self.max_width, self.max_height)
+        self.mask = np.zeros((self.images[0].shape[0], self.images[0].shape[1]), np.uint8)
+
+        self.median_image = cv2.cvtColor(calc_median_image(self.images, 1), cv2.COLOR_BGR2GRAY)
         self.current_page_index = 0
         self.current_image = self.images[self.current_page_index].copy()
         self.input_mask = cv2.bitwise_and(self.median_image, self.mask)
@@ -46,6 +58,7 @@ class BaseModel:
         self.undo_stack.clear()
         self.redo_stack.clear()
         self.points = []
+        self.parameters = [AdjusterParameters() for _ in images]
         self.current_parameters = self.parameters[self.current_page_index]
         if self.apply_same_parameters:
             self.set_all_parameters_the_same_as_current()
@@ -87,16 +100,9 @@ class BaseModel:
             raise ValueError("Mask has an unexpected shape: " + str(self.final_mask.shape))
 
     def load_images(self, path):
-        if path is None:
-            return
         try:
-            loaded_images = [cv2.imread(p) for p in path]
-            loaded_images = [img for img in loaded_images if img is not None]
-            if not loaded_images:
-                print("No valid images found in the provided paths.")
-                return
-            self.update_data(loaded_images)
-            print(f"Loaded {len(loaded_images)} images.")
+            images = load_pdf(path, self.dpi)
+            self.update_data(images)
         except Exception as e:
             print(f"Error loading images: {e}")
 
