@@ -24,7 +24,7 @@ class BaseController:
         self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
 
     def update_view(self):
-        image = self.model.get_weighted_image()
+        image = self.model.get_image_to_show()
         self.view.display_image(image)
 
     def on_weight_trackbar(self, pos):
