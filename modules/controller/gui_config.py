@@ -130,11 +130,13 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             'buttons': {
                 'Back': {
                     'text': 'Back',
-                    'callback': lambda btn_name='back': controller.on_button_click(btn_name)
+                    'callback': lambda btn_name='back': controller.on_button_click(btn_name),
+                    'position': (0, 0)
                 },
                 'Remove': {
                     'text': 'Remove watermark',
-                    'callback': lambda btn_name='remove': controller.on_button_click(btn_name)
+                    'callback': lambda btn_name='remove': controller.on_button_click(btn_name),
+                    'position': (0, 1)
                 }
             },
             'key': controller.on_key,

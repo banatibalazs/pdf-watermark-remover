@@ -5,3 +5,7 @@ class MaskMode(Enum):
     DRAW = 1
     ADJUST = 2
 
+class CursorType(Enum):
+    CIRCLE = 0
+    SQUARE = 1
+

@@ -175,12 +175,33 @@ class BaseModel:
         # Clip values to valid range and convert back to uint8
         blended_image = np.clip(blended_image, 0, 255).astype(np.uint8)
         if self.config_data.mode == MaskMode.DRAW:
-            cv2.circle(blended_image,
+            blended_image = self.draw_cursor(blended_image)
+        return blended_image
+
+    def draw_cursor(self, image):
+        if self.cursor_data.type == CursorType.CIRCLE:
+            cv2.circle(image,
                        self.cursor_data.pos,
                        self.cursor_data.size,
                        (0, 0, 0),
                        self.cursor_data.thickness)
-        return blended_image
+        elif self.cursor_data.type == CursorType.SQUARE:
+            size = self.cursor_data.size
+            top_left = (self.cursor_data.pos[0] - size, self.cursor_data.pos[1] - size)
+            bottom_right = (self.cursor_data.pos[0] + size, self.cursor_data.pos[1] + size)
+            cv2.rectangle(image,
+                          top_left,
+                          bottom_right,
+                          (0, 0, 0),
+                          self.cursor_data.thickness)
+        return image
+
+
+    def toggle_cursor_type(self):
+        if self.cursor_data.type == CursorType.CIRCLE:
+            self.cursor_data.type = CursorType.SQUARE
+        else:
+            self.cursor_data.type = CursorType.CIRCLE
 
     def get_processed_current_image(self):
         current_image = self.image_data.images[self.image_data.current_page_index]

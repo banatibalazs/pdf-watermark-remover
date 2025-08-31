@@ -37,9 +37,9 @@ class MouseHandler:
             self.mask_manipulator.apply_thresholds()
 
         if type == tkinter.EventType.Motion and self.left_button_pressed:
-            cv2.circle(self.model.mask_data.final_mask, (x, y), self.model.cursor_data.size, [255], -1)
+            self.mask_manipulator.draw_white()
         elif type == tkinter.EventType.Motion and self.right_button_pressed:
-            cv2.circle(self.model.mask_data.final_mask, (x, y), self.model.cursor_data.size, [0], -1)
+            self.mask_manipulator.draw_black()
 
         if getattr(event, 'num', None) == 4 or getattr(event, 'delta', 0) > 0:
             self.model.cursor_data.size = min(self.model.cursor_data.size + 1, 50)
@@ -96,6 +96,8 @@ class KeyboardHandler:
             self.state_manager.undo()
         elif key == ord('y'):
             self.state_manager.redo()
+        elif key == ord('c'):
+            self.model.toggle_cursor_type()
         elif key == 32:
             return False
         return True
