@@ -55,6 +55,7 @@ class BaseController:
         elif self.model.get_mode() == MaskMode.SELECT:
             self.change_mode(MaskMode.ADJUST)
         elif self.model.get_mode() == MaskMode.ADJUST:
+            self.remove_watermark()
             self.change_mode(MaskMode.SELECT)
 
     def change_mode(self, mode: MaskMode):
@@ -136,6 +137,7 @@ class BaseController:
         if path:
             images = load_pdf(path, self.model.config_data.dpi)
             self.model.update_data(images)
+        self.update_view()
 
     def get_threshold_min(self):
         return self.model.get_threshold_min()
