@@ -9,7 +9,7 @@ from modules.model.base_model import BaseModel
 from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
-from modules.utils import remove_watermark, load_pdf
+from modules.utils import remove_watermark, load_pdf, save_images
 
 
 class BaseController:
@@ -156,7 +156,7 @@ class BaseController:
 
     def save_images(self):
     #     save images from numpy array to the specified path via pymupdf
-        self.state_manager.save_images()
+        save_images(self.model.get_original_sized_images(), 'output')
 
     def redo(self):
         self.state_manager.redo()

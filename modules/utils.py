@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 import fitz  # PyMuPDF
@@ -166,3 +168,20 @@ def load_pdf(pdf_path, dpi=200):
     images = read_pdf(pdf_path, dpi)
     images = convert_images(images)
     return images
+
+def save_images(images, path: str = 'output') -> None:
+    images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
+    height, width = images[0].shape[:2]
+    doc = fitz.open()
+    rect = fitz.Rect(0, 0, width, height)
+    for image in images:
+        temp_img_path = 'temp_image.jpg'
+        # Save as JPEG with quality 90
+        cv2.imwrite(temp_img_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR), [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+        page = doc.new_page(width=width, height=height)
+        page.insert_image(rect, filename=temp_img_path)
+    # Use compression options
+    doc.save(f'{path}.pdf', deflate=True, garbage=4)
+    doc.close()
+    os.remove(temp_img_path)
+    print(f"Images saved as {path}.pdf")
