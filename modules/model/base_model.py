@@ -159,10 +159,10 @@ class BaseModel:
         self.cursor_data.cursor_pos = pos
 
     def get_image_to_show(self):
-        if self.config_data.mode == MaskMode.SELECT:
-            return self.get_weighted_image()
-        else:
+        if self.config_data.mode == MaskMode.ADJUST:
             return self.get_processed_current_image()
+        else:
+            return self.get_weighted_image()
 
     def get_weighted_image(self):
         """Return the current image with the mask applied based on the weight."""
