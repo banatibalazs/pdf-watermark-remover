@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Optional, Tuple
 from dataclasses import dataclass, field
 
-from modules.controller.constants import MaskMode
+from modules.controller.constants import MaskMode, CursorType
 from modules.utils import calc_median_image, AdjusterParameters, fill_masked_area, inpaint_image, sharpen_image, \
     resize_images, load_pdf
 from web.utils import resize_image
@@ -31,6 +31,7 @@ class MaskData:
 
 @dataclass
 class CursorData:
+    type: CursorType = CursorType.CIRCLE
     size: int = 10
     pos: Tuple[int, int] = (0, 0)
     thickness: int = 2
@@ -69,7 +70,7 @@ class BaseModel:
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)
 
         self.image_data.median_image = cv2.cvtColor(calc_median_image(self.image_data.images, 10), cv2.COLOR_BGR2GRAY)
-        self.image_data.current_page_index = 0
+        # self.image_data.current_page_index = 0
         self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
 
         self.mask_data.input_mask = cv2.bitwise_and(self.image_data.median_image, self.mask_data.mask)
