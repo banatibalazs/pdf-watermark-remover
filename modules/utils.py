@@ -69,7 +69,7 @@ def add_texts_to_image(image, texts, start_pos, color, background_color=(0, 0, 0
 
 
 class AdjusterParameters:
-    def __init__(self, r_min=145, r_max=200, g_min=145, g_max=200, b_min=145, b_max=200, w=0, mode=True):
+    def __init__(self, r_min=90, r_max=220, g_min=90, g_max=220, b_min=90, b_max=220, w=0, mode=True):
         self.r_min = r_min
         self.r_max = r_max
         self.g_min = g_min
