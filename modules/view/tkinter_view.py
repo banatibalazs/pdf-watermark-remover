@@ -26,7 +26,6 @@ class TkinterView(DisplayInterface):
         self._bind_events(params)
 
     def change_window_setup(self, params):
-        print("Changing window setup with params:", params)
         # Clear existing sidebar content
         if self.sidebar:
             for widget in self.sidebar.winfo_children():
