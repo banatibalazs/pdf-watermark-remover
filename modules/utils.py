@@ -106,17 +106,25 @@ def remove_watermark(images, mask, parameters):
 
 
 def read_pdf(pdf_path, dpi=300):
-    doc = fitz.open(pdf_path)
-    images = []
+    try:
+        doc = fitz.open(pdf_path)
+        images = []
 
-    for page_num in range(len(doc)):
-        page = doc.load_page(page_num)
-        pix = page.get_pixmap(dpi=dpi)
-        img_bytes = pix.tobytes('png')
-        img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
-        cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
-        images.append(img_array)
-    return images
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            pix = page.get_pixmap(dpi=dpi)
+            img_bytes = pix.tobytes('png')
+            img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+            cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
+            images.append(img_array)
+        return images
+    except Exception as e:
+        print(f"Error reading PDF: {e}")
+        # Return a blank image in case of error, with values of 255
+        # Write the following text on the image: "Error reading PDF"
+        blank_image = np.ones((800, 600, 3), np.uint8) * 255
+        cv2.putText(blank_image, str(e), (150, 390), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+        return [blank_image]
 
 def resize_images(images, max_width=None, max_height=None):
     img_width, img_height = images[0].shape[:2]
