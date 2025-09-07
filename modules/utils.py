@@ -6,21 +6,8 @@ import fitz  # PyMuPDF
 
 
 def calc_median_image(images, length=40):
-    print("image type:", type(images))
-
     length = min(length, len(images))
     stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
-    # if length > 1:
-    #     stacked_images_2 = np.stack([np.array(image) for image in images[:(length-1)]], axis=-1)
-    #     stacked_images_3 = np.stack([np.array(image) for image in images[:(length-2)]], axis=-1)
-    #     median_image_1 = np.median(stacked_images, axis=-1)
-    #     median_image_2 = np.median(stacked_images_2, axis=-1)
-    #     median_image_3 = np.median(stacked_images_3, axis=-1)
-    #     set null the pixels that are different on the two median images
-    #     median_image = np.where(median_image_1 == median_image_2, median_image_1, 0)
-    #     median_image = np.where(median_image == median_image_3, median_image, 0)
-    #     print("Median image calculated with length:", length)
-    # else:
     median_image = np.median(stacked_images, axis=-1)
     median_image = np.uint8(median_image)
     return median_image
@@ -103,7 +90,6 @@ def remove_watermark(images, mask, parameters):
     if images[0].shape[:2] != mask.shape[:2]:
         # raise ValueError(f"Image and mask sizes do not match. Image size: {images[0].shape[:2]}, Mask size:{mask.shape[:2]}")
         mask = cv2.resize(mask, (images[0].shape[1], images[0].shape[0]), interpolation=cv2.INTER_AREA)
-        print(f"Resized mask to match image size. New mask size: {mask.shape[:]}")
 
     total_images = len(images)
     progressbar_bg_image = np.zeros((75, 800, 3), np.uint8)
