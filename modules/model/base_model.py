@@ -52,7 +52,7 @@ class ConfigData:
 
 
 @dataclass
-class AdjusterParameters:
+class ParamsForRemoval:
     r_min: int = 90
     r_max: int = 220
     g_min: int = 90
@@ -101,7 +101,7 @@ class BaseModel:
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
 
-        self.parameters = [AdjusterParameters() for _ in images]
+        self.parameters = [ParamsForRemoval() for _ in images]
         self.current_parameters = self.parameters[self.image_data.current_page_index]
 
         if self.config_data.apply_same_parameters:
