@@ -4,7 +4,7 @@ from tkinter import filedialog
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
-from modules.interfaces.gui_interfaces import DisplayInterface
+from modules.interfaces.gui_interfaces import DisplayInterface, KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
 
 from modules.controller.state_manager import MaskStateManager
@@ -14,15 +14,15 @@ from modules.utils import remove_watermark, load_pdf, save_images
 
 
 class BaseController:
-    def __init__(self, view: DisplayInterface, path, dpi, max_width, max_height):
+    def __init__(self, view: DisplayInterface, args):
         self.view: DisplayInterface = view
-        self.model = BaseModel(load_pdf(path, dpi), dpi, max_width, max_height)
+        self.model = BaseModel(load_pdf(args.pdf_path, args.dpi), args.dpi, args.max_width, args.max_height)
 
         # Initialize components
         self.state_manager = MaskStateManager(self.model)
         self.mask_manipulator = MaskManipulator(self.model)
-        self.mouse_handler = MouseHandler(self.model, self.state_manager, self.mask_manipulator)
-        self.keyboard_handler = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
+        self.mouse_handler: MouseHandlerInterface = MouseHandler(self.model, self.state_manager, self.mask_manipulator)
+        self.keyboard_handler: KeyHandlerInterface = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
 
     def update_view(self):
         image = self.model.get_image_to_show()
