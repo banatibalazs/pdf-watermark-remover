@@ -26,11 +26,11 @@ class DisplayInterface(ABC):
 
 class KeyHandlerInterface(ABC):
     @abstractmethod
-    def handle_key(self, key):
+    def handle_key(self, key) -> bool:
         pass
 
 
 class MouseHandlerInterface(ABC):
     @abstractmethod
-    def handle_mouse(self, event):
+    def handle_mouse(self, event) -> None:
         pass
