@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 from dataclasses import dataclass, field
 
 from modules.controller.constants import MaskMode, CursorType
-from modules.utils import calc_median_image, AdjusterParameters, fill_masked_area, inpaint_image, sharpen_image, \
+from modules.utils import calc_median_image, fill_masked_area, inpaint_image, sharpen_image, \
     resize_images, load_pdf
 from web.utils import resize_image
 
@@ -49,6 +49,27 @@ class ConfigData:
     threshold_max: int = 225
     weight: float = 0.45
     apply_same_parameters: bool = True
+
+
+@dataclass
+class AdjusterParameters:
+    r_min: int = 90
+    r_max: int = 220
+    g_min: int = 90
+    g_max: int = 220
+    b_min: int = 90
+    b_max: int = 220
+    w: float = 0
+    mode: bool = True
+
+    def get_parameters(self):
+        return self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode
+
+    def set_parameters(self, args):
+        self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = args
+
+    def get_parameter_names(self):
+        return ['r_min', 'r_max', 'g_min', 'g_max', 'b_min', 'b_max', 'w', 'mode']
 
 
 class BaseModel:
