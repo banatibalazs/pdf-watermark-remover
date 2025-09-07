@@ -3,10 +3,11 @@ import tkinter
 import cv2
 import numpy as np
 from modules.controller.constants import MaskMode
+from modules.interfaces.gui_interfaces import KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
 
 
-class MouseHandler:
+class MouseHandler(MouseHandlerInterface):
     def __init__(self, model: BaseModel, state_manager, mask_manipulator):
         self.model: BaseModel = model
         self.state_manager = state_manager
@@ -78,7 +79,7 @@ class MouseHandler:
         self.model.image_data.current_image = self.model.image_data.images[self.model.image_data.current_page_index].copy()
 
 
-class KeyboardHandler:
+class KeyboardHandler(KeyHandlerInterface):
     def __init__(self, model, state_manager, mask_manipulator):
         self.model: BaseModel = model
         self.state_manager = state_manager
