@@ -19,6 +19,10 @@ class DisplayInterface(ABC):
     def set_texts(self, texts, text_color, title):
         pass
 
+    @abstractmethod
+    def start_main_loop(self):
+        pass
+
 
 class KeyHandlerInterface(ABC):
     @abstractmethod

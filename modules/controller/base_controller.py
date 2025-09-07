@@ -106,7 +106,7 @@ class BaseController:
                             MaskSelectorGUIConfig.WINDOW_TITLE)
         self.view.change_window_setup(MaskSelectorGUIConfig.get_params(self))
         self.update_view()
-        self.view.root.mainloop()
+        self.view.start_main_loop()
 
     # Delegating methods to appropriate components
     def erode_mask(self):

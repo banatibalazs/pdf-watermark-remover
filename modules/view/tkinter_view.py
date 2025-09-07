@@ -26,6 +26,9 @@ class TkinterView(DisplayInterface):
         self._setup_sidebar_content(params)
         self._bind_events(params)
 
+    def start_main_loop(self):
+        self.root.mainloop()
+
     def change_window_setup(self, params):
         # Clear existing sidebar content
         if self.sidebar:
