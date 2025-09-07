@@ -39,7 +39,7 @@ class BaseGUIConfig:
                 'position': (2, 0)
             },
             'Reset mask': {
-                'text': 'Reset',
+                'text': 'Reset mask',
                 'callback': lambda btn_name='reset': controller.reset_mask(),
                 'position': (2, 2)
             },
