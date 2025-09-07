@@ -33,11 +33,7 @@ def main():
     args = parse_args()
 
     view_instance = TkinterView()
-    selector = BaseController(view_instance,
-                              args.pdf_path,
-                              args.dpi,
-                              args.max_width,
-                              args.max_height)
+    selector = BaseController(view_instance, args)
     selector.run()
     # remover.save_pdf(args.save_path)
 
