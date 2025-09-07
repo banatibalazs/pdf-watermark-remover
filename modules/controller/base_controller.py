@@ -4,6 +4,7 @@ from tkinter import filedialog
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
+from modules.interfaces.gui_interfaces import DisplayInterface
 from modules.model.base_model import BaseModel
 
 from modules.controller.state_manager import MaskStateManager
@@ -13,8 +14,8 @@ from modules.utils import remove_watermark, load_pdf, save_images
 
 
 class BaseController:
-    def __init__(self, view, path, dpi, max_width, max_height):
-        self.view = view
+    def __init__(self, view: DisplayInterface, path, dpi, max_width, max_height):
+        self.view: DisplayInterface = view
         self.model = BaseModel(load_pdf(path, dpi), dpi, max_width, max_height)
 
         # Initialize components
@@ -101,7 +102,6 @@ class BaseController:
     #########################################################################
 
     def run(self):
-        self.view.setup_window()
         self.view.set_texts(MaskSelectorGUIConfig.TEXTS, MaskSelectorGUIConfig.TEXT_COLOR,
                             MaskSelectorGUIConfig.WINDOW_TITLE)
         self.view.change_window_setup(MaskSelectorGUIConfig.get_params(self))

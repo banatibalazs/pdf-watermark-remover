@@ -17,8 +17,9 @@ class TkinterView(DisplayInterface):
         self.label = None
         self.sidebar = None
         self.image_label = None
+        self._setup_window()
 
-    def setup_window(self, params=None):
+    def _setup_window(self, params=None):
         self.root = tk.Tk()
         self.root.title(self.title)
         self._create_main_layout()

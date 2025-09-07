@@ -12,7 +12,7 @@ class DisplayInterface(ABC):
         pass
 
     @abstractmethod
-    def setup_window(self, *args, **kwargs):
+    def change_window_setup(self, *args, **kwargs):
         pass
 
     @abstractmethod
