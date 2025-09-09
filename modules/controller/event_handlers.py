@@ -5,6 +5,7 @@ import numpy as np
 from modules.controller.constants import MaskMode
 from modules.interfaces.gui_interfaces import KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
+from modules.interfaces.events import MouseButton, EventType
 
 
 class MouseHandler(MouseHandlerInterface):
@@ -22,56 +23,60 @@ class MouseHandler(MouseHandlerInterface):
             self.handle_select_mode(event)
 
     def handle_draw_mode(self, event):
-        type = event.type
         x, y = event.x, event.y
 
-        if type == tkinter.EventType.ButtonPress:
+        if event.event_type == EventType.MOUSE_PRESS:
             self.state_manager.save_state()
-            if event.num == 1:
+            if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
-            elif event.num == 3:
+            elif event.button == MouseButton.RIGHT:
                 self.right_button_pressed = True
 
-        elif type == tkinter.EventType.ButtonRelease:
+        elif event.event_type == EventType.MOUSE_RELEASE:
             self.left_button_pressed = False
             self.right_button_pressed = False
             self.mask_manipulator.apply_thresholds()
 
-        if type == tkinter.EventType.Motion and self.left_button_pressed:
+        if event.event_type == EventType.MOUSE_MOVE and self.left_button_pressed:
             self.mask_manipulator.draw_white()
-        elif type == tkinter.EventType.Motion and self.right_button_pressed:
+        elif event.event_type == EventType.MOUSE_MOVE and self.right_button_pressed:
             self.mask_manipulator.draw_black()
 
-        if getattr(event, 'num', None) == 4 or getattr(event, 'delta', 0) > 0:
-            self.model.cursor_data.size = min(self.model.cursor_data.size + 1, 50)
-        elif getattr(event, 'num', None) == 5 or getattr(event, 'delta', 0) < 0:
-            self.model.cursor_data.size = max(self.model.cursor_data.size - 1, 1)
+        if event.event_type == EventType.MOUSE_WHEEL:
+            if event.wheel_delta > 0:
+                self.model.cursor_data.size = min(self.model.cursor_data.size + 1, 50)
+            else:
+                self.model.cursor_data.size = max(self.model.cursor_data.size - 1, 1)
 
         self.model.cursor_data.pos = (x, y)
 
-
     def handle_select_mode(self, event):
-        type = event.type
         x, y = event.x, event.y
 
-        if type == tkinter.EventType.ButtonPress:
+        if event.event_type == EventType.MOUSE_PRESS:
             self.state_manager.save_state()
             # self.mask_manipulator.reset_temp_mask()
 
-        if type == tkinter.EventType.ButtonPress and event.num == 1:
-            self.left_button_pressed = True
-            self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
-            self.model.mask_data.points.append((x, y))
-        elif type == tkinter.EventType.Motion:
-            if self.left_button_pressed:
-                cv2.line(self.model.image_data.current_image, (self.model.cursor_data.ix, self.model.cursor_data.iy), (x, y), (0, 0, 0), 2)
+            if event.button == MouseButton.LEFT:
+                self.left_button_pressed = True
                 self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
                 self.model.mask_data.points.append((x, y))
-        elif type == tkinter.EventType.ButtonRelease:
+
+        elif event.event_type == EventType.MOUSE_MOVE:
+            if self.left_button_pressed:
+                cv2.line(self.model.image_data.current_image,
+                         (self.model.cursor_data.ix, self.model.cursor_data.iy),
+                         (x, y), (0, 0, 0), 2)
+                self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
+                self.model.mask_data.points.append((x, y))
+
+        elif event.event_type == EventType.MOUSE_RELEASE:
             self.left_button_pressed = False
             self.reset_current_image()
             self.model.mask_data.points.append((x, y))
-            cv2.fillPoly(self.model.mask_data.temp_mask, [np.array(self.model.mask_data.points)], (255, 255, 255))
+            cv2.fillPoly(self.model.mask_data.temp_mask,
+                         [np.array(self.model.mask_data.points)],
+                         (255, 255, 255))
             self.model.mask_data.points.clear()
             self.mask_manipulator.apply_thresholds()
 

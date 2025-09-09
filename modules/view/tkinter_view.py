@@ -5,6 +5,8 @@ from PIL import Image, ImageTk
 from modules.utils import add_texts_to_image
 from modules.interfaces.gui_interfaces import DisplayInterface
 import cv2
+from modules.controller.event_adapter import TkinterEventAdapter
+
 
 class TkinterView(DisplayInterface):
     def __init__(self, texts='', text_color=(0,0,0), title='Tkinter View'):
@@ -119,6 +121,10 @@ class TkinterView(DisplayInterface):
             self.root.bind('<Key>', params['key'])
 
         if 'mouse' in params:
+            def on_mouse_event(event):
+                abstract_event = TkinterEventAdapter.adapt_event(event)
+                if abstract_event:
+                    params['mouse'](abstract_event)
             mouse_events = [
                 '<Button-1>', '<ButtonRelease-1>',
                 '<Button-3>', '<ButtonRelease-3>',
@@ -126,7 +132,7 @@ class TkinterView(DisplayInterface):
                 '<MouseWheel>', '<Button-2>', '<ButtonRelease-2>'
             ]
             for event in mouse_events:
-                self.image_label.bind(event, params['mouse'])
+                self.image_label.bind(event, on_mouse_event)
 
     def display_image(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
