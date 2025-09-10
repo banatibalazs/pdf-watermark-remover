@@ -1,6 +1,7 @@
 import argparse
 
 from modules.controller.base_controller import BaseController
+from modules.view.pyqt_view import PyQt5View
 from modules.view.tkinter_view import TkinterView
 
 import sys
@@ -32,7 +33,8 @@ def parse_args():
 def main():
     args = parse_args()
 
-    view_instance = TkinterView()
+    # view_instance = TkinterView()
+    view_instance = PyQt5View()
     selector = BaseController(view_instance, args)
     selector.run()
     # remover.save_pdf(args.save_path)

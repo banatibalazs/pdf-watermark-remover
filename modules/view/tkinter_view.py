@@ -121,8 +121,8 @@ class TkinterView(DisplayInterface):
             self.root.bind('<Key>', params['key'])
 
         if 'mouse' in params:
-            def on_mouse_event(event):
-                abstract_event = TkinterEventAdapter.adapt_event(event)
+            def on_mouse_event(evnt):
+                abstract_event = TkinterEventAdapter.adapt_event(evnt)
                 if abstract_event:
                     params['mouse'](abstract_event)
             mouse_events = [
