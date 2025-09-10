@@ -37,7 +37,6 @@ def main():
     view_instance = PyQt5View()
     selector = BaseController(view_instance, args)
     selector.run()
-    # remover.save_pdf(args.save_path)
 
 if __name__ == "__main__":
     main()
