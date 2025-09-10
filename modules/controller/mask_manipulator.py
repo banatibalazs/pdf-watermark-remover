@@ -56,10 +56,6 @@ class MaskManipulator:
                                             np.array(self.model.get_threshold_min(), dtype=np.uint8),
                                             np.array(self.model.get_threshold_max(), dtype=np.uint8))
         self.model.mask_data.final_mask = cv2.bitwise_and(self.model.mask_data.temp_mask, cv2.inRange(filtered_median_image, 1, 255))
-        # cv2.imshow("Median Image", filtered_median_image)
-        # cv2.imshow("Temp Mask", self.model.mask_data.temp_mask)
-        # cv2.imshow("Final Mask", self.model.mask_data.final_mask)
-
 
     def load_mask(self) -> None:
         path = filedialog.askopenfilename(
