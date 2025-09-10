@@ -10,12 +10,12 @@ class BaseGUIConfig:
         return {
             'Select': {
                 'text': 'Select',
-                'callback': lambda btn_name='select': controller.on_button_click(btn_name),
+                'callback': controller.on_click_select,
                 'position': (0, 0)
             },
             'Draw': {
                 'text': 'Draw',
-                'callback': lambda btn_name='draw': controller.on_button_click(btn_name),
+                'callback': controller.on_click_draw,
                 'position': (0, 1)
             },
             'Erode': {
@@ -30,47 +30,47 @@ class BaseGUIConfig:
             },
             'Redo': {
                 'text': 'Redo',
-                'callback': lambda btn_name='redo': controller.redo(),
+                'callback': controller.redo,
                 'position': (2, 1)
             },
             'Undo': {
                 'text': 'Undo',
-                'callback': lambda btn_name='undo': controller.undo(),
+                'callback': controller.undo,
                 'position': (2, 0)
             },
             'Reset mask': {
                 'text': 'Reset mask',
-                'callback': lambda btn_name='reset': controller.reset_mask(),
+                'callback': controller.reset_mask,
                 'position': (2, 2)
             },
             'Save mask': {
                 'text': 'Save mask',
-                'callback': lambda btn_name='save': controller.save_mask(),
+                'callback': controller.save_mask,
                 'position': (3, 1)
             },
             'Load mask': {
                 'text': 'Load mask',
-                'callback': lambda btn_name='load_mask': controller.load_mask(),
+                'callback': controller.load_mask,
                 'position': (3, 0)
             },
             'Load images': {
                 'text': 'Load images',
-                'callback': lambda btn_name='load_images': controller.load_images(),
+                'callback': controller.load_images,
                 'position': (4, 0)
             },
             'Save image': {
                 'text': 'Save image',
-                'callback': lambda btn_name='save_image': controller.save_images(),
+                'callback': controller.save_images,
                 'position': (4, 1)
             },
             'Continue': {
                 'text': 'Continue',
-                'callback': lambda btn_name='continue': controller.on_button_click(btn_name),
+                'callback': controller.on_click_continue,
                 'position': (5, 0)
             },
             'Exit': {
                 'text': 'Exit',
-                'callback': lambda btn_name='exit': controller.exit(),
+                'callback': controller.exit,
                 'position': (5, 1)
             }
         }
@@ -130,12 +130,12 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             'buttons': {
                 'Back': {
                     'text': 'Back',
-                    'callback': lambda btn_name='back': controller.on_button_click(btn_name),
+                    'callback':controller.on_click_back,
                     'position': (0, 0)
                 },
                 'Remove': {
                     'text': 'Remove watermark',
-                    'callback': lambda btn_name='remove': controller.on_button_click(btn_name),
+                    'callback': controller.on_click_remove,
                     'position': (0, 1)
                 }
             },
