@@ -151,9 +151,9 @@ class BaseModel:
                 # print("No saved mask found. Using default mask.")
                 self.reset_mask()
 
-            elif len(loaded_mask.shape) == 2:
-                loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_GRAY2BGR)
-                print("Mask loaded from " + path)
+            # elif len(loaded_mask.shape) == 2:
+            #     loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_GRAY2BGR)
+            #     print("Mask loaded from " + path)
 
             if loaded_mask.shape != self.image_data.current_image.shape:
                 loaded_mask = resize_image(loaded_mask,
