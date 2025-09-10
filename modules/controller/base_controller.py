@@ -1,6 +1,7 @@
 # base_controller.py
 from tkinter import filedialog
 
+
 from modules.controller.constants import MaskMode
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
@@ -37,18 +38,21 @@ class BaseController:
             self.next_mode()
         self.update_view()
 
-    def on_button_click(self, button_name):
-        if button_name == 'select':
-            self.change_mode(MaskMode.SELECT)
-        elif button_name == 'draw':
-            self.change_mode(MaskMode.DRAW)
-        elif button_name == 'continue':
-            self.change_mode(MaskMode.ADJUST)
-        elif button_name == 'back':
-            self.change_mode(MaskMode.SELECT)
-        elif button_name == 'remove':
-            self.remove_watermark()
-            self.change_mode(MaskMode.SELECT)
+    def on_click_back(self):
+        self.change_mode(MaskMode.SELECT)
+
+    def on_click_remove(self):
+        self.remove_watermark()
+        self.change_mode(MaskMode.SELECT)
+
+    def on_click_select(self):
+        self.change_mode(MaskMode.SELECT)
+
+    def on_click_draw(self):
+        self.change_mode(MaskMode.DRAW)
+
+    def on_click_continue(self):
+        self.change_mode(MaskMode.ADJUST)
 
     def next_mode(self):
         if self.model.get_mode() == MaskMode.DRAW:
@@ -61,6 +65,7 @@ class BaseController:
 
     def change_mode(self, mode: MaskMode):
         self.model.set_mode(mode)
+        print(f"Changed mode to {self.model.get_mode().name}")
         self.change_window_setup()
         self.update_view()
 
