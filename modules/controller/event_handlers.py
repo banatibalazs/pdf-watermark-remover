@@ -91,7 +91,8 @@ class KeyboardHandler(KeyHandlerInterface):
         self.mask_manipulator = mask_manipulator
 
     def handle_key(self, event):
-        key = ord(event.char) if event.char else 255
+        # the tkinter event has 'char' attribute for character keys, pyqt5 uses 'key_char'
+        key = ord(getattr(event, 'char', None) if hasattr(event, 'char') else getattr(event, 'key_char', None))
         if key == ord('a'):
             self.model.set_current_page_index(max(0, self.model.get_current_page_index() - 1))
         elif key == ord('d'):
