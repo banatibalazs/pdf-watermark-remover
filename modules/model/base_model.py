@@ -5,8 +5,7 @@ from dataclasses import dataclass, field
 
 from modules.controller.constants import MaskMode, CursorType
 from modules.utils import calc_median_image, fill_masked_area, inpaint_image, sharpen_image, \
-    resize_images, load_pdf
-from web.utils import resize_image
+    resize_images, resize_mask, load_pdf
 
 
 @dataclass
@@ -151,14 +150,16 @@ class BaseModel:
                 # print("No saved mask found. Using default mask.")
                 self.reset_mask()
 
-            # elif len(loaded_mask.shape) == 2:
-            #     loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_GRAY2BGR)
-            #     print("Mask loaded from " + path)
+            # if mask has 3 channels, convert to grayscale
+            elif len(loaded_mask.shape) == 3 and loaded_mask.shape[2] == 3:
+                loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_BGR2GRAY)
 
             if loaded_mask.shape != self.image_data.current_image.shape:
-                loaded_mask = resize_image(loaded_mask,
-                                           self.image_data.current_image.shape[1],
-                                           self.image_data.current_image.shape[0])
+                loaded_mask = resize_mask(loaded_mask,
+                                          self.image_data.current_image.shape[1],
+                                          self.image_data.current_image.shape[0])
+                print(f"Resized loaded mask to match image size: {loaded_mask.shape}")
+                print(f"Image size: {self.image_data.current_image.shape}")
             self.mask_data.final_mask = loaded_mask
         except:
             print(f"Error loading mask from {path}. Using default mask.")

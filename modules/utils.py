@@ -135,6 +135,8 @@ def resize_images(images, max_width=None, max_height=None):
     new_height = int(img_height * ratio)
     return [cv2.resize(img, (new_height, new_width), interpolation=cv2.INTER_AREA) for img in images]
 
+def resize_mask(mask, height, width):
+    return cv2.resize(mask, (height, width), interpolation=cv2.INTER_AREA)
 
 def load_pdf(pdf_path, dpi=200):
     images = read_pdf(pdf_path, dpi)
