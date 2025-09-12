@@ -48,10 +48,16 @@ class PyQt5View(DisplayInterface):
     def _setup_sidebar_content(self, params):
         # Clear existing content
         if self.sidebar.layout():
-            while self.sidebar.layout().count():
-                item = self.sidebar.layout().takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
+            def clear_layout(layout):
+                while layout.count():
+                   item = layout.takeAt(0)
+                   widget = item.widget()
+                   if widget:
+                      widget.deleteLater()
+                   elif item.layout():
+                      clear_layout(item.layout())
+
+            clear_layout(self.sidebar.layout())
 
         sidebar_layout = QVBoxLayout(self.sidebar)
 
