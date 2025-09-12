@@ -165,6 +165,7 @@ class PyQt5View(DisplayInterface):
                 except Exception as e:
                     print(f"Error in mouse handler: {str(e)}")
 
+            self.image_label.setMouseTracking(True)
             self.image_label.mousePressEvent = lambda e: mouse_handler(e, 'press')
             self.image_label.mouseReleaseEvent = lambda e: mouse_handler(e, 'release')
             self.image_label.mouseMoveEvent = lambda e: mouse_handler(e, 'move')

@@ -24,6 +24,7 @@ class MouseHandler(MouseHandlerInterface):
 
     def handle_draw_mode(self, event):
         x, y = event.x, event.y
+        print(f"Mouse Event: {event.event_type} at ({x}, {y})")
 
         if event.event_type == EventType.MOUSE_PRESS:
             self.state_manager.save_state()
