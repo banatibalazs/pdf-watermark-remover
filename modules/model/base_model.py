@@ -106,7 +106,6 @@ class BaseModel:
         if self.config_data.apply_same_parameters:
             self.set_all_parameters_the_same_as_current()
 
-
     def get_image_size(self):
         if self.image_data.current_image is not None:
             return self.image_data.current_image.shape[1], self.image_data.current_image.shape[0]
