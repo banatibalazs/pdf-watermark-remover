@@ -175,12 +175,12 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
                           'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)
                 }
             },
-            # 'checkboxes': {
-            #     'Apply same parameters to all pages ': {
-            #         'value': controller.model.config_data.apply_same_parameters,
-            #         'callback': controller.on_toggle_apply_same_parameters
-            #     }
-            # }
+            'checkboxes': {
+                'Apply same parameters to all pages ': {
+                    'value': controller.model.config_data.apply_same_parameters,
+                    'callback': controller.on_toggle_apply_same_parameters
+                }
+            }
         }
 
 

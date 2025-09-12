@@ -3,7 +3,7 @@ import sys
 import cv2
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton,
                              QSlider, QVBoxLayout, QHBoxLayout, QWidget,
-                             QFrame, QGridLayout)
+                             QFrame, QGridLayout, QCheckBox)
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from modules.interfaces.gui_interfaces import DisplayInterface
@@ -98,7 +98,20 @@ class PyQt5View(DisplayInterface):
         if params and 'buttons' in params:
             self._create_buttons(params['buttons'])
 
-        sidebar_layout.addStretch()
+        # Checkboxes (if any)
+        if params and 'checkboxes' in params:
+            self._create_checkboxes(params)
+
+    def _create_checkboxes(self, params):
+        if params and 'checkboxes' in params:
+            sidebar_layout = QVBoxLayout()
+            for name, value in params['checkboxes'].items():
+                checkbox = QCheckBox(name)
+                checkbox.setChecked(value.get('value', False))
+                checkbox.stateChanged.connect(value['callback'])
+                checkbox.setFocusPolicy(Qt.NoFocus)
+                sidebar_layout.addWidget(checkbox)
+                self.sidebar.layout().addLayout(sidebar_layout)
 
     def _create_trackbars(self, trackbars):
         for name, value in trackbars.items():
@@ -131,6 +144,8 @@ class PyQt5View(DisplayInterface):
             row, col = button.get('position', (0, 0))
             btn = QPushButton(button['text'])
             btn.clicked.connect(button['callback'])
+            # Apply the focus clearing behavior
+            btn.setFocusPolicy(Qt.NoFocus)
             button_grid.addWidget(btn, row, col)
 
         self.sidebar.layout().addLayout(button_grid)

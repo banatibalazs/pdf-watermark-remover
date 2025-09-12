@@ -94,6 +94,10 @@ class BaseController:
         self.mask_manipulator.apply_thresholds()
         self.update_view()
 
+    def on_toggle_apply_same_parameters(self):
+        self.model.config_data.apply_same_parameters = not self.model.config_data.apply_same_parameters
+        print(f"Apply same parameters: {self.model.config_data.apply_same_parameters}")
+
     #####################################################################x
 
     def on_parameter_changed(self, attr, val):
