@@ -9,6 +9,17 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from modules.interfaces.gui_interfaces import DisplayInterface
 
 
+def _create_text_area():
+    """Create and configure the text area for instructions"""
+    text_area = QLabel("Instructions will appear here.")
+    text_area.setFrameShape(QFrame.StyledPanel)
+    text_area.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+    text_area.setWordWrap(True)
+    text_area.setMinimumHeight(100)
+    text_area.setMaximumHeight(100)
+    return text_area
+
+
 class PyQt5View(DisplayInterface):
     def __init__(self, texts='', text_color=(0, 0, 0), title='PyQt5 View'):
         self.texts = texts
@@ -39,11 +50,24 @@ class PyQt5View(DisplayInterface):
         self.image_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(self.image_label, 3)
 
+        # Right side container with text area and sidebar
+        right_container = QWidget()
+        right_layout = QVBoxLayout(right_container)
+
+        # Text area above sidebar
+        self.text_area = _create_text_area()
+        right_layout.addWidget(self.text_area)# Add the right container to main layout
+        main_layout.addWidget(right_container, 1)
+
         # Sidebar for controls
         self.sidebar = QFrame()
         self.sidebar.setFrameShape(QFrame.StyledPanel)
-        self.sidebar.setMaximumSize(300, 400)
-        main_layout.addWidget(self.sidebar, 1)
+        self.sidebar.setMaximumSize(350, 350)  # Reduced height to accommodate text area
+        self.sidebar.setMinimumSize(250, 250)
+        right_layout.addWidget(self.sidebar)
+
+        # Add the right container to main layout
+        main_layout.addWidget(right_container, 1)
 
     def _setup_sidebar_content(self, params):
         # Clear existing content
@@ -77,23 +101,16 @@ class PyQt5View(DisplayInterface):
         sidebar_layout.addStretch()
 
     def _create_trackbars(self, trackbars):
-        trackbar_configs = {
-            'mode': {'range': (0, 1)},
-            'w': {'range': (0, 25)},
-            'default': {'range': (0, 255)},
-            'weight': {'range': (0, 100)}
-        }
-
         for name, value in trackbars.items():
-            config = trackbar_configs.get(name, trackbar_configs['default'])
+            range_min, range_max = value.get('range', (0, 255))
             slider_layout = QVBoxLayout()
 
             label = QLabel(name)
             slider_layout.addWidget(label)
 
             slider = QSlider(Qt.Horizontal)
-            slider.setMinimum(config['range'][0])
-            slider.setMaximum(config['range'][1])
+            slider.setMinimum(range_min)
+            slider.setMaximum(range_max)
             # Convert float to int for slider
             slider.setValue(int(value['value']))
 
@@ -185,20 +202,24 @@ class PyQt5View(DisplayInterface):
         self.image_label.setPixmap(pixmap)
         self.window.update()
 
-    def set_texts(self, texts, text_color, title):
-        self.texts = texts
-        self.text_color = text_color
-        self.title = title
+    def set_texts(self, texts, color, title):
+        # Make sure the text panel exists
+        if not hasattr(self, 'text_area'):
+            # Create text panel if it doesn't exist
+            self.text_area = QWidget()
+            self.text_layout = QVBoxLayout(self.text_area)
+            self.text_layout.setContentsMargins(10, 10, 10, 10)
+            self.text_area.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
 
-        if self.window:
-            self.window.setWindowTitle(title)
-        if self.text_label:
-            self.text_label.setText('\n'.join(texts))
+            # Add text panel to top of sidebar layout
+            self.sidebar.layout().insertWidget(0, self.text_area)
+
 
     def change_window_setup(self, params):
         # Clear existing sidebar content
         self._setup_sidebar_content(params)
         self._bind_events(params)
+
 
         if params and 'title' in params:
             self.window.setWindowTitle(params['title'])

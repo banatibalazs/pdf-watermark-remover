@@ -78,11 +78,18 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image / mask weight': {'value': controller.model.get_weight() * 100, 'callback': controller.on_weight_trackbar},
+            'Image / mask weight': {'value': controller.model.get_weight() * 100,
+                                    'callback': controller.on_weight_trackbar,
+                                    'range': (0, 100)
+            },
             'threshold_min': {'value': controller.model.get_threshold_min(),
-                              'callback': lambda val: controller.on_threshold_trackbar(val, 'min')},
+                              'callback': lambda val: controller.on_threshold_trackbar(val, 'min'),
+                              'range': (0, 255)
+            },
             'threshold_max': {'value': controller.model.get_threshold_max(),
-                              'callback': lambda val: controller.on_threshold_trackbar(val, 'max')}
+                              'callback': lambda val: controller.on_threshold_trackbar(val, 'max'),
+                              'range': (0, 255)
+            }
         }
 
     @staticmethod
@@ -142,28 +149,37 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             'key': controller.on_key,
             'trackbars': {
                 'mode': {'value': controller.model.current_parameters.mode,
-                         'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val)},
+                         'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val),
+                         'range': (0, 1)
+                },
                 'w': {'value': controller.model.current_parameters.w,
-                      'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val)},
+                      'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val)
+                },
                 'r_min': {'value': controller.model.current_parameters.r_min,
-                          'callback': lambda val, attr='r_min': controller.on_parameter_changed(attr, val)},
+                          'callback': lambda val, attr='r_min': controller.on_parameter_changed(attr, val)
+                },
                 'r_max': {'value': controller.model.current_parameters.r_max,
-                          'callback': lambda val, attr='r_max': controller.on_parameter_changed(attr, val)},
+                          'callback': lambda val, attr='r_max': controller.on_parameter_changed(attr, val)
+                },
                 'g_min': {'value': controller.model.current_parameters.g_min,
-                          'callback': lambda val, attr='g_min': controller.on_parameter_changed(attr, val)},
+                          'callback': lambda val, attr='g_min': controller.on_parameter_changed(attr, val)
+                },
                 'g_max': {'value': controller.model.current_parameters.g_max,
-                          'callback': lambda val, attr='g_max': controller.on_parameter_changed(attr, val)},
+                          'callback': lambda val, attr='g_max': controller.on_parameter_changed(attr, val)
+                },
                 'b_min': {'value': controller.model.current_parameters.b_min,
-                          'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)},
+                          'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)
+                },
                 'b_max': {'value': controller.model.current_parameters.b_max,
-                          'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)}
-            },
-            'checkboxes': {
-                'Apply same parameters to all pages ': {
-                    'value': controller.model.config_data.apply_same_parameters,
-                    'callback': controller.on_toggle_apply_same_parameters
+                          'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)
                 }
-            }
+            },
+            # 'checkboxes': {
+            #     'Apply same parameters to all pages ': {
+            #         'value': controller.model.config_data.apply_same_parameters,
+            #         'callback': controller.on_toggle_apply_same_parameters
+            #     }
+            # }
         }
 
 
