@@ -42,7 +42,7 @@ class PyQt5View(DisplayInterface):
         # Sidebar for controls
         self.sidebar = QFrame()
         self.sidebar.setFrameShape(QFrame.StyledPanel)
-        sidebar_layout = QVBoxLayout(self.sidebar)
+        self.sidebar.setMaximumSize(300, 400)
         main_layout.addWidget(self.sidebar, 1)
 
     def _setup_sidebar_content(self, params):
