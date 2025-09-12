@@ -73,8 +73,14 @@ class BaseController:
     def change_window_setup(self):
         if self.model.get_mode() == MaskMode.ADJUST:
             self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
+            self.view.set_texts(ParameterAdjusterGUIConfig.TEXTS,
+                                ParameterAdjusterGUIConfig.TEXT_COLOR,
+                                ParameterAdjusterGUIConfig.TITLE)
         else:
             self.view.change_window_setup(BaseGUIConfig.get_params(self))
+            self.view.set_texts(MaskSelectorGUIConfig.TEXTS,
+                                MaskSelectorGUIConfig.TEXT_COLOR,
+                                MaskSelectorGUIConfig.WINDOW_TITLE)
 
     def handle_mouse(self, event):
         self.mouse_handler.handle_mouse(event)
@@ -123,12 +129,6 @@ class BaseController:
         self.mask_manipulator.dilate_mask()
         self.state_manager.save_state()
         self.update_view()
-
-    def get_gray_mask(self):
-        return self.mask_manipulator.get_gray_mask()
-
-    def get_bgr_mask(self):
-        return self.mask_manipulator.get_bgr_mask()
 
     def load_mask(self):
         self.mask_manipulator.load_mask()
