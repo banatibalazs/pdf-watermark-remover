@@ -50,7 +50,6 @@ class MaskManipulator:
     def draw_black(self):
         self._draw_on_mask(0)
 
-
     def apply_thresholds(self) -> None:
         filtered_median_image = cv2.inRange(self.model.image_data.median_image,
                                             np.array(self.model.get_threshold_min(), dtype=np.uint8),
