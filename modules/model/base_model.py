@@ -53,11 +53,11 @@ class ConfigData:
 @dataclass
 class ParamsForRemoval:
     r_min: int = 90
-    r_max: int = 220
+    r_max: int = 240
     g_min: int = 90
-    g_max: int = 220
+    g_max: int = 240
     b_min: int = 90
-    b_max: int = 220
+    b_max: int = 240
     w: float = 0
     mode: bool = True
 
