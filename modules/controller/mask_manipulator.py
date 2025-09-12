@@ -36,13 +36,11 @@ class MaskManipulator:
         elif self.model.cursor_data.type == CursorType.SQUARE:
             x, y = self.model.cursor_data.pos
             size = self.model.cursor_data.size
-            cv2.rectangle(
-                self.model.mask_data.final_mask,
-                (x - size, y - size),
-                (x + size, y + size),
-                [color],
-                -1
-            )
+            cv2.rectangle(self.model.mask_data.final_mask,
+                          (x - size, y - size),
+                          (x + size, y + size),
+                          [color],
+                          -1)
 
     def draw_white(self):
         self._draw_on_mask(255)
@@ -55,23 +53,6 @@ class MaskManipulator:
                                             np.array(self.model.get_threshold_min(), dtype=np.uint8),
                                             np.array(self.model.get_threshold_max(), dtype=np.uint8))
         self.model.mask_data.final_mask = cv2.bitwise_and(self.model.mask_data.temp_mask, cv2.inRange(filtered_median_image, 1, 255))
-
-    def load_mask(self) -> None:
-        path = filedialog.askopenfilename(
-            title="Load mask",
-            filetypes=[("All files", "*.*")]
-        )
-        if path:
-            self.model.load_mask(path)
-
-    def save_mask(self) -> None:
-        path = filedialog.asksaveasfile(
-            title="Save mask",
-            defaultextension=".png",
-            filetypes=[("PNG files", "*.png"), ("All files", "*.*")],
-            initialfile="mask.png"
-        ).name
-        self.model.save_mask(path)
 
     def get_gray_mask(self):
         return self.model.get_gray_mask() if self.model else None

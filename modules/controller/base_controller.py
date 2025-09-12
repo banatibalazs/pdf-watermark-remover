@@ -3,6 +3,7 @@ from tkinter import filedialog
 
 
 from modules.controller.constants import MaskMode
+from modules.controller.file_handler import FileHandler
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
 from modules.interfaces.gui_interfaces import DisplayInterface, KeyHandlerInterface, MouseHandlerInterface
@@ -11,7 +12,7 @@ from modules.model.base_model import BaseModel
 from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
-from modules.utils import remove_watermark, load_pdf, save_images
+from modules.utils import remove_watermark, load_pdf
 
 
 class BaseController:
@@ -21,6 +22,7 @@ class BaseController:
 
         # Initialize components
         self.state_manager = MaskStateManager(self.model)
+        self.file_handler = FileHandler(self.model)
         self.mask_manipulator = MaskManipulator(self.model)
         self.mouse_handler: MouseHandlerInterface = MouseHandler(self.model, self.state_manager, self.mask_manipulator)
         self.keyboard_handler: KeyHandlerInterface = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
@@ -135,17 +137,11 @@ class BaseController:
         self.update_view()
 
     def load_mask(self):
-        self.mask_manipulator.load_mask()
+        self.file_handler.load_mask()
         self.update_view()
 
     def load_images(self):
-        path = filedialog.askopenfilename(
-            title="Load mask",
-            filetypes=[("All files", "*.*")]
-        )
-        if path:
-            images = load_pdf(path, self.model.config_data.dpi)
-            self.model.update_data(images)
+        self.file_handler.load_images()
         self.update_view()
 
     def get_threshold_min(self):
@@ -154,18 +150,16 @@ class BaseController:
     def get_threshold_max(self):
         return self.model.get_threshold_max()
 
-
     def reset_mask(self):
         self.mask_manipulator.reset_mask()
         self.model.image_data.current_image = self.model.get_current_image().copy()
         self.update_view()
 
     def save_mask(self):
-        self.mask_manipulator.save_mask()
+        self.file_handler.save_mask()
 
     def save_images(self):
-    #     save images from numpy array to the specified path via pymupdf
-        save_images(self.model.get_original_sized_images(), 'output')
+        self.file_handler.save_images()
 
     def redo(self):
         self.state_manager.redo()
