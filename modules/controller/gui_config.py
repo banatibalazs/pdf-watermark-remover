@@ -78,7 +78,7 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'weight': {'value': controller.model.get_weight() * 100, 'callback': controller.on_weight_trackbar},
+            'Image / mask weight': {'value': controller.model.get_weight() * 100, 'callback': controller.on_weight_trackbar},
             'threshold_min': {'value': controller.model.get_threshold_min(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'min')},
             'threshold_max': {'value': controller.model.get_threshold_max(),
@@ -157,6 +157,12 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
                           'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)},
                 'b_max': {'value': controller.model.current_parameters.b_max,
                           'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)}
+            },
+            'checkboxes': {
+                'Apply same parameters to all pages': {
+                    'value': controller.model.config_data.apply_same_parameters,
+                    'callback': controller.on_toggle_apply_same_parameters
+                }
             }
         }
 
