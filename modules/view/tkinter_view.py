@@ -79,8 +79,8 @@ class TkinterView(DisplayInterface):
 
     def _create_checkboxes(self, checkboxes):
         for name, checkbox in checkboxes.items():
-            var = tk.IntVar(value=1 if checkbox.get('value', False) else 0)
-            chk = tk.Checkbutton(self.sidebar, text=name, variable=var, command=checkbox['callback'])
+            self.check_var = tk.IntVar(value=1)
+            chk = tk.Checkbutton(self.sidebar, text=name, variable=self.check_var, command=checkbox['callback'])
             chk.pack(anchor='w', pady=2)
 
     def _create_trackbars(self, trackbars):
