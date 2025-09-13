@@ -90,7 +90,7 @@ class KeyboardHandler(KeyHandlerInterface):
         self.state_manager = state_manager
         self.mask_manipulator = mask_manipulator
 
-    def handle_key(self, event):
+    def handle_key(self, event) -> bool:
         # the tkinter event has 'char' attribute for character keys, pyqt5 uses 'key_char'
         key = ord(getattr(event, 'char', None) if hasattr(event, 'char') else getattr(event, 'key_char', None))
         if key == ord('a'):
