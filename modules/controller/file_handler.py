@@ -22,7 +22,6 @@ class FileHandler:
         try:
             output_path = filedialog.asksaveasfile(
                 title="Save images",
-                defaultextension=".png",
                 filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg;*.jpeg"), ("All files", "*.*")],
                 initialfile="output"
             ).name
