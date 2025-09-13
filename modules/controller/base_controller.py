@@ -26,6 +26,8 @@ class BaseController:
 
     def update_view(self):
         image = self.model.get_image_to_show()
+        if self.model.get_mode() == MaskMode.ADJUST:
+            self.view.update_trackbars(self.model.get_current_parameters())
         self.view.display_image(image)
 
     def on_weight_trackbar(self, pos):
@@ -97,8 +99,7 @@ class BaseController:
         self.update_view()
 
     def on_toggle_apply_same_parameters(self):
-        self.model.config_data.apply_same_parameters = not self.model.config_data.apply_same_parameters
-        print(f"Apply same parameters: {self.model.config_data.apply_same_parameters}")
+        self.model.toggle_apply_same_parameters()
 
     #####################################################################x
 
