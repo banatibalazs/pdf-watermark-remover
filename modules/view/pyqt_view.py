@@ -8,6 +8,72 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from modules.interfaces.gui_interfaces import DisplayInterface
 
+DARK_THEME_STYLESHEET = """
+QWidget {
+    background-color: #2D2D30;
+    color: #CCCCCC;
+}
+QLabel {
+    color: #CCCCCC;
+}
+QPushButton {
+    background-color: #3E3E42;
+    border: 1px solid #555555;
+    color: #CCCCCC;
+    padding: 5px;
+    border-radius: 3px;
+}
+QPushButton:hover {
+    background-color: #4E4E52;
+}
+QPushButton:pressed {
+    background-color: #007ACC;
+}
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #1E1E1E;
+    color: #CCCCCC;
+    border: 1px solid #3E3E42;
+}
+QCheckBox {
+    color: #CCCCCC;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+    border: 1px solid #555555;
+    background-color: #2D2D30;
+}
+QCheckBox::indicator:checked {
+    border: 1px solid #007ACC;
+    background-color: #007ACC;
+}
+QScrollBar {
+    background-color: #2D2D30;
+}
+QScrollBar:horizontal {
+    height: 15px;
+}
+QScrollBar:vertical {
+    width: 15px;
+}
+QComboBox {
+    background-color: #3E3E42;
+    color: #CCCCCC;
+    border: 1px solid #555555;
+}
+QMenu {
+    background-color: #1E1E1E;
+    color: #CCCCCC;
+}
+QMenuBar {
+    background-color: #2D2D30;
+    color: #CCCCCC;
+}
+"""
+
+
 
 def _create_text_area():
     """Create and configure the text area for instructions"""
@@ -32,6 +98,7 @@ class PyQt5View(DisplayInterface):
         self.sidebar = None
         self.text_label = None
         self._setup_window()
+        self.set_dark_theme()
 
     def _setup_window(self, params=None):
         self.window = QMainWindow()
@@ -263,3 +330,7 @@ class PyQt5View(DisplayInterface):
                     if isinstance(widget, QSlider) and widget.objectName() in params['names']:
                         index = params['names'].index(widget.objectName())
                         widget.setValue(params['values'][index])
+
+    def set_dark_theme(self):
+        """Apply dark theme to the entire application"""
+        self.window.setStyleSheet(DARK_THEME_STYLESHEET)
