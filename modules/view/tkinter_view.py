@@ -74,19 +74,12 @@ class TkinterView(DisplayInterface):
             self._create_buttons(params['buttons'])
 
     def _create_trackbars(self, trackbars):
-        trackbar_configs = {
-            'mode': {'range': (0, 1)},
-            'w': {'range': (0, 25)},
-            'default': {'range': (0, 255)},
-            'weight': {'range': (0, 100)}
-        }
-
         for name, value in trackbars.items():
-            config = trackbar_configs.get(name, trackbar_configs['default'])
+            range_min, range_max = value.get('range', (0, 255))
             scale = tk.Scale(
                 self.sidebar,
-                from_=config['range'][0],
-                to=config['range'][1],
+                from_=range_min,
+                to=range_max,
                 orient='horizontal',
                 label=name,
                 command=value['callback'],
