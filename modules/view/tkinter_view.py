@@ -65,38 +65,34 @@ class TkinterView(DisplayInterface):
         self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
         self.text_label.pack(anchor='n', pady=5)
 
-        # Trackbars
+        # Add trackbars
         if params and 'trackbars' in params:
             self._create_trackbars(params['trackbars'])
 
-        # Additional buttons
+        # Add buttons
         if params and "buttons" in params:
             self._create_buttons(params['buttons'])
 
         # Add checkboxes
         if params and "checkboxes" in params:
-            for name, checkbox in params['checkboxes'].items():
-                var = tk.IntVar(value=1 if checkbox.get('value', False) else 0)
-                chk = tk.Checkbutton(
-                    self.sidebar,
-                    text=name,
-                    variable=var,
-                    command=checkbox['callback']
-                )
-                chk.pack(anchor='w', pady=2)
+            self._create_checkboxes(params['checkboxes'])
+
+    def _create_checkboxes(self, checkboxes):
+        for name, checkbox in checkboxes.items():
+            var = tk.IntVar(value=1 if checkbox.get('value', False) else 0)
+            chk = tk.Checkbutton(self.sidebar, text=name, variable=var, command=checkbox['callback'])
+            chk.pack(anchor='w', pady=2)
 
     def _create_trackbars(self, trackbars):
         for name, value in trackbars.items():
             range_min, range_max = value.get('range', (0, 255))
-            scale = tk.Scale(
-                self.sidebar,
-                from_=range_min,
-                to=range_max,
-                orient='horizontal',
-                label=name,
-                command=value['callback'],
-                length=200
-            )
+            scale = tk.Scale(self.sidebar,
+                             from_=range_min,
+                             to=range_max,
+                             orient='horizontal',
+                             label=name,
+                             command=value['callback'],
+                             length=200)
             scale.set(value['value'])
             scale.pack()
 
