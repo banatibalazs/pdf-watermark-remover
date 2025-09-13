@@ -1,7 +1,4 @@
 # base_controller.py
-from tkinter import filedialog
-
-
 from modules.controller.constants import MaskMode
 from modules.controller.file_handler import FileHandler
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
@@ -51,7 +48,10 @@ class BaseController:
         self.change_mode(MaskMode.SELECT)
 
     def on_click_draw(self):
-        self.change_mode(MaskMode.DRAW)
+        if self.model.get_mode() == MaskMode.DRAW:
+            self.model.toggle_cursor_type()
+        else:
+            self.change_mode(MaskMode.DRAW)
 
     def on_click_continue(self):
         self.change_mode(MaskMode.ADJUST)
@@ -136,14 +136,6 @@ class BaseController:
         self.state_manager.save_state()
         self.update_view()
 
-    def load_mask(self):
-        self.file_handler.load_mask()
-        self.update_view()
-
-    def load_images(self):
-        self.file_handler.load_images()
-        self.update_view()
-
     def get_threshold_min(self):
         return self.model.get_threshold_min()
 
@@ -160,6 +152,14 @@ class BaseController:
 
     def save_images(self):
         self.file_handler.save_images()
+
+    def load_mask(self):
+        self.file_handler.load_mask()
+        self.update_view()
+
+    def load_images(self):
+        self.file_handler.load_images()
+        self.update_view()
 
     def redo(self):
         self.state_manager.redo()
