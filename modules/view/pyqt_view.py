@@ -78,6 +78,8 @@ SIDEBAR_MAX_WIDTH = 450
 SIDEBAR_MIN_WIDTH = 250
 SIDEBAR_MAX_HEIGHT = 550
 SIDEBAR_MIN_HEIGHT = 300
+TEXT_AREA_MIN_HEIGHT = 100
+TEXT_AREA_MAX_HEIGHT = 100
 
 
 
@@ -87,8 +89,8 @@ def _create_text_area():
     text_area.setFrameShape(QFrame.StyledPanel)
     text_area.setAlignment(Qt.AlignTop | Qt.AlignLeft)
     text_area.setWordWrap(True)
-    text_area.setMinimumHeight(100)
-    text_area.setMaximumHeight(100)
+    text_area.setMinimumHeight(TEXT_AREA_MIN_HEIGHT)
+    text_area.setMaximumHeight(TEXT_AREA_MAX_HEIGHT)
     return text_area
 
 
@@ -105,7 +107,6 @@ class PyQt5View(DisplayInterface):
         self.text_label = None
         self._setup_window()
         self.set_dark_theme()
-
         self.set_app_icon()
 
     def set_app_icon(self, icon_name=None):
@@ -368,6 +369,7 @@ class PyQt5View(DisplayInterface):
             self.window = None
 
     def update_trackbars(self, params):
+        print("Updating trackbars with params:", params)
         if not self.sidebar or not self.sidebar.layout():
             return
 
