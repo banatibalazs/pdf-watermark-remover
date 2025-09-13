@@ -1,10 +1,11 @@
 # modules/view/pyqt_view.py
 import sys
 import cv2
+import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton,
                              QSlider, QVBoxLayout, QHBoxLayout, QWidget,
                              QFrame, QGridLayout, QCheckBox)
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt, pyqtSlot
 from modules.interfaces.gui_interfaces import DisplayInterface
 
@@ -99,6 +100,24 @@ class PyQt5View(DisplayInterface):
         self.text_label = None
         self._setup_window()
         self.set_dark_theme()
+
+        self.set_app_icon()
+
+    def set_app_icon(self, icon_name=None):
+        """Set the application icon using a path relative to this script"""
+        # Get the directory of the current script file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Navigate to project root (two directories up from modules/view)
+        project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        # Build path to the icon
+        icon_path = os.path.join(project_root, 'icons', icon_name or 'filter.png')
+
+        if os.path.exists(icon_path):
+            app_icon = QIcon(icon_path)
+            self.window.setWindowIcon(app_icon)
+            self.app.setWindowIcon(app_icon)
+        else:
+            print(f"Icon not found at: {icon_path}")
 
     def _setup_window(self, params=None):
         self.window = QMainWindow()
