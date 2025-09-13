@@ -1,4 +1,5 @@
 from enum import Enum
+from dataclasses import dataclass
 
 class MaskMode(Enum):
     SELECT = 0
@@ -8,4 +9,6 @@ class MaskMode(Enum):
 class CursorType(Enum):
     CIRCLE = 0
     SQUARE = 1
+
+
 
