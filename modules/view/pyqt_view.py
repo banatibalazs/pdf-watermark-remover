@@ -74,9 +74,9 @@ QMenuBar {
 }
 """
 
-SIDEBAR_MAX_WIDTH = 350
+SIDEBAR_MAX_WIDTH = 450
 SIDEBAR_MIN_WIDTH = 250
-SIDEBAR_MAX_HEIGHT = 400
+SIDEBAR_MAX_HEIGHT = 550
 SIDEBAR_MIN_HEIGHT = 300
 
 
@@ -234,10 +234,17 @@ class PyQt5View(DisplayInterface):
         for name, button in buttons.items():
             row, col = button.get('position', (0, 0))
             btn = QPushButton(button['text'])
+            margin = button.get('margin', (0, 0, 0, 0))
+            btn.setStyleSheet('QPushButton { margin: %dpx %dpx %dpx %dpx; }' % margin)
             btn.clicked.connect(button['callback'])
+
             # Apply the focus clearing behavior
             btn.setFocusPolicy(Qt.NoFocus)
-            button_grid.addWidget(btn, row, col)
+
+            if button.get('columnspan', 1) > 1:
+                button_grid.addWidget(btn, row, col, 1, button['columnspan'])
+            else:
+                button_grid.addWidget(btn, row, col)
 
         self.sidebar.layout().addLayout(button_grid)
 

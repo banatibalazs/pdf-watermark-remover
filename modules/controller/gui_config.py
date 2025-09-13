@@ -11,12 +11,14 @@ class BaseGUIConfig:
             'Select': {
                 'text': 'Select',
                 'callback': controller.on_click_select,
-                'position': (0, 0)
+                'position': (0, 0),
+                'margin': (25, 0, 0, 0)
             },
             'Draw': {
                 'text': 'Draw',
                 'callback': controller.on_click_draw,
-                'position': (0, 1)
+                'position': (0, 1),
+                'margin': (25, 0, 0, 0)
             },
             'Erode': {
                 'text': 'Erode',
@@ -41,7 +43,8 @@ class BaseGUIConfig:
             'Reset mask': {
                 'text': 'Reset mask',
                 'callback': controller.reset_mask,
-                'position': (3, 0)
+                'position': (3, 0),
+                'margin': (0, 0, 25, 0)
             },
             'Save mask': {
                 'text': 'Save mask',
@@ -66,12 +69,15 @@ class BaseGUIConfig:
             'Continue': {
                 'text': 'Continue',
                 'callback': controller.on_click_continue,
-                'position': (6, 0)
+                'position': (6, 0),
+                'margin': (25, 0, 0, 0),
+                'columnspan': 2
             },
             'Exit': {
                 'text': 'Exit',
                 'callback': controller.exit,
-                'position': (6, 1)
+                'position': (7, 0),
+                'columnspan': 2
             }
         }
 
@@ -138,12 +144,14 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
                 'Back': {
                     'text': 'Back',
                     'callback':controller.on_click_back,
-                    'position': (0, 0)
+                    'position': (0, 0),
+                    'margin': (25, 0, 0, 0)
                 },
                 'Remove': {
                     'text': 'Remove watermark',
                     'callback': controller.on_click_remove,
-                    'position': (0, 1)
+                    'position': (0, 1),
+                    'margin': (25, 0, 0, 0)
                 }
             },
             'key': controller.on_key,
