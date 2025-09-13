@@ -93,7 +93,7 @@ def _create_text_area():
 
 
 class PyQt5View(DisplayInterface):
-    def __init__(self, texts='', text_color=(0, 0, 0), title='PyQt5 View'):
+    def __init__(self, texts='', text_color=(0, 0, 0), title='PDF Watermark Remover'):
         self.texts = texts
         self.text_color = text_color
         self.title = title
@@ -165,12 +165,12 @@ class PyQt5View(DisplayInterface):
         if self.sidebar.layout():
             def clear_layout(layout):
                 while layout.count():
-                   item = layout.takeAt(0)
-                   widget = item.widget()
-                   if widget:
-                      widget.deleteLater()
-                   elif item.layout():
-                      clear_layout(item.layout())
+                    item = layout.takeAt(0)
+                    widget = item.widget()
+                    if widget:
+                        widget.deleteLater()
+                    elif item.layout():
+                        clear_layout(item.layout())
 
             clear_layout(self.sidebar.layout())
 
@@ -185,13 +185,14 @@ class PyQt5View(DisplayInterface):
         if params and 'trackbars' in params:
             self._create_trackbars(params['trackbars'])
 
+        # Checkboxes (if any)
+        if params and 'checkboxes' in params:
+            self._create_checkboxes(params)
+
         # Buttons
         if params and 'buttons' in params:
             self._create_buttons(params['buttons'])
 
-        # Checkboxes (if any)
-        if params and 'checkboxes' in params:
-            self._create_checkboxes(params)
 
     def _create_checkboxes(self, params):
         if params and 'checkboxes' in params:

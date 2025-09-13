@@ -44,7 +44,8 @@ class BaseGUIConfig:
                 'text': 'Reset mask',
                 'callback': controller.reset_mask,
                 'position': (3, 0),
-                'margin': (0, 0, 25, 0)
+                'margin': (0, 0, 25, 0),
+                'columnspan': 2
             },
             'Save mask': {
                 'text': 'Save mask',
@@ -77,6 +78,7 @@ class BaseGUIConfig:
                 'text': 'Exit',
                 'callback': controller.exit,
                 'position': (7, 0),
+                'margin': (5, 0, 0, 0),
                 'columnspan': 2
             }
         }
@@ -141,17 +143,19 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
     def get_params(controller):
         return {
             'buttons': {
-                'Back': {
-                    'text': 'Back',
-                    'callback':controller.on_click_back,
-                    'position': (0, 0),
-                    'margin': (25, 0, 0, 0)
-                },
                 'Remove': {
                     'text': 'Remove watermark',
                     'callback': controller.on_click_remove,
-                    'position': (0, 1),
-                    'margin': (25, 0, 0, 0)
+                    'position': (0, 0),
+                    'margin': (25, 0, 0, 0),
+                    'columnspan': 2
+                },
+                'Back': {
+                    'text': 'Back',
+                    'callback':controller.on_click_back,
+                    'position': (1, 0),
+                    'margin': (5, 0, 0, 0),
+                    'columnspan': 2
                 }
             },
             'key': controller.on_key,
