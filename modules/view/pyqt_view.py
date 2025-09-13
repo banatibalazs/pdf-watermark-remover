@@ -104,6 +104,8 @@ class PyQt5View(DisplayInterface):
         self.window = None
         self.image_label = None
         self.sidebar = None
+        self.sliders = {}
+        self.slider_labels = {}
         self.text_label = None
         self._setup_window()
         self.set_dark_theme()
@@ -194,7 +196,6 @@ class PyQt5View(DisplayInterface):
         if params and 'buttons' in params:
             self._create_buttons(params['buttons'])
 
-
     def _create_checkboxes(self, params):
         if params and 'checkboxes' in params:
             sidebar_layout = QVBoxLayout()
@@ -213,21 +214,23 @@ class PyQt5View(DisplayInterface):
 
             label = QLabel(name)
             slider_layout.addWidget(label)
+            self.slider_labels[name] = label  # Store label reference
 
             slider = QSlider(Qt.Horizontal)
             slider.setMinimum(range_min)
             slider.setMaximum(range_max)
-            # Convert float to int for slider
             slider.setValue(int(value['value']))
 
-            # Preserve the original value type when calling the callback
+            # Store reference to the slider
+            self.sliders[name] = slider
+
+            # Connect callback
             if isinstance(value['value'], float):
                 slider.valueChanged.connect(lambda val, cb=value['callback']: cb(float(val)))
             else:
                 slider.valueChanged.connect(lambda val, cb=value['callback']: cb(val))
 
             slider_layout.addWidget(slider)
-
             self.sidebar.layout().addLayout(slider_layout)
 
     def _create_buttons(self, buttons):
@@ -368,20 +371,23 @@ class PyQt5View(DisplayInterface):
             self.window.close()
             self.window = None
 
-    def update_trackbars(self, params):
-        print("Updating trackbars with params:", params)
-        if not self.sidebar or not self.sidebar.layout():
-            return
+    def update_trackbars(self, values):
+        """
+        Updates trackbar values
 
-        # Find sliders by their labels and update values
-        for i in range(self.sidebar.layout().count()):
-            item = self.sidebar.layout().itemAt(i)
-            if item and item.layout():
-                for j in range(item.layout().count()):
-                    widget = item.layout().itemAt(j).widget()
-                    if isinstance(widget, QSlider) and widget.objectName() in params['names']:
-                        index = params['names'].index(widget.objectName())
-                        widget.setValue(params['values'][index])
+        Args:
+            values (dict): Dictionary of trackbar names and their new values
+            Like this: {'names': ['min', 'max', 'w'],
+                        'values': [10, 200, 5]}
+        """
+        if hasattr(self, 'sliders'):
+            for i in range(len(values['names'])):
+                name = values['names'][i]
+                if name in self.sliders:
+                    self.sliders[name].setValue(int(values['values'][i]))
+
+            # Process UI events to ensure immediate update
+            QApplication.processEvents()
 
     def set_dark_theme(self):
         """Apply dark theme to the entire application"""
