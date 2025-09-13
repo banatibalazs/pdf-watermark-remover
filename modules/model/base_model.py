@@ -62,13 +62,17 @@ class ParamsForRemoval:
     mode: bool = True
 
     def get_parameters(self):
-        return self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode
+        return [self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode]
 
     def set_parameters(self, args):
         self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = args
 
     def get_parameter_names(self):
         return ['r_min', 'r_max', 'g_min', 'g_max', 'b_min', 'b_max', 'w', 'mode']
+
+    def get_params_as_dict(self):
+        return { 'names': self.get_parameter_names(),
+                 'values': self.get_parameters() }
 
 
 class BaseModel:
@@ -105,6 +109,14 @@ class BaseModel:
 
         if self.config_data.apply_same_parameters:
             self.set_all_parameters_the_same_as_current()
+
+    def toggle_apply_same_parameters(self):
+        self.config_data.apply_same_parameters = not self.config_data.apply_same_parameters
+        if self.config_data.apply_same_parameters:
+            self.set_all_parameters_the_same_as_current()
+
+    def get_current_parameters(self):
+        return self.current_parameters.get_params_as_dict()
 
     def get_image_size(self):
         if self.image_data.current_image is not None:
