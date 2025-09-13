@@ -74,6 +74,11 @@ QMenuBar {
 }
 """
 
+SIDEBAR_MAX_WIDTH = 350
+SIDEBAR_MIN_WIDTH = 250
+SIDEBAR_MAX_HEIGHT = 400
+SIDEBAR_MIN_HEIGHT = 300
+
 
 
 def _create_text_area():
@@ -148,8 +153,8 @@ class PyQt5View(DisplayInterface):
         # Sidebar for controls
         self.sidebar = QFrame()
         self.sidebar.setFrameShape(QFrame.StyledPanel)
-        self.sidebar.setMaximumSize(350, 350)  # Reduced height to accommodate text area
-        self.sidebar.setMinimumSize(250, 250)
+        self.sidebar.setMaximumSize(SIDEBAR_MAX_WIDTH, SIDEBAR_MAX_HEIGHT)
+        self.sidebar.setMinimumSize(SIDEBAR_MIN_WIDTH, SIDEBAR_MIN_HEIGHT)
         right_layout.addWidget(self.sidebar)
 
         # Add the right container to main layout
@@ -241,11 +246,29 @@ class PyQt5View(DisplayInterface):
             return
 
         if 'key' in params:
+            # Store original key press event handler
+            original_key_press = self.window.keyPressEvent
+
             def key_handler(event):
                 from modules.controller.event_adapter import PyQt5EventAdapter
-                abstract_event = PyQt5EventAdapter.adapt_key_event(event)
-                if abstract_event:
-                    params['key'](abstract_event)
+                try:
+                    # Skip handling for modifier keys like Caps Lock
+                    if event.key() in (Qt.Key_CapsLock, Qt.Key_NumLock, Qt.Key_ScrollLock):
+                        # Call the original handler for system keys
+                        original_key_press(event)
+                        return
+
+                    # Handle regular keys
+                    abstract_event = PyQt5EventAdapter.adapt_key_event(event)
+                    if abstract_event:
+                        params['key'](abstract_event)
+                    else:
+                        # Call original handler if we couldn't adapt the event
+                        original_key_press(event)
+                except Exception as e:
+                    print(f"Error handling key event: {str(e)}")
+                    # Ensure the application doesn't crash on key handling errors
+                    original_key_press(event)
 
             self.window.keyPressEvent = key_handler
 
