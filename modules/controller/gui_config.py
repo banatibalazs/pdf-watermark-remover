@@ -148,30 +148,30 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             },
             'key': controller.on_key,
             'trackbars': {
-                'mode': {'value': controller.model.current_parameters.mode,
+                'Mode: Inpaint or most common color': {'value': controller.model.current_parameters.mode,
                          'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val),
                          'range': (0, 1)
                 },
-                'w': {'value': controller.model.current_parameters.w,
+                'Sharpening factor:': {'value': controller.model.current_parameters.w,
                       'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val),
                       'range': (0, 25)
                 },
-                'r_min': {'value': controller.model.current_parameters.r_min,
+                'Red min:': {'value': controller.model.current_parameters.r_min,
                           'callback': lambda val, attr='r_min': controller.on_parameter_changed(attr, val)
                 },
-                'r_max': {'value': controller.model.current_parameters.r_max,
+                'Red max:': {'value': controller.model.current_parameters.r_max,
                           'callback': lambda val, attr='r_max': controller.on_parameter_changed(attr, val)
                 },
-                'g_min': {'value': controller.model.current_parameters.g_min,
+                'Green min:': {'value': controller.model.current_parameters.g_min,
                           'callback': lambda val, attr='g_min': controller.on_parameter_changed(attr, val)
                 },
-                'g_max': {'value': controller.model.current_parameters.g_max,
+                'Green max:': {'value': controller.model.current_parameters.g_max,
                           'callback': lambda val, attr='g_max': controller.on_parameter_changed(attr, val)
                 },
-                'b_min': {'value': controller.model.current_parameters.b_min,
+                'Blue min:': {'value': controller.model.current_parameters.b_min,
                           'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)
                 },
-                'b_max': {'value': controller.model.current_parameters.b_max,
+                'Blue max:': {'value': controller.model.current_parameters.b_max,
                           'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)
                 }
             },
