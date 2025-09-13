@@ -73,6 +73,18 @@ class TkinterView(DisplayInterface):
         if params and "buttons" in params:
             self._create_buttons(params['buttons'])
 
+        # Add checkboxes
+        if params and "checkboxes" in params:
+            for name, checkbox in params['checkboxes'].items():
+                var = tk.IntVar(value=1 if checkbox.get('value', False) else 0)
+                chk = tk.Checkbutton(
+                    self.sidebar,
+                    text=name,
+                    variable=var,
+                    command=checkbox['callback']
+                )
+                chk.pack(anchor='w', pady=2)
+
     def _create_trackbars(self, trackbars):
         for name, value in trackbars.items():
             range_min, range_max = value.get('range', (0, 255))
