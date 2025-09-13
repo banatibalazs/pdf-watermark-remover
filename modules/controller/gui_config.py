@@ -41,37 +41,37 @@ class BaseGUIConfig:
             'Reset mask': {
                 'text': 'Reset mask',
                 'callback': controller.reset_mask,
-                'position': (2, 2)
+                'position': (3, 0)
             },
             'Save mask': {
                 'text': 'Save mask',
                 'callback': controller.save_mask,
-                'position': (3, 1)
+                'position': (4, 1)
             },
             'Load mask': {
                 'text': 'Load mask',
                 'callback': controller.load_mask,
-                'position': (3, 0)
+                'position': (4, 0)
             },
             'Load images': {
                 'text': 'Load images',
                 'callback': controller.load_images,
-                'position': (4, 0)
+                'position': (5, 0)
             },
-            'Save image': {
-                'text': 'Save image',
+            'Save images': {
+                'text': 'Save images',
                 'callback': controller.save_images,
-                'position': (4, 1)
+                'position': (5, 1)
             },
             'Continue': {
                 'text': 'Continue',
                 'callback': controller.on_click_continue,
-                'position': (5, 0)
+                'position': (6, 0)
             },
             'Exit': {
                 'text': 'Exit',
                 'callback': controller.exit,
-                'position': (5, 1)
+                'position': (6, 1)
             }
         }
 
