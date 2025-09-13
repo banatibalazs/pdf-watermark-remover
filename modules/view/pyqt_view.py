@@ -349,6 +349,7 @@ class PyQt5View(DisplayInterface):
 
             # Add text panel to top of sidebar layout
             self.sidebar.layout().insertWidget(0, self.text_area)
+        # TODO: Implement this properly
 
 
     def change_window_setup(self, params):
