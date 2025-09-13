@@ -23,6 +23,9 @@ class DisplayInterface(ABC):
     def start_main_loop(self):
         pass
 
+    def update_trackbars(self, current_parameters):
+        pass
+
 
 class KeyHandlerInterface(ABC):
     @abstractmethod
