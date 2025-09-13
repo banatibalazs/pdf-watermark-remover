@@ -1,3 +1,15 @@
+from dataclasses import dataclass
+
+@dataclass
+class TrackbarTexts:
+    r_max = 'Red max:'
+    r_min = 'Red min:'
+    g_max = 'Green max:'
+    g_min = 'Green min:'
+    b_max = 'Blue max:'
+    b_min = 'Blue min:'
+    mode = 'Mode: Inpaint or most common color'
+    w = 'Sharpening factor (w)'
 
 
 class BaseGUIConfig:
@@ -78,7 +90,7 @@ class BaseGUIConfig:
                 'text': 'Exit',
                 'callback': controller.exit,
                 'position': (7, 0),
-                'margin': (5, 0, 0, 0),
+                'margin': (2, 0, 0, 0),
                 'columnspan': 2
             }
         }
@@ -86,7 +98,7 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image <---> mask weight': {'value': controller.model.get_weight() * 100,
+            'Image <---> mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             },
@@ -160,32 +172,32 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             },
             'key': controller.on_key,
             'trackbars': {
-                'Mode: Inpaint or most common color': {'value': controller.model.current_parameters.mode,
+                'mode' : {'value': controller.model.current_parameters.mode,
                          'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val),
                          'range': (0, 1)
-                },
-                'Sharpening factor:': {'value': controller.model.current_parameters.w,
+                                      },
+                'w': {'value': controller.model.current_parameters.w,
                       'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val),
                       'range': (0, 25)
-                },
-                'Red min:': {'value': controller.model.current_parameters.r_min,
+                                   },
+                'r_min': {'value': controller.model.current_parameters.r_min,
                           'callback': lambda val, attr='r_min': controller.on_parameter_changed(attr, val)
-                },
-                'Red max:': {'value': controller.model.current_parameters.r_max,
+                                       },
+                'r_max': {'value': controller.model.current_parameters.r_max,
                           'callback': lambda val, attr='r_max': controller.on_parameter_changed(attr, val)
-                },
-                'Green min:': {'value': controller.model.current_parameters.g_min,
+                                      },
+                'g_min': {'value': controller.model.current_parameters.g_min,
                           'callback': lambda val, attr='g_min': controller.on_parameter_changed(attr, val)
-                },
-                'Green max:': {'value': controller.model.current_parameters.g_max,
+                                      },
+                'g_max': {'value': controller.model.current_parameters.g_max,
                           'callback': lambda val, attr='g_max': controller.on_parameter_changed(attr, val)
-                },
-                'Blue min:': {'value': controller.model.current_parameters.b_min,
+                                      },
+                'b_min': {'value': controller.model.current_parameters.b_min,
                           'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)
-                },
-                'Blue max:': {'value': controller.model.current_parameters.b_max,
+                                      },
+                'b_max': {'value': controller.model.current_parameters.b_max,
                           'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)
-                }
+                                      }
             },
             'checkboxes': {
                 'Apply same parameters to all pages ': {
