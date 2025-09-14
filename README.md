@@ -6,40 +6,25 @@
 ![OpenCV](https://img.shields.io/badge/opencv_contrib_python--green.svg)
 
 
-This Python project uses OpenCV to remove watermarks or other objects from PDFs. The process includes steps such as area selection, thresholding, drawing, mask erosion/dilation, and color range setting. The final result is a new PDF file with the watermark removed, either filled with the most common color in the image or inpainted.
+A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
 
-## Usage
+## Overview
+![Description](gifs/pyqt_gui_1.png)
+
+## Features
+- **PDF to Image Conversion:** Converts each page of the PDF into an image for processing.
+- **Area Selection:** Allows users to select the area of the watermark using a graphical interface.
+![Description](gifs/pyqt_gui_mask_selected.png)
+- **Thresholding:** Applies thresholding to create a binary mask of the watermark area.
+![Description](gifs/pyqt_gui_mask_threshold.png)
+- **Mask Drawing:** Users can manually refine the mask by drawing on it. Right-click to erase, left-click to draw. There are two cursor types: circle and rectangle.
+- **Mask Erosion/Dilation:** Provides options to erode or dilate the mask to improve accuracy.
+- **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
+  ![Description](gifs/pyqt_gui_2.png)
+- **Watermark Removal:** Removes the watermark from the images and saves the output as a new PDF file, either by filling the area with the most common color or by inpainting.
 
 
-1. **Path to your pdf:** Set `PDF_PATH` global variable or pass it as an argument in the command line. 
-2. **Area Selection:** Draw on the image to create a mask for the watermark.
 
-<p align="center">
-  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_1_draw.gif" alt="draw mask gif">
-</p>
-
-3. **Median Image Calculation:** This process sorts pixel values at each location in a set of images and selects the middle value. It helps to identify the constant features in the image.
-
-4. **Thresholding:** Adjust the threshold value to fine-tune the mask.
-
-<p align="center">
-  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_2_threshold.gif" alt="draw mask gif">
-</p>
-
-5. **Draw on the mask**: Use the mouse to draw on the mask to refine it. Erase the unwanted parts of the mask or draw on the missing parts. 
-
-6. **Mask Adjustment:** Use 'd', 'e', or 'r' to dilate, erode, or reset the mask.
-
-<p align="center">
-  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_3_erode_dilate.gif" alt="draw mask gif">
-</p>
-
-7. **Color Range:** Set the color range with trackbars to finalize the mask
-<p align="center">
-  <img src="https://github.com/banatibalazs/pdf-watermark-remover/blob/main/gifs/sm_4_color_filter.gif" alt="draw mask gif">
-</p>
-
-8. **Watermark Removal:** The script removes the watermark from the images and saves the output as a new PDF file. <u> The area of the removed watermark is either filled with the **most common color** in the image or **inpainted**. </u>
 
 
 ## Python Version Compatibility
@@ -50,9 +35,9 @@ This script is compatible with `Python 3.6` and above.
 
 The script requires the following Python libraries:
 
-- `pdf2image`: Used for converting PDF files into images. This library depends on `poppler-utils`, which is a set of command line tools for working with PDF files. You need to install `poppler-utils` separately for `pdf2image` to work. The installation process depends on your operating system.
-- `img2pdf`: Used for converting images back into a PDF file.
-- `opencv-contrib-python`: A wrapper package for OpenCV python bindings along with its extra modules.
+- `opencv-contrib-python`: For image processing tasks.
+- `pymupdf`: For handling PDF files.
+- `pyqt5`: For the graphical user interface.
 
 ## Installation 
 
@@ -83,7 +68,7 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install pdf2image img2pdf opencv-contrib-python pymupdf
+    pip install opencv-contrib-python pymupdf
     ```
 
 ## Running the Script
