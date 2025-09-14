@@ -42,6 +42,14 @@ class BaseController:
     def on_click_back(self):
         self.change_mode(MaskMode.SELECT)
 
+    def on_click_prev(self):
+        self.model.prev_image()
+        self.update_view()
+
+    def on_click_next(self):
+        self.model.next_image()
+        self.update_view()
+
     def on_click_remove(self):
         self.remove_watermark()
         self.change_mode(MaskMode.SELECT)
