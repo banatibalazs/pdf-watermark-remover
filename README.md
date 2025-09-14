@@ -38,6 +38,7 @@ The script requires the following Python libraries:
 - `opencv-contrib-python`: For image processing tasks.
 - `pymupdf`: For handling PDF files.
 - `pyqt5`: For the graphical user interface.
+- `Pillow`: For image handling.
 
 ## Installation 
 
@@ -68,7 +69,7 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install opencv-contrib-python pymupdf PyQt5
+    pip install opencv-contrib-python pymupdf PyQt5 Pillow
     ```
 
 ## Running the Script
