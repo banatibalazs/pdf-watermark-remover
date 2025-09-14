@@ -123,6 +123,18 @@ class BaseModel:
             return self.image_data.current_image.shape[1], self.image_data.current_image.shape[0]
         return None
 
+    def prev_image(self):
+        if self.image_data.current_page_index > 0:
+            self.image_data.current_page_index -= 1
+            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
+            self.current_parameters = self.parameters[self.image_data.current_page_index]
+
+    def next_image(self):
+        if self.image_data.current_page_index < len(self.image_data.images) - 1:
+            self.image_data.current_page_index += 1
+            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
+            self.current_parameters = self.parameters[self.image_data.current_page_index]
+
     def save_mask(self, path=None):
         if path is None:
             path = 'saved_mask.png'
