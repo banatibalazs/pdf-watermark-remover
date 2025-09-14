@@ -68,7 +68,7 @@ The script requires the following Python libraries:
 2. **Install the required libraries.**
     
     ```bash
-    pip install opencv-contrib-python pymupdf
+    pip install opencv-contrib-python pymupdf PyQt5
     ```
 
 ## Running the Script
