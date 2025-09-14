@@ -394,7 +394,7 @@ def main():
     filename = os.path.join(output_dir, "input_new.pdf")
 
     try:
-        create_watermarked_pdf(filename, 30)
+        create_watermarked_pdf(filename, 250)
     except Exception as e:
         print(f"Error generating PDF: {e}")
 
