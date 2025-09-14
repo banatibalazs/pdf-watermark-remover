@@ -56,7 +56,7 @@ class BaseGUIConfig:
                 'text': 'Reset mask (R)',
                 'callback': controller.reset_mask,
                 'position': (3, 0),
-                'margin': (0, 0, 25, 0),
+                'margin': (0, 0, 45, 0),
                 'columnspan': 2
             },
             'Save mask': {
@@ -80,25 +80,27 @@ class BaseGUIConfig:
                 'position': (5, 1)
             },
             'Continue': {
-                'text': 'Continue (Space)',
+                'text': 'Continue \n(Space)',
                 'callback': controller.on_click_continue,
                 'position': (6, 0),
-                'margin': (25, 0, 0, 0),
-                'columnspan': 2
+                'margin': (45, 0, 0, 0),
+                'columnspan': 2,
+                'bg_color': (80, 135, 85)
             },
             'Exit': {
                 'text': 'Exit',
                 'callback': controller.exit,
                 'position': (7, 0),
                 'margin': (2, 0, 0, 0),
-                'columnspan': 2
+                'columnspan': 2,
+                'bg_color': (150, 75, 75)
             }
         }
 
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image <---> mask': {'value': controller.model.get_weight() * 100,
+            'Image <-----> Mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             },
@@ -168,18 +170,20 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
                     'margin': (25, 0, 0, 0)
                 },
                 'Remove': {
-                    'text': 'Remove watermark (Space)',
+                    'text': 'Remove watermark \n(Space)',
                     'callback': controller.on_click_remove,
                     'position': (1, 0),
-                    'margin': (25, 0, 0, 0),
-                    'columnspan': 2
+                    'margin': (45, 0, 0, 0),
+                    'columnspan': 2,
+                    'bg_color': (70,125, 75),
                 },
                 'Back': {
                     'text': 'Back',
                     'callback':controller.on_click_back,
                     'position': (2, 0),
                     'margin': (5, 0, 0, 0),
-                    'columnspan': 2
+                    'columnspan': 2,
+                    'bg_color': (150, 75, 75)
                 }
             },
             'key': controller.on_key,
