@@ -1,9 +1,9 @@
 #  Watermark Remover
 
 ![Python](https://img.shields.io/badge/python-3.6+-green.svg)
-![PDF2Image](https://img.shields.io/badge/pdf2image--green.svg)
-![Img2PDF](https://img.shields.io/badge/img2pdf--green.svg)
 ![OpenCV](https://img.shields.io/badge/opencv_contrib_python--green.svg)
+![PyMuPDF](https://img.shields.io/badge/pymupdf--green.svg)
+![PyQt5](https://img.shields.io/badge/pyqt5--green.svg)
 
 
 A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
