@@ -94,9 +94,9 @@ class KeyboardHandler(KeyHandlerInterface):
         # the tkinter event has 'char' attribute for character keys, pyqt5 uses 'key_char'
         key = ord(getattr(event, 'char', None) if hasattr(event, 'char') else getattr(event, 'key_char', None))
         if key == ord('a'):
-            self.model.set_current_page_index(max(0, self.model.get_current_page_index() - 1))
+            self.model.prev_image()
         elif key == ord('d'):
-            self.model.set_current_page_index(min(len(self.model.image_data.images) - 1, self.model.get_current_page_index() + 1))
+            self.model.next_image()
         elif key == ord('r'):
             self.mask_manipulator.reset_mask()
         elif key == ord('u'):
@@ -104,7 +104,16 @@ class KeyboardHandler(KeyHandlerInterface):
         elif key == ord('y'):
             self.state_manager.redo()
         elif key == ord('c'):
+            if self.model.get_mode() != MaskMode.DRAW:
+                self.model.set_mode(MaskMode.DRAW)
             self.model.toggle_cursor_type()
+        elif key == ord('s'):
+            if self.model.get_mode() != MaskMode.SELECT:
+                self.model.set_mode(MaskMode.SELECT)
+        elif key == ord('e'):
+            self.mask_manipulator.erode_mask()
+        elif key == ord('q'):
+            self.mask_manipulator.dilate_mask()
         elif key == 32:
             return False
         return True
