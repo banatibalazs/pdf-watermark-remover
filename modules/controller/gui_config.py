@@ -21,39 +21,39 @@ class BaseGUIConfig:
     def get_base_params(controller):
         return {
             'Select': {
-                'text': 'Select',
+                'text': 'Select (S)',
                 'callback': controller.on_click_select,
                 'position': (0, 0),
                 'margin': (25, 0, 0, 0)
             },
             'Draw': {
-                'text': 'Draw',
+                'text': 'Draw (C)',
                 'callback': controller.on_click_draw,
                 'position': (0, 1),
                 'margin': (25, 0, 0, 0)
             },
             'Erode': {
-                'text': 'Erode',
+                'text': 'Erode (E)',
                 'callback': controller.erode_mask,
                 'position': (1, 0)
             },
             'Dilate': {
-                'text': 'Dilate',
+                'text': 'Dilate (Q)',
                 'callback': controller.dilate_mask,
                 'position': (1, 1)
             },
             'Redo': {
-                'text': 'Redo',
+                'text': 'Redo (Y)',
                 'callback': controller.redo,
                 'position': (2, 1)
             },
             'Undo': {
-                'text': 'Undo',
+                'text': 'Undo (U)',
                 'callback': controller.undo,
                 'position': (2, 0)
             },
             'Reset mask': {
-                'text': 'Reset mask',
+                'text': 'Reset mask (R)',
                 'callback': controller.reset_mask,
                 'position': (3, 0),
                 'margin': (0, 0, 25, 0),
@@ -80,7 +80,7 @@ class BaseGUIConfig:
                 'position': (5, 1)
             },
             'Continue': {
-                'text': 'Continue',
+                'text': 'Continue (Space)',
                 'callback': controller.on_click_continue,
                 'position': (6, 0),
                 'margin': (25, 0, 0, 0),
@@ -155,17 +155,29 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
     def get_params(controller):
         return {
             'buttons': {
-                'Remove': {
-                    'text': 'Remove watermark',
-                    'callback': controller.on_click_remove,
+                'Prev': {
+                    'text': '<',
+                    'callback': controller.on_click_prev,
                     'position': (0, 0),
+                    'margin': (25, 0, 0, 0)
+                },
+                'Next': {
+                    'text': '>',
+                    'callback': controller.on_click_next,
+                    'position': (0, 1),
+                    'margin': (25, 0, 0, 0)
+                },
+                'Remove': {
+                    'text': 'Remove watermark (Space)',
+                    'callback': controller.on_click_remove,
+                    'position': (1, 0),
                     'margin': (25, 0, 0, 0),
                     'columnspan': 2
                 },
                 'Back': {
                     'text': 'Back',
                     'callback':controller.on_click_back,
-                    'position': (1, 0),
+                    'position': (2, 0),
                     'margin': (5, 0, 0, 0),
                     'columnspan': 2
                 }
@@ -200,7 +212,7 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
                                       }
             },
             'checkboxes': {
-                'Apply same parameters to all pages ': {
+                'Apply same parameters to all pages': {
                     'value': controller.model.config_data.apply_same_parameters,
                     'callback': controller.on_toggle_apply_same_parameters
                 }
