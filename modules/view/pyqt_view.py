@@ -240,7 +240,19 @@ class PyQt5View(DisplayInterface):
             row, col = button.get('position', (0, 0))
             btn = QPushButton(button['text'])
             margin = button.get('margin', (0, 0, 0, 0))
-            btn.setStyleSheet('QPushButton { margin: %dpx %dpx %dpx %dpx; }' % margin)
+            # include the background color if provided
+            r, g, b = button.get('bg_color', (75, 75, 75))
+            btn.setStyleSheet(
+                f"""
+                QPushButton {{
+                    background-color: rgb({r}, {g}, {b});
+                    margin: {margin[0]}px {margin[1]}px {margin[2]}px {margin[3]}px;
+                }}
+                QPushButton:hover {{
+                    background-color: rgb({min(r+20,255)}, {min(g+20,255)}, {min(b+20,255)});
+                }}
+                """
+            )
             btn.clicked.connect(button['callback'])
 
             # Apply the focus clearing behavior
