@@ -56,41 +56,53 @@ class BaseGUIConfig:
                 'text': 'Reset mask (R)',
                 'callback': controller.reset_mask,
                 'position': (3, 0),
-                'margin': (0, 0, 45, 0),
+                'margin': (0, 0, 25, 0),
                 'columnspan': 2
+            },
+            'Next': {
+                'text': '>',
+                'callback': controller.on_click_next,
+                'position': (4, 1),
+                'margin': (0, 0, 25, 0)
+            },
+            'Prev': {
+                'text': '<',
+                'callback': controller.on_click_prev,
+                'position': (4, 0),
+                'margin': (0, 0, 25, 0)
             },
             'Save mask': {
                 'text': 'Save mask',
                 'callback': controller.save_mask,
-                'position': (4, 1)
+                'position': (5, 1)
             },
             'Load mask': {
                 'text': 'Load mask',
                 'callback': controller.load_mask,
-                'position': (4, 0)
+                'position': (5, 0)
             },
             'Load images': {
                 'text': 'Load images',
                 'callback': controller.load_images,
-                'position': (5, 0)
+                'position': (6, 0)
             },
             'Save images': {
                 'text': 'Save images',
                 'callback': controller.save_images,
-                'position': (5, 1)
+                'position': (6, 1)
             },
             'Continue': {
                 'text': 'Continue \n(Space)',
                 'callback': controller.on_click_continue,
-                'position': (6, 0),
-                'margin': (45, 0, 0, 0),
+                'position': (7, 0),
+                'margin': (25, 0, 0, 0),
                 'columnspan': 2,
                 'bg_color': (80, 135, 85)
             },
             'Exit': {
                 'text': 'Exit',
                 'callback': controller.exit,
-                'position': (7, 0),
+                'position': (8, 0),
                 'margin': (2, 0, 0, 0),
                 'columnspan': 2,
                 'bg_color': (150, 75, 75)
@@ -100,7 +112,7 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image <-----> Mask': {'value': controller.model.get_weight() * 100,
+            'Image <---> Mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             },
