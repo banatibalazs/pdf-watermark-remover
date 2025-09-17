@@ -112,6 +112,10 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
+            'Median Image Number': {'value': controller.model.get_aggregate_image_number(),
+                                    'callback': controller.on_median_image_number_trackbar,
+                                    'range': (1, max(1, controller.model.get_total_images()))
+            },
             'Image <---> Mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
