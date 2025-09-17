@@ -44,10 +44,12 @@ class BaseController:
 
     def on_click_prev(self):
         self.model.prev_image()
+        self.mask_manipulator.apply_thresholds()
         self.update_view()
 
     def on_click_next(self):
         self.model.next_image()
+        self.mask_manipulator.apply_thresholds()
         self.update_view()
 
     def on_click_remove(self):
@@ -62,6 +64,15 @@ class BaseController:
             self.model.toggle_cursor_type()
         else:
             self.change_mode(MaskMode.DRAW)
+
+    def show_dft_filtered_image(self):
+        image = self.model.get_experimental_image()
+        self.view.display_image(image)
+
+    def on_median_image_number_trackbar(self, pos):
+        self.model.set_aggregate_image_number(pos)
+        self.mask_manipulator.apply_thresholds()
+        self.update_view()
 
     def on_click_continue(self):
         self.change_mode(MaskMode.ADJUST)
