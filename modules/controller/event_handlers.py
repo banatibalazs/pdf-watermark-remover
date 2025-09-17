@@ -81,7 +81,7 @@ class MouseHandler(MouseHandlerInterface):
             self.mask_manipulator.apply_thresholds()
 
     def reset_current_image(self):
-        self.model.image_data.current_image = self.model.image_data.images[self.model.image_data.current_page_index].copy()
+        self.model.reset_current_image()
 
 
 class KeyboardHandler(KeyHandlerInterface):
