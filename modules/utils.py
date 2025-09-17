@@ -6,8 +6,9 @@ import fitz  # PyMuPDF
 
 
 def calc_median_image(images, length=40):
-    _length = min(length, len(images))
-    stacked_images = np.stack([np.array(image) for image in images[:_length]], axis=-1)
+    # _length = min(length, len(images))
+    print(f"Calculating median image from {min(length, len(images))} images...")
+    stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
     median_image = np.median(stacked_images, axis=-1)
     median_image = np.uint8(median_image)
     return median_image
