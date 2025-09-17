@@ -49,7 +49,7 @@ class MaskManipulator:
         self._draw_on_mask(0)
 
     def apply_thresholds(self) -> None:
-        filtered_median_image = cv2.inRange(self.model.image_data.median_image,
+        filtered_median_image = cv2.inRange(self.model.image_data.current_image,
                                             np.array(self.model.get_threshold_min(), dtype=np.uint8),
                                             np.array(self.model.get_threshold_max(), dtype=np.uint8))
         self.model.mask_data.final_mask = cv2.bitwise_and(self.model.mask_data.temp_mask, cv2.inRange(filtered_median_image, 1, 255))
