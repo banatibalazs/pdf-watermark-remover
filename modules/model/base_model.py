@@ -15,6 +15,7 @@ class ImageData:
     current_image: Optional[np.ndarray] = None
     median_image: Optional[np.ndarray] = None
     current_page_index: int = 0
+    aggregate_image_number: int = 10
 
 
 @dataclass
@@ -93,7 +94,8 @@ class BaseModel:
         self.image_data.images = resize_images(images, self.config_data.max_width, self.config_data.max_height)
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)
 
-        self.image_data.median_image = cv2.cvtColor(calc_median_image(self.image_data.images, 10), cv2.COLOR_BGR2GRAY)
+        self.image_data.median_image = cv2.cvtColor(calc_median_image(self.image_data.images,
+                                                                      self.get_aggregate_image_number()), cv2.COLOR_BGR2GRAY)
         # self.image_data.current_page_index = 0
         self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
 
@@ -310,10 +312,87 @@ class BaseModel:
     def get_current_page_index(self):
         return self.image_data.current_page_index
 
+    def get_aggregate_image_number(self):
+        return self.image_data.aggregate_image_number
+
+    def get_total_images(self):
+        return len(self.image_data.images)
+
     def set_current_page_index(self, page_index: int):
         self.image_data.current_page_index = page_index
         self.image_data.current_image = self.image_data.images[page_index]
         self.current_parameters = self.parameters[page_index]
+
+    def get_experimental_image(self):
+        # Get the current image
+        img = self.image_data.current_image
+
+        # Convert to grayscale if needed
+        if img.ndim == 3:
+            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        else:
+            img_gray = img
+        # Convert to float32
+        img_float = np.float32(img_gray)
+        # Compute DFT
+        dft = cv2.dft(img_float, flags=cv2.DFT_COMPLEX_OUTPUT)
+        dft_shift = np.fft.fftshift(dft)
+        # Compute magnitude spectrum
+        magnitude = cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, :, 1])
+        magnitude_spectrum = np.log(magnitude + 1)
+        # Normalize for display
+        cv2.normalize(magnitude_spectrum, magnitude_spectrum, 0, 255, cv2.NORM_MINMAX)
+
+        # # filter out the high frequencies
+        # rows, cols = img_gray.shape
+        # crow, ccol = rows // 2, cols // 2
+        # mask = np.zeros((rows, cols, 2), np.uint8)
+        # r = 70  # radius of the low-pass filter
+        # center = (crow, ccol)
+        # x, y = np.ogrid[:rows, :cols]
+        # mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r * r
+        # mask[mask_area] = 1
+        # dft_shift = dft_shift * mask
+
+        # filter out the low frequencies
+        rows, cols = img_gray.shape
+        crow, ccol = rows // 2, cols // 2
+        mask = np.ones((rows, cols, 2), np.uint8)
+        r = 30  # radius of the high-pass filter
+        center = (crow, ccol)
+        x, y = np.ogrid[:rows, :cols]
+        mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r * r
+        mask[mask_area] = 0
+        dft_shift = dft_shift * mask
+
+
+        # Inverse DFT to reconstruct the image
+        dft_ishift = np.fft.ifftshift(dft_shift)
+        img_back = cv2.idft(dft_ishift)
+        img_back = cv2.magnitude(img_back[:, :, 0], img_back[:, :, 1])
+        cv2.normalize(img_back, img_back, 0, 255, cv2.NORM_MINMAX)
+        img_back = img_back.astype(np.uint8)
+        # subtract the img_back from the original image
+        img_back = cv2.subtract(img_gray, img_back)
+        print(img_back)
+        return img_back
+
+
+    def set_aggregate_image_number(self, number: int):
+        self.image_data.aggregate_image_number = number
+        if number == 1:
+            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
+        else:
+            self.image_data.current_image = calc_median_image(self.image_data.images,
+                                                              number)
+
+    def reset_current_image(self):
+        if self.image_data.aggregate_image_number == 1:
+            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
+        else:
+            self.image_data.current_image = calc_median_image(self.image_data.images,
+                                                              self.image_data.aggregate_image_number)
+
 
 
 
