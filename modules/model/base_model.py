@@ -16,15 +16,15 @@ class ImageData:
     median_image_bgr: Optional[np.ndarray] = None
     median_image_gray: Optional[np.ndarray] = None
     current_page_index: int = 0
-    aggregate_image_number: int = 10
+    median_trackbar_pos: int = 1
 
 
 @dataclass
 class MaskData:
     mask: Optional[np.ndarray] = None
-    input_mask: Optional[np.ndarray] = None
     final_mask: Optional[np.ndarray] = None
     temp_mask: Optional[np.ndarray] = None
+    temp_mask_after_threshold: Optional[np.ndarray] = None
     undo_stack: List[np.ndarray] = field(default_factory=list)
     redo_stack: List[np.ndarray] = field(default_factory=list)
     points: List = field(default_factory=list)
@@ -95,13 +95,13 @@ class BaseModel:
         self.image_data.images = resize_images(images, self.config_data.max_width, self.config_data.max_height)
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)
 
-        self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_aggregate_image_number())
+        self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_median_trackbar_pos())
         self.image_data.median_image_gray = cv2.cvtColor(self.image_data.median_image_bgr, cv2.COLOR_BGR2GRAY)
-        self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
+        self.update_current_image()
 
-        self.mask_data.input_mask = cv2.bitwise_and(self.image_data.median_image_gray, self.mask_data.mask)
-        self.mask_data.final_mask = self.mask_data.input_mask.copy()
+        self.mask_data.final_mask = self.mask_data.mask.copy()
         self.mask_data.temp_mask = self.mask_data.final_mask.copy()
+        self.mask_data.temp_mask_after_threshold = self.mask_data.final_mask.copy()
         self.mask_data.undo_stack.clear()
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
@@ -117,6 +117,9 @@ class BaseModel:
         if self.config_data.apply_same_parameters:
             self.set_all_parameters_the_same_as_current()
 
+    def set_current_image(self, image: np.ndarray):
+        self.image_data.current_image = image
+
     def get_current_parameters(self):
         return self.current_parameters.get_params_as_dict()
 
@@ -128,14 +131,14 @@ class BaseModel:
     def prev_image(self):
         if self.image_data.current_page_index > 0:
             self.image_data.current_page_index -= 1
-            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
-            self.current_parameters = self.parameters[self.image_data.current_page_index]
+            self.update_current_image()
+            self.update_current_parameters()
 
     def next_image(self):
         if self.image_data.current_page_index < len(self.image_data.images) - 1:
             self.image_data.current_page_index += 1
-            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
-            self.current_parameters = self.parameters[self.image_data.current_page_index]
+            self.update_current_image()
+            self.update_current_parameters()
 
     def save_mask(self, path=None):
         if path is None:
@@ -152,10 +155,11 @@ class BaseModel:
             raise ValueError("Mask has an unexpected shape: " + str(self.mask_data.final_mask.shape))
 
     def get_bgr_mask(self):
-        if len(self.mask_data.final_mask.shape) == 2:
-            return cv2.cvtColor(self.mask_data.final_mask, cv2.COLOR_GRAY2BGR)
-        elif len(self.mask_data.final_mask.shape) == 3 and self.mask_data.final_mask.shape[2] == 3:
-            return self.mask_data.final_mask
+        mask = self.mask_data.temp_mask_after_threshold
+        if len(mask.shape) == 2:
+            return cv2.cvtColor(cv2.bitwise_or(mask, self.mask_data.final_mask), cv2.COLOR_GRAY2BGR)
+        elif len(mask.shape) == 3 and self.mask.shape[2] == 3:
+            return cv2.bitwise_or(mask, self.mask_data.final_mask)
         else:
             raise ValueError("Mask has an unexpected shape: " + str(self.mask_data.final_mask.shape))
 
@@ -192,7 +196,7 @@ class BaseModel:
             self.reset_mask()
 
     def reset_mask(self):
-        self.mask_data.final_mask = self.mask_data.input_mask.copy()
+        self.mask_data.final_mask = self.mask_data.mask.copy()
         self.mask_data.undo_stack.clear()
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
@@ -214,10 +218,10 @@ class BaseModel:
 
     def get_weighted_image(self):
         """Return the current image with the mask applied based on the weight."""
-        if self.image_data.current_image is None or self.mask_data.final_mask is None:
+        if self.get_current_image() is None or self.mask_data.final_mask is None:
             raise ValueError("Current image or final mask is not set.")
         # Perform blending using NumPy
-        blended_image = (1 - self.config_data.weight) * self.image_data.current_image.astype(np.float32) + \
+        blended_image = (1 - self.config_data.weight) * self.get_current_image().astype(np.float32) + \
                         self.config_data.weight * self.get_bgr_mask().astype(np.float32)
         # Clip values to valid range and convert back to uint8
         blended_image = np.clip(blended_image, 0, 255).astype(np.uint8)
@@ -251,6 +255,7 @@ class BaseModel:
             self.cursor_data.type = CursorType.CIRCLE
 
     def get_processed_current_image(self):
+        print("get_processed_current_image method called")
         current_image = self.image_data.images[self.image_data.current_page_index]
         lower = np.array([self.current_parameters.b_min, self.current_parameters.g_min, self.current_parameters.r_min], dtype=np.uint8)
         upper = np.array([self.current_parameters.b_max, self.current_parameters.g_max, self.current_parameters.r_max], dtype=np.uint8)
@@ -286,7 +291,12 @@ class BaseModel:
         self.config_data.threshold_max = int(value)
 
     def get_current_image(self):
-        return self.image_data.images[self.image_data.current_page_index]
+        return self.image_data.current_image
+
+    def get_current_image_gray(self):
+        if self.image_data.current_image is not None:
+            return cv2.cvtColor(self.image_data.current_image, cv2.COLOR_BGR2GRAY)
+        return None
 
     def get_original_sized_images(self):
         return self.image_data.original_sized_images
@@ -312,16 +322,11 @@ class BaseModel:
     def get_current_page_index(self):
         return self.image_data.current_page_index
 
-    def get_aggregate_image_number(self):
-        return self.image_data.aggregate_image_number
+    def get_median_trackbar_pos(self):
+        return self.image_data.median_trackbar_pos
 
     def get_total_images(self):
         return len(self.image_data.images)
-
-    def set_current_page_index(self, page_index: int):
-        self.image_data.current_page_index = page_index
-        self.image_data.current_image = self.image_data.images[page_index]
-        self.current_parameters = self.parameters[page_index]
 
     def get_experimental_image(self):
         # Get the current image
@@ -379,18 +384,22 @@ class BaseModel:
 
 
     def set_aggregate_image_number(self, number: int):
-        self.image_data.aggregate_image_number = number
+        self.image_data.median_trackbar_pos = number
         if number == 1:
             self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
         else:
             self.image_data.current_image = calc_median_image(self.image_data.images,
                                                               number)
 
-    def reset_current_image(self):
-        if self.image_data.aggregate_image_number == 1:
+    def update_current_image(self):
+         # Reset current_image based on aggregate_image_number
+        if self.image_data.median_trackbar_pos == 1:
             self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
         else:
             self.image_data.current_image = self.image_data.median_image_bgr.copy()
+
+    def update_current_parameters(self):
+        self.current_parameters = self.parameters[self.image_data.current_page_index]
 
 
 

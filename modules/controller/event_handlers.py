@@ -3,13 +3,14 @@ import tkinter
 import cv2
 import numpy as np
 from modules.controller.constants import MaskMode
+from modules.controller.mask_manipulator import MaskManipulator
 from modules.interfaces.gui_interfaces import KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
 from modules.interfaces.events import MouseButton, EventType
 
 
 class MouseHandler(MouseHandlerInterface):
-    def __init__(self, model: BaseModel, state_manager, mask_manipulator):
+    def __init__(self, model: BaseModel, state_manager, mask_manipulator: MaskManipulator):
         self.model: BaseModel = model
         self.state_manager = state_manager
         self.mask_manipulator = mask_manipulator
@@ -55,7 +56,8 @@ class MouseHandler(MouseHandlerInterface):
 
         if event.event_type == EventType.MOUSE_PRESS:
             self.state_manager.save_state()
-            # self.mask_manipulator.reset_temp_mask()
+            self.mask_manipulator.reset_temp_mask()
+            self.mask_manipulator.add_temp_mask_to_final_mask()
 
             if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
@@ -81,7 +83,7 @@ class MouseHandler(MouseHandlerInterface):
             self.mask_manipulator.apply_thresholds()
 
     def reset_current_image(self):
-        self.model.reset_current_image()
+        self.model.update_current_image()
 
 
 class KeyboardHandler(KeyHandlerInterface):
