@@ -13,7 +13,8 @@ class ImageData:
     images: List[np.ndarray] = field(default_factory=list)
     original_sized_images: Optional[List[np.ndarray]] = None
     current_image: Optional[np.ndarray] = None
-    median_image: Optional[np.ndarray] = None
+    median_image_bgr: Optional[np.ndarray] = None
+    median_image_gray: Optional[np.ndarray] = None
     current_page_index: int = 0
     aggregate_image_number: int = 10
 
@@ -94,12 +95,11 @@ class BaseModel:
         self.image_data.images = resize_images(images, self.config_data.max_width, self.config_data.max_height)
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)
 
-        self.image_data.median_image = cv2.cvtColor(calc_median_image(self.image_data.images,
-                                                                      self.get_aggregate_image_number()), cv2.COLOR_BGR2GRAY)
-        # self.image_data.current_page_index = 0
+        self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_aggregate_image_number())
+        self.image_data.median_image_gray = cv2.cvtColor(self.image_data.median_image_bgr, cv2.COLOR_BGR2GRAY)
         self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
 
-        self.mask_data.input_mask = cv2.bitwise_and(self.image_data.median_image, self.mask_data.mask)
+        self.mask_data.input_mask = cv2.bitwise_and(self.image_data.median_image_gray, self.mask_data.mask)
         self.mask_data.final_mask = self.mask_data.input_mask.copy()
         self.mask_data.temp_mask = self.mask_data.final_mask.copy()
         self.mask_data.undo_stack.clear()
@@ -390,8 +390,7 @@ class BaseModel:
         if self.image_data.aggregate_image_number == 1:
             self.image_data.current_image = self.image_data.images[self.image_data.current_page_index].copy()
         else:
-            self.image_data.current_image = calc_median_image(self.image_data.images,
-                                                              self.image_data.aggregate_image_number)
+            self.image_data.current_image = self.image_data.median_image_bgr.copy()
 
 
 
