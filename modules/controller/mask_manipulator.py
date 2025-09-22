@@ -57,6 +57,9 @@ class MaskManipulator:
 
     def add_temp_mask_to_final_mask(self):
         self.model.mask_data.final_mask = cv2.bitwise_or(self.model.mask_data.final_mask, self.model.mask_data.temp_mask_after_threshold)
+    #  TODO call this method after finishing the thresholding
+    #  TODO fix the reset mask button
+    #  TODO fix the bug that the current image gets set from median image to an original image when pushing button
 
     def get_gray_mask(self):
         return self.model.get_gray_mask() if self.model else None
