@@ -195,8 +195,13 @@ class BaseModel:
             # print("Mask size:", self.final_mask.shape)
             self.reset_mask()
 
+    def reset_temp_mask(self):
+        self.mask_data.temp_mask = self.mask_data.mask.copy()
+        self.mask_data.temp_mask_after_threshold = self.mask_data.mask.copy()
+
     def reset_mask(self):
         self.mask_data.final_mask = self.mask_data.mask.copy()
+        self.reset_temp_mask()
         self.mask_data.undo_stack.clear()
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
