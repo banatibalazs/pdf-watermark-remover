@@ -139,6 +139,58 @@ class BaseGUIConfig:
             'trackbars': BaseGUIConfig.get_base_trackbars(controller)
         }
 
+class ThresholdGUIConfig:
+    WINDOW_TITLE = ""
+    TEXTS = []
+    TEXT_COLOR = (0, 0, 0)
+
+    @staticmethod
+    def get_base_params(controller):
+        return {
+            'Continue': {
+                'text': 'Continue \n(Space)',
+                'callback': controller.on_click_continue,
+                'position': (7, 0),
+                'margin': (25, 0, 0, 0),
+                'columnspan': 2,
+                'bg_color': (80, 135, 85)
+            },
+            'Exit': {
+                'text': 'Exit',
+                'callback': controller.exit,
+                'position': (8, 0),
+                'margin': (2, 0, 0, 0),
+                'columnspan': 2,
+                'bg_color': (150, 75, 75)
+            }
+        }
+
+    @staticmethod
+    def get_base_trackbars(controller):
+        return {
+            'Image <---> Mask': {'value': controller.model.get_weight() * 100,
+                                    'callback': controller.on_weight_trackbar,
+                                    'range': (0, 100)
+            },
+            'Threshold min:': {'value': controller.model.get_threshold_min(),
+                              'callback': lambda val: controller.on_threshold_trackbar(val, 'min'),
+                              'range': (0, 255)
+            },
+            'Threshold max:': {'value': controller.model.get_threshold_max(),
+                              'callback': lambda val: controller.on_threshold_trackbar(val, 'max'),
+                              'range': (0, 255)
+            }
+        }
+
+    @staticmethod
+    def get_params(controller):
+        return {
+            'mouse': controller.handle_mouse,
+            'key': controller.on_key,
+            'buttons': BaseGUIConfig.get_base_params(controller),
+            'trackbars': BaseGUIConfig.get_base_trackbars(controller)
+        }
+
 
 
 class MaskSelectorGUIConfig(BaseGUIConfig):
