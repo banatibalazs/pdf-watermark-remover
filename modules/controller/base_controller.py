@@ -1,7 +1,7 @@
 # base_controller.py
 from modules.controller.constants import MaskMode
 from modules.controller.file_handler import FileHandler
-from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig
+from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig, ThresholdGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
 from modules.interfaces.gui_interfaces import DisplayInterface, KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
@@ -44,12 +44,10 @@ class BaseController:
 
     def on_click_prev(self):
         self.model.prev_image()
-        self.mask_manipulator.apply_thresholds()
         self.update_view()
 
     def on_click_next(self):
         self.model.next_image()
-        self.mask_manipulator.apply_thresholds()
         self.update_view()
 
     def on_click_remove(self):
@@ -71,17 +69,25 @@ class BaseController:
 
     def on_median_image_number_trackbar(self, pos):
         self.model.set_aggregate_image_number(pos)
-        self.mask_manipulator.apply_thresholds()
         self.update_view()
 
     def on_click_continue(self):
+        self.next_mode()
+
+    def on_click_threshold_finished(self):
+        self.mask_manipulator.add_temp_mask_to_final_mask()
+        self.change_mode(MaskMode.SELECT)
+
+    def on_click_finished_mask(self):
         self.change_mode(MaskMode.ADJUST)
 
     def next_mode(self):
         if self.model.get_mode() == MaskMode.DRAW:
-            self.change_mode(MaskMode.ADJUST)
+            self.change_mode(MaskMode.THRESHOLD)
         elif self.model.get_mode() == MaskMode.SELECT:
-            self.change_mode(MaskMode.ADJUST)
+            self.change_mode(MaskMode.THRESHOLD)
+        elif self.model.get_mode() == MaskMode.THRESHOLD:
+            self.change_mode(MaskMode.SELECT)
         elif self.model.get_mode() == MaskMode.ADJUST:
             self.remove_watermark()
             self.change_mode(MaskMode.SELECT)
@@ -96,14 +102,10 @@ class BaseController:
     def change_window_setup(self):
         if self.model.get_mode() == MaskMode.ADJUST:
             self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
-            self.view.set_texts(ParameterAdjusterGUIConfig.TEXTS,
-                                ParameterAdjusterGUIConfig.TEXT_COLOR,
-                                ParameterAdjusterGUIConfig.TITLE)
+        elif self.model.get_mode() == MaskMode.THRESHOLD:
+            self.view.change_window_setup(ThresholdGUIConfig.get_params(self))
         else:
             self.view.change_window_setup(BaseGUIConfig.get_params(self))
-            self.view.set_texts(MaskSelectorGUIConfig.TEXTS,
-                                MaskSelectorGUIConfig.TEXT_COLOR,
-                                MaskSelectorGUIConfig.WINDOW_TITLE)
 
     def handle_mouse(self, event):
         self.mouse_handler.handle_mouse(event)
@@ -120,7 +122,7 @@ class BaseController:
     def on_toggle_apply_same_parameters(self):
         self.model.toggle_apply_same_parameters()
 
-    #####################################################################x
+    #####################################################################
 
     def on_parameter_changed(self, attr, val):
         self.update_parameter(attr, val)
@@ -164,7 +166,7 @@ class BaseController:
 
     def reset_mask(self):
         self.mask_manipulator.reset_mask()
-        self.model.image_data.current_image = self.model.get_current_image().copy()
+        self.model.update_current_image()
         self.update_view()
 
     def save_mask(self):

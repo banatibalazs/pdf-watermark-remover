@@ -91,18 +91,26 @@ class BaseGUIConfig:
                 'callback': controller.save_images,
                 'position': (6, 1)
             },
-            'Continue': {
-                'text': 'Continue \n(Space)',
+            'Threshold mask': {
+                'text': 'Threshold mask \n(Space)',
                 'callback': controller.on_click_continue,
                 'position': (7, 0),
                 'margin': (25, 0, 0, 0),
                 'columnspan': 2,
-                'bg_color': (80, 135, 85)
+                'bg_color': (90, 145, 95)
+            },
+            'Finished mask': {
+                'text': '\n Finished mask \n',
+                'callback': controller.on_click_finished_mask,
+                'position': (8, 0),
+                'margin': (0, 0, 0, 0),
+                'columnspan': 2,
+                'bg_color': (75, 75, 155)
             },
             'Exit': {
                 'text': 'Exit',
                 'callback': controller.exit,
-                'position': (8, 0),
+                'position': (9, 0),
                 'margin': (2, 0, 0, 0),
                 'columnspan': 2,
                 'bg_color': (150, 75, 75)
@@ -119,14 +127,6 @@ class BaseGUIConfig:
             'Image <---> Mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
-            },
-            'Threshold min:': {'value': controller.model.get_threshold_min(),
-                              'callback': lambda val: controller.on_threshold_trackbar(val, 'min'),
-                              'range': (0, 255)
-            },
-            'Threshold max:': {'value': controller.model.get_threshold_max(),
-                              'callback': lambda val: controller.on_threshold_trackbar(val, 'max'),
-                              'range': (0, 255)
             }
         }
 
@@ -147,19 +147,19 @@ class ThresholdGUIConfig:
     @staticmethod
     def get_base_params(controller):
         return {
-            'Continue': {
-                'text': 'Continue \n(Space)',
-                'callback': controller.on_click_continue,
+            'Threshold finished': {
+                'text': 'Threshold finished \n(Space)',
+                'callback': controller.on_click_threshold_finished,
                 'position': (7, 0),
-                'margin': (25, 0, 0, 0),
+                'margin': (250, 0, 0, 0),
                 'columnspan': 2,
                 'bg_color': (80, 135, 85)
             },
-            'Exit': {
-                'text': 'Exit',
-                'callback': controller.exit,
+            'Back': {
+                'text': 'Back',
+                'callback': controller.on_click_back,
                 'position': (8, 0),
-                'margin': (2, 0, 0, 0),
+                'margin': (0, 0, 0, 0),
                 'columnspan': 2,
                 'bg_color': (150, 75, 75)
             }
@@ -187,8 +187,8 @@ class ThresholdGUIConfig:
         return {
             'mouse': controller.handle_mouse,
             'key': controller.on_key,
-            'buttons': BaseGUIConfig.get_base_params(controller),
-            'trackbars': BaseGUIConfig.get_base_trackbars(controller)
+            'buttons': ThresholdGUIConfig.get_base_params(controller),
+            'trackbars': ThresholdGUIConfig.get_base_trackbars(controller)
         }
 
 

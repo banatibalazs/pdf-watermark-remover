@@ -155,10 +155,13 @@ class BaseModel:
             raise ValueError("Mask has an unexpected shape: " + str(self.mask_data.final_mask.shape))
 
     def get_bgr_mask(self):
-        mask = self.mask_data.temp_mask_after_threshold
+        if self.config_data.mode == MaskMode.THRESHOLD:
+            mask = self.mask_data.temp_mask_after_threshold
+        else:
+            mask = self.mask_data.temp_mask
         if len(mask.shape) == 2:
             return cv2.cvtColor(cv2.bitwise_or(mask, self.mask_data.final_mask), cv2.COLOR_GRAY2BGR)
-        elif len(mask.shape) == 3 and self.mask.shape[2] == 3:
+        elif len(mask.shape) == 3 and mask.shape[2] == 3:
             return cv2.bitwise_or(mask, self.mask_data.final_mask)
         else:
             raise ValueError("Mask has an unexpected shape: " + str(self.mask_data.final_mask.shape))
@@ -196,6 +199,7 @@ class BaseModel:
             self.reset_mask()
 
     def reset_temp_mask(self):
+        print("Resetting temporary mask to match the final mask.")
         self.mask_data.temp_mask = self.mask_data.mask.copy()
         self.mask_data.temp_mask_after_threshold = self.mask_data.mask.copy()
 

@@ -7,7 +7,7 @@ class MaskStateManager:
         self.model: BaseModel = model
 
     def save_state(self) -> None:
-        self.model.mask_data.temp_mask = self.model.mask_data.final_mask
+        # self.model.mask_data.temp_mask = self.model.mask_data.final_mask
         self.model.mask_data.undo_stack.append(self.model.mask_data.final_mask.copy())
         self.model.mask_data.redo_stack.clear()
 
