@@ -1,10 +1,11 @@
-from enum import Enum
-from dataclasses import dataclass
+from enum import Enum, auto
 
 class MaskMode(Enum):
-    SELECT = 0
-    DRAW = 1
-    ADJUST = 2
+    SELECT = auto()
+    THRESHOLD = auto()
+    DRAW = auto()
+    ADJUST = auto()
+
 
 class CursorType(Enum):
     CIRCLE = 0
