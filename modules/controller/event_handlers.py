@@ -36,6 +36,7 @@ class MouseHandler(MouseHandlerInterface):
         elif event.event_type == EventType.MOUSE_RELEASE:
             self.left_button_pressed = False
             self.right_button_pressed = False
+            self.mask_manipulator.apply_thresholds()
 
         if event.event_type == EventType.MOUSE_MOVE and self.left_button_pressed:
             self.mask_manipulator.draw()
@@ -77,6 +78,7 @@ class MouseHandler(MouseHandlerInterface):
                          [np.array(self.model.mask_data.points)],
                          (255, 255, 255))
             self.model.mask_data.points.clear()
+            self.mask_manipulator.apply_thresholds()
 
     def reset_current_image(self):
         self.model.update_current_image()
