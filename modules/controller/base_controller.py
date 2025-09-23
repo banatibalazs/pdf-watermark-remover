@@ -36,7 +36,11 @@ class BaseController:
 
     def on_key(self, event):
         if not self.keyboard_handler.handle_key(event):
-            self.next_mode()
+            if self.model.get_mode() == MaskMode.THRESHOLD:
+                self.mask_manipulator.add_temp_mask_to_final_mask()
+                self.change_mode(MaskMode.SELECT)
+            else:
+                self.next_mode()
         self.update_view()
 
     def on_click_back(self):
