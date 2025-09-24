@@ -72,7 +72,7 @@ class BaseController:
         self.view.display_image(image)
 
     def on_median_image_number_trackbar(self, pos):
-        self.model.set_aggregate_image_number(pos)
+        self.model.set_median_image_number(pos)
         self.update_view()
 
     def on_click_continue(self):

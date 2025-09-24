@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 from tkinter import filedialog
+from modules.controller.constants import MaskMode
 
 from modules.controller.constants import CursorType
 from modules.model.base_model import BaseModel
@@ -24,12 +25,7 @@ class MaskManipulator:
     def dilate_mask(self) -> None:
         self.model.mask_data.final_mask = cv2.dilate(self.model.mask_data.final_mask, np.ones((3, 3), np.uint8), iterations=1)
 
-    def _draw_on_mask(self, color):
-        if color == 0:
-            mask = self.model.mask_data.final_mask
-        else:
-            mask = self.model.mask_data.temp_mask
-
+    def _draw_on_mask(self, color, mask):
         if self.model.cursor_data.type == CursorType.CIRCLE:
             cv2.circle(
                 mask,
@@ -48,10 +44,12 @@ class MaskManipulator:
                           -1)
 
     def draw(self):
-        self._draw_on_mask(255)
+        self._draw_on_mask(255, self.model.mask_data.temp_mask)
 
     def erase(self):
-        self._draw_on_mask(0)
+        mask = self.model.mask_data.final_mask
+        self._draw_on_mask(0, self.model.mask_data.final_mask)
+        self._draw_on_mask(0, self.model.mask_data.temp_mask)
 
     def apply_thresholds(self) -> None:
         filtered_image = cv2.inRange(self.model.get_current_image_gray(),

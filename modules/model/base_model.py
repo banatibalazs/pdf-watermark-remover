@@ -300,7 +300,11 @@ class BaseModel:
         self.config_data.threshold_max = int(value)
 
     def get_current_image(self):
-        return self.image_data.current_image
+        if self.image_data.median_trackbar_pos == 1:
+            image = self.image_data.images[self.image_data.current_page_index]
+        else:
+            image = self.image_data.median_image_bgr
+        return image
 
     def get_current_image_gray(self):
         if self.image_data.current_image is not None:
@@ -392,13 +396,14 @@ class BaseModel:
         return img_back
 
 
-    def set_aggregate_image_number(self, number: int):
-        self.image_data.median_trackbar_pos = number
-        if number == 1:
-            self.image_data.current_image = self.image_data.images[self.image_data.current_page_index]
-        else:
-            self.image_data.current_image = calc_median_image(self.image_data.images,
-                                                              number)
+    def set_median_image_number(self, tb_pos: int):
+        self.image_data.median_trackbar_pos = tb_pos
+        self.update_median_image()
+
+    def update_median_image(self):
+        self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_median_trackbar_pos())
+        self.image_data.median_image_gray = cv2.cvtColor(self.image_data.median_image_bgr, cv2.COLOR_BGR2GRAY)
+        self.update_current_image()
 
     def update_current_image(self):
          # Reset current_image based on aggregate_image_number
