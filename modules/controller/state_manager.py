@@ -15,8 +15,8 @@ class MaskStateManager:
 
             def save_state(self) -> None:
                 current_state = State(
-                    self.model.mask_data.final_mask,
-                    self.model.mask_data.temp_mask
+                    self.model.get_final_mask(),
+                    self.model.get_temp_mask()
                 )
                 self.model.mask_data.undo_stack.append(current_state)
                 self.model.mask_data.redo_stack.clear()
@@ -27,8 +27,8 @@ class MaskStateManager:
 
                 # Save current state to redo stack
                 current_state = State(
-                    self.model.mask_data.final_mask,
-                    self.model.mask_data.temp_mask
+                    self.model.get_final_mask(),
+                    self.model.get_temp_mask()
                 )
                 self.model.mask_data.redo_stack.append(current_state)
 
@@ -42,8 +42,8 @@ class MaskStateManager:
 
                 # Save current state to undo stack
                 current_state = State(
-                    self.model.mask_data.final_mask,
-                    self.model.mask_data.temp_mask
+                    self.model.get_final_mask(),
+                    self.model.get_temp_mask()
                 )
                 self.model.mask_data.undo_stack.append(current_state)
 
