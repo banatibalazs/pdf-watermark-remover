@@ -17,6 +17,7 @@ class ImageData:
     median_image_gray: Optional[np.ndarray] = None
     current_page_index: int = 0
     median_trackbar_pos: int = 1
+    median_image_cache: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -424,7 +425,13 @@ class BaseModel:
         self.update_median_image()
 
     def update_median_image(self):
-        self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_median_trackbar_pos())
+        tb_pos = self.get_median_trackbar_pos()
+        if tb_pos in self.image_data.median_image_cache:
+            self.image_data.median_image_bgr = self.image_data.median_image_cache[tb_pos]
+        else:
+            median_img = calc_median_image(self.image_data.images, tb_pos)
+            self.image_data.median_image_cache[tb_pos] = median_img
+            self.image_data.median_image_bgr = median_img
         self.image_data.median_image_gray = cv2.cvtColor(self.image_data.median_image_bgr, cv2.COLOR_BGR2GRAY)
         self.update_current_image()
 
