@@ -296,6 +296,12 @@ class BaseModel:
     def get_threshold_max(self):
         return self.config_data.threshold_max
 
+    def get_temp_mask(self):
+        return self.mask_data.temp_mask
+
+    def set_temp_mask(self, value):
+        self.mask_data.temp_mask = value
+
     def set_threshold_max(self, value):
         self.config_data.threshold_max = int(value)
 
