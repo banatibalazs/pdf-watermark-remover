@@ -175,15 +175,10 @@ class BaseModel:
             print(f"Error loading images: {e}")
 
     def load_mask(self, path=None):
-        if path is None:
-            return
         try:
             loaded_mask = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-            if loaded_mask is None:
-                self.reset_mask()
-
             # if mask has 3 channels, convert to grayscale
-            elif len(loaded_mask.shape) == 3 and loaded_mask.shape[2] == 3:
+            if len(loaded_mask.shape) == 3 and loaded_mask.shape[2] == 3:
                 loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_BGR2GRAY)
 
             if loaded_mask.shape != self.image_data.current_image.shape:
@@ -193,10 +188,9 @@ class BaseModel:
                 print(f"Resized loaded mask to match image size: {loaded_mask.shape}")
                 print(f"Image size: {self.image_data.current_image.shape}")
             self.mask_data.final_mask = loaded_mask
+            self.reset_temp_mask()
         except:
             print(f"Error loading mask from {path}. Using default mask.")
-            # print("Mask size:", self.final_mask.shape)
-            self.reset_mask()
 
     def reset_temp_mask(self):
         self.mask_data.temp_mask = self.mask_data.mask.copy()
