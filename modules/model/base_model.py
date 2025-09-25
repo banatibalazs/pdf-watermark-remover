@@ -179,7 +179,6 @@ class BaseModel:
         try:
             loaded_mask = cv2.imread(path, cv2.IMREAD_UNCHANGED)
             if loaded_mask is None:
-                # print("No saved mask found. Using default mask.")
                 self.reset_mask()
 
             # if mask has 3 channels, convert to grayscale
@@ -199,7 +198,6 @@ class BaseModel:
             self.reset_mask()
 
     def reset_temp_mask(self):
-        print("Resetting temporary mask to match the final mask.")
         self.mask_data.temp_mask = self.mask_data.mask.copy()
         self.mask_data.temp_mask_after_threshold = self.mask_data.mask.copy()
 
@@ -209,7 +207,6 @@ class BaseModel:
         self.mask_data.undo_stack.clear()
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
-        print("Mask reset to initial state.")
 
     def set_cursor_size(self, size: int):
         """Set the size of the cursor."""
@@ -264,7 +261,6 @@ class BaseModel:
             self.cursor_data.type = CursorType.CIRCLE
 
     def get_processed_current_image(self):
-        print("get_processed_current_image method called")
         current_image = self.image_data.images[self.image_data.current_page_index]
         lower = np.array([self.current_parameters.b_min, self.current_parameters.g_min, self.current_parameters.r_min], dtype=np.uint8)
         upper = np.array([self.current_parameters.b_max, self.current_parameters.g_max, self.current_parameters.r_max], dtype=np.uint8)
@@ -301,6 +297,27 @@ class BaseModel:
 
     def set_temp_mask(self, value):
         self.mask_data.temp_mask = value
+
+    def get_temp_mask_after_threshold(self):
+        return self.mask_data.temp_mask_after_threshold
+
+    def set_temp_mask_after_threshold(self, value):
+        self.mask_data.temp_mask_after_threshold = value
+
+    def get_cursor_type(self):
+        return self.cursor_data.type
+
+    def get_cursor_size(self):
+        return self.cursor_data.size
+
+    def get_cursor_pos(self):
+        return self.cursor_data.pos
+
+    def get_final_mask(self):
+        return self.mask_data.final_mask
+
+    def set_final_mask(self, value):
+        self.mask_data.final_mask = value
 
     def set_threshold_max(self, value):
         self.config_data.threshold_max = int(value)
