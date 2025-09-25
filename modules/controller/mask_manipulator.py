@@ -20,10 +20,16 @@ class MaskManipulator:
         self.model.mask_data.temp_mask = np.zeros_like(self.model.mask_data.final_mask)
 
     def erode_mask(self) -> None:
-        self.model.mask_data.final_mask = cv2.erode(self.model.mask_data.final_mask, np.ones((3, 3), np.uint8), iterations=1)
+        if self.model.get_mode() == MaskMode.THRESHOLD:
+            self.model.mask_data.temp_mask_after_threshold = cv2.erode(self.model.mask_data.temp_mask_after_threshold, np.ones((3, 3), np.uint8), iterations=1)
+        else:
+            self.model.mask_data.final_mask = cv2.erode(self.model.mask_data.final_mask, np.ones((3, 3), np.uint8), iterations=1)
 
     def dilate_mask(self) -> None:
-        self.model.mask_data.final_mask = cv2.dilate(self.model.mask_data.final_mask, np.ones((3, 3), np.uint8), iterations=1)
+        if self.model.get_mode() == MaskMode.THRESHOLD:
+            self.model.mask_data.temp_mask_after_threshold = cv2.dilate(self.model.mask_data.temp_mask_after_threshold, np.ones((3, 3), np.uint8), iterations=1)
+        else:
+            self.model.mask_data.final_mask = cv2.dilate(self.model.mask_data.final_mask, np.ones((3, 3), np.uint8), iterations=1)
 
     def _draw_on_mask(self, color, mask):
         if self.model.cursor_data.type == CursorType.CIRCLE:

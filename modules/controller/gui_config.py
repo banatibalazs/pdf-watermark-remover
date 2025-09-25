@@ -147,6 +147,16 @@ class ThresholdGUIConfig:
     @staticmethod
     def get_base_params(controller):
         return {
+            'Erode': {
+                'text': 'Erode (E)',
+                'callback': controller.erode_mask,
+                'position': (0, 0)
+            },
+            'Dilate': {
+                'text': 'Dilate (Q)',
+                'callback': controller.dilate_mask,
+                'position': (0, 1)
+            },
             'Threshold finished': {
                 'text': 'Threshold finished \n(Space)',
                 'callback': controller.on_click_threshold_finished,

@@ -64,9 +64,9 @@ class MouseHandler(MouseHandlerInterface):
 
         elif event.event_type == EventType.MOUSE_MOVE:
             if self.left_button_pressed:
-                cv2.line(self.model.image_data.current_image,
+                cv2.line(self.model.mask_data.temp_mask,
                          (self.model.cursor_data.ix, self.model.cursor_data.iy),
-                         (x, y), (0, 0, 0), 2)
+                         (x, y), (255, 255, 255), 2)
                 self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
                 self.model.mask_data.points.append((x, y))
 
