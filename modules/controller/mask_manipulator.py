@@ -22,22 +22,22 @@ class MaskManipulator:
     def erode_mask(self) -> None:
         if self.model.get_mode() == MaskMode.THRESHOLD:
             self.model.set_temp_mask_after_threshold(cv2.erode(self.model.get_temp_mask_after_threshold(),
-                                                               np.ones((3, 3), np.uint8),
-                                                               iterations=1))
+                                                               np.ones((3, 3), np.uint8), iterations=1))
         else:
-            self.model.set_final_mask(cv2.erode(self.model.get_final_mask(),
-                                                np.ones((3, 3), np.uint8),
-                                                iterations=1))
+            self.model.set_temp_mask(cv2.erode(self.model.get_temp_mask(), np.ones((3, 3),
+                                                                                   np.uint8), iterations=1))
+            self.model.set_final_mask(cv2.erode(self.model.get_final_mask(), np.ones((3, 3),
+                                                                                     np.uint8), iterations=1))
 
     def dilate_mask(self) -> None:
         if self.model.get_mode() == MaskMode.THRESHOLD:
-            self.model.set_temp_mask_after_threshold(
-                cv2.dilate(self.model.get_temp_mask_after_threshold(), np.ones((3, 3), np.uint8), iterations=1)
-            )
+            self.model.set_temp_mask_after_threshold(cv2.dilate(self.model.get_temp_mask_after_threshold(),
+                                                                np.ones((3, 3), np.uint8), iterations=1))
         else:
-            self.model.set_final_mask(
-                cv2.dilate(self.model.get_final_mask(), np.ones((3, 3), np.uint8), iterations=1)
-            )
+            self.model.set_final_mask(cv2.dilate(self.model.get_final_mask(), np.ones((3, 3),
+                                                                                      np.uint8), iterations=1))
+            self.model.set_temp_mask(cv2.dilate(self.model.get_temp_mask(), np.ones((3, 3),
+                                                                                      np.uint8), iterations=1))
 
     def _draw_on_mask(self, color, mask):
         if self.model.get_cursor_type() == CursorType.CIRCLE:
