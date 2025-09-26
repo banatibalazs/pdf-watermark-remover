@@ -74,4 +74,3 @@ class MaskManipulator:
     def add_temp_mask_to_final_mask(self):
         self.model.set_final_mask(cv2.bitwise_or(self.model.get_final_mask(), self.model.get_temp_mask_after_threshold()))
         self.model.reset_temp_mask()
-    #  TODO fix the bug that the current image gets set from median image to an original image when pushing button

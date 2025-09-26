@@ -92,7 +92,6 @@ class BaseModel:
         self.update_data(images)
 
     def update_data(self, images):
-        print(f"Data updated.")
         self.image_data.original_sized_images = images
         self.image_data.images = resize_images(images, self.config_data.max_width, self.config_data.max_height)
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)

@@ -8,7 +8,7 @@ from modules.controller.constants import MAX_MEDIAN_IMAGE_NUMBER
 
 
 def calc_median_image(images, length: int = 40):
-    print(f"Calculating median image from {length} images...")
+    # print(f"Calculating median image from {length} images...")
     length = min(length, MAX_MEDIAN_IMAGE_NUMBER)
     stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
     median_image = np.median(stacked_images, axis=-1)
@@ -116,7 +116,6 @@ def read_pdf(pdf_path, dpi=300):
             total_pages = len(doc)
 
             print(f"Loading PDF: {os.path.basename(pdf_path)}")
-            print(f"Total pages: {total_pages}")
 
             for page_num in range(total_pages):
                 # Display progress in a progress bar style
@@ -157,28 +156,7 @@ def load_pdf(pdf_path, dpi=200):
     images = convert_images(images)
     return images
 
-# def save_images(images, path: str = 'output') -> None:
-#     images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
-#     height, width = images[0].shape[:2]
-#     doc = fitz.open()
-#     rect = fitz.Rect(0, 0, width, height)
-#     for image in images:
-#         temp_img_path = 'temp_image.jpg'
-#         # Save as JPEG with quality 90
-#         cv2.imwrite(temp_img_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR), [int(cv2.IMWRITE_JPEG_QUALITY), 90])
-#         page = doc.new_page(width=width, height=height)
-#         page.insert_image(rect, filename=temp_img_path)
-#     # Use compression options
-#     doc.save(f'{path}.pdf', deflate=True, garbage=4)
-#     doc.close()
-#     os.remove(temp_img_path)
-#     print(f"Images saved as {path}.pdf")
-
-
 def save_images(images, path: str = 'output') -> int:
-    # Estimate size before saving
-    # est_size_bytes, human_readable = estimate_pdf_size(images)
-    # print(f"Estimated PDF size: {human_readable}")
 
     images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
     height, width = images[0].shape[:2]
@@ -208,53 +186,4 @@ def save_images(images, path: str = 'output') -> int:
 
     print(f"Images saved as {file_path} (Size: {actual_size_str})")
     return actual_size_bytes
-
-
-# def estimate_pdf_size(images, jpeg_quality=80):
-#     """
-#     Estimate the size of the PDF file based on image count and dimensions.
-#
-#     Args:
-#         images: List of images
-#         jpeg_quality: JPEG quality (higher means larger files)
-#
-#     Returns:
-#         Tuple of (estimated_size_bytes, human_readable_size)
-#     """
-#     total_estimated_size = 0
-#     pdf_overhead = 0  # Base PDF structure overhead in bytes
-#
-#     # Quality factor (empirical approximation)
-#     quality_factor = (jpeg_quality / 100) * 0.2
-#
-#     # PDF compression factor when using deflate and garbage collection
-#     pdf_compression_factor = 0.4
-#
-#     for image in images:
-#         height, width = image.shape[:2]
-#         channels = 3 if len(image.shape) == 3 else 1
-#
-#         # Raw image size in bytes
-#         raw_size = height * width * channels
-#
-#         # Estimated JPEG size
-#         jpeg_size = raw_size * quality_factor
-#
-#         # Estimated size in PDF after compression
-#         pdf_image_size = jpeg_size * pdf_compression_factor
-#
-#         total_estimated_size += pdf_image_size
-#
-#     # Add PDF overhead
-#     estimated_size_bytes = int(total_estimated_size + pdf_overhead)
-#
-#     # Convert to human-readable format
-#     if estimated_size_bytes < 1024:
-#         human_readable = f"{estimated_size_bytes} bytes"
-#     elif estimated_size_bytes < 1024 * 1024:
-#         human_readable = f"{estimated_size_bytes / 1024:.2f} KB"
-#     else:
-#         human_readable = f"{estimated_size_bytes / (1024 * 1024):.2f} MB"
-#
-#     return estimated_size_bytes, human_readable
 

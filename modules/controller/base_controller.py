@@ -98,7 +98,6 @@ class BaseController:
 
     def change_mode(self, mode: MaskMode):
         self.model.set_mode(mode)
-        print(f"Changed mode to {self.model.get_mode().name}")
         self.change_window_setup()
         self.update_view()
 

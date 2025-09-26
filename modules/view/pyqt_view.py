@@ -148,11 +148,6 @@ class PyQt5View(DisplayInterface):
         right_container = QWidget()
         right_layout = QVBoxLayout(right_container)
 
-        # # Text area above sidebar
-        # self.text_area = _create_text_area()
-        # right_layout.addWidget(self.text_area)# Add the right container to main layout
-        # main_layout.addWidget(right_container, 1)
-
         # Sidebar for controls
         self.sidebar = QFrame()
         self.sidebar.setFrameShape(QFrame.StyledPanel)
@@ -180,11 +175,6 @@ class PyQt5View(DisplayInterface):
             clear_layout(self.sidebar.layout())
 
         sidebar_layout = QVBoxLayout(self.sidebar)
-
-        # # Text display
-        # self.text_label = QLabel('\n'.join(self.texts))
-        # self.text_label.setAlignment(Qt.AlignTop)
-        # sidebar_layout.addWidget(self.text_label)
 
         # Trackbars
         if params and 'trackbars' in params:
@@ -353,16 +343,6 @@ class PyQt5View(DisplayInterface):
         self.window.update()
 
     def set_texts(self, texts, color, title):
-        # # Make sure the text panel exists
-        # if not hasattr(self, 'text_area'):
-        #     # Create text panel if it doesn't exist
-        #     self.text_area = QWidget()
-        #     self.text_layout = QVBoxLayout(self.text_area)
-        #     self.text_layout.setContentsMargins(10, 10, 10, 10)
-        #     self.text_area.setStyleSheet("background-color: #f0f0f0; border-radius: 5px;")
-        #
-        #     # Add text panel to top of sidebar layout
-        #     self.sidebar.layout().insertWidget(0, self.text_area)
         # TODO: Implement this properly
         pass
 
