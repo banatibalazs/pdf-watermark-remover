@@ -5,8 +5,9 @@ import numpy as np
 import fitz  # PyMuPDF
 
 
-def calc_median_image(images, length=40):
+def calc_median_image(images, length: int = 40):
     # _length = min(length, len(images))
+    length = int(length)
     print(f"Calculating median image from {min(length, len(images))} images...")
     stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
     median_image = np.median(stacked_images, axis=-1)
@@ -107,25 +108,35 @@ def remove_watermark(images, mask, parameters):
 
 
 def read_pdf(pdf_path, dpi=300):
-    try:
-        doc = fitz.open(pdf_path)
-        images = []
+        try:
+            doc = fitz.open(pdf_path)
+            images = []
+            total_pages = len(doc)
 
-        for page_num in range(len(doc)):
-            page = doc.load_page(page_num)
-            pix = page.get_pixmap(dpi=dpi)
-            img_bytes = pix.tobytes('png')
-            img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
-            cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
-            images.append(img_array)
-        return images
-    except Exception as e:
-        print(f"Error reading PDF: {e}")
-        # Return a blank image in case of error, with values of 255
-        # Write the following text on the image: "Error reading PDF"
-        blank_image = np.ones((800, 600, 3), np.uint8) * 255
-        cv2.putText(blank_image, str(e), (150, 390), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
-        return [blank_image]
+            print(f"Loading PDF: {os.path.basename(pdf_path)}")
+            print(f"Total pages: {total_pages}")
+
+            for page_num in range(total_pages):
+                # Display progress in a progress bar style
+                progress = (page_num + 1) / total_pages
+                print(f"\rLoading page {page_num + 1}/{total_pages} ({(progress * 100):.2f}%)", end='', flush=True)
+
+                page = doc.load_page(page_num)
+                pix = page.get_pixmap(dpi=dpi)
+                img_bytes = pix.tobytes('png')
+                img_array = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+                cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB, img_array)
+                images.append(img_array)
+
+            print("\nPDF loading complete.")
+            return images
+        except Exception as e:
+            text = f"Error reading PDF: {e}"
+            print(text)
+            # Return a blank image in case of error, with values of 255
+            blank_image = np.ones((1000, 700, 3), np.uint8) * 100
+            # cv2.putText(blank_image, text, (15, 39), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+            return [blank_image]
 
 def resize_images(images, max_width=None, max_height=None):
     img_width, img_height = images[0].shape[:2]
