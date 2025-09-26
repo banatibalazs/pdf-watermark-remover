@@ -72,7 +72,7 @@ class BaseController:
         self.view.display_image(image)
 
     def on_median_image_number_trackbar(self, pos):
-        self.model.set_median_image_number(pos)
+        self.model.set_median_trackbar_pos(pos)
         self.update_view()
 
     def on_click_continue(self):
@@ -185,6 +185,7 @@ class BaseController:
 
     def load_images(self):
         self.file_handler.load_images()
+        self.change_mode(MaskMode.SELECT)
         self.update_view()
 
     def redo(self):

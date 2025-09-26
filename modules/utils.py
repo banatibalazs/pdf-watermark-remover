@@ -4,11 +4,12 @@ import cv2
 import numpy as np
 import fitz  # PyMuPDF
 
+from modules.controller.constants import MAX_MEDIAN_IMAGE_NUMBER
+
 
 def calc_median_image(images, length: int = 40):
-    # _length = min(length, len(images))
-    length = int(length)
-    print(f"Calculating median image from {min(length, len(images))} images...")
+    print(f"Calculating median image from {length} images...")
+    length = min(length, MAX_MEDIAN_IMAGE_NUMBER)
     stacked_images = np.stack([np.array(image) for image in images[:length]], axis=-1)
     median_image = np.median(stacked_images, axis=-1)
     median_image = np.uint8(median_image)
@@ -27,6 +28,7 @@ def sharpen_image(img, w):
 
 def get_most_frequent_color(image):
     # Split the image into its channels and get the most frequent color in each channel
+    # TODO: take only the certain vicinity of the masked area into account
     channels = cv2.split(image)
     most_frequent_colors = [np.bincount(channel.flatten()).argmax() for channel in channels]
     return np.array(most_frequent_colors)

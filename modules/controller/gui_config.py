@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 
+from modules.controller.constants import MAX_MEDIAN_IMAGE_NUMBER
+
+
 @dataclass
 class TrackbarTexts:
     r_max = 'Red max:'
@@ -97,7 +100,7 @@ class BaseGUIConfig:
                 'position': (7, 0),
                 'margin': (25, 0, 0, 0),
                 'columnspan': 2,
-                'bg_color': (90, 145, 95)
+                'bg_color': (75, 145, 75)
             },
             'Finished mask': {
                 'text': '\n Finished mask \n',
@@ -105,7 +108,7 @@ class BaseGUIConfig:
                 'position': (8, 0),
                 'margin': (0, 0, 0, 0),
                 'columnspan': 2,
-                'bg_color': (75, 75, 155)
+                'bg_color': (85, 85, 155)
             },
             'Exit': {
                 'text': 'Exit',
@@ -122,7 +125,7 @@ class BaseGUIConfig:
         return {
             'Image <---> Median Image': {'value': controller.model.get_median_trackbar_pos(),
                                     'callback': controller.on_median_image_number_trackbar,
-                                    'range': (1, max(1, controller.model.get_total_images()))
+                                    'range': (1, min(max(1, controller.model.get_total_images()), MAX_MEDIAN_IMAGE_NUMBER))
             },
             'Image <---> Mask': {'value': controller.model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,

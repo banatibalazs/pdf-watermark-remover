@@ -1,5 +1,7 @@
 from enum import Enum, auto
 
+MAX_MEDIAN_IMAGE_NUMBER = 50
+
 class MaskMode(Enum):
     SELECT = auto()
     THRESHOLD = auto()
@@ -10,6 +12,8 @@ class MaskMode(Enum):
 class CursorType(Enum):
     CIRCLE = 0
     SQUARE = 1
+
+
 
 
 

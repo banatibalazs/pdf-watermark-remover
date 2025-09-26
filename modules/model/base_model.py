@@ -92,9 +92,11 @@ class BaseModel:
         self.update_data(images)
 
     def update_data(self, images):
+        print(f"Data updated.")
         self.image_data.original_sized_images = images
         self.image_data.images = resize_images(images, self.config_data.max_width, self.config_data.max_height)
         self.mask_data.mask = np.zeros((self.image_data.images[0].shape[0], self.image_data.images[0].shape[1]), np.uint8)
+        self.image_data.median_image_cache = {}
 
         self.image_data.median_image_bgr = calc_median_image(self.image_data.images, self.get_median_trackbar_pos())
         self.image_data.median_image_gray = cv2.cvtColor(self.image_data.median_image_bgr, cv2.COLOR_BGR2GRAY)
@@ -414,12 +416,19 @@ class BaseModel:
         return img_back
 
 
-    def set_median_image_number(self, tb_pos: int):
-        self.image_data.median_trackbar_pos = tb_pos
+    def set_median_trackbar_pos(self, tb_pos: int):
+        self.image_data.median_trackbar_pos = int(tb_pos)
         self.update_median_image()
 
     def update_median_image(self):
         tb_pos = self.get_median_trackbar_pos()
+        # Change the tb_pos so that above 10 it is rounded to the nearest 5 or 10
+        if tb_pos > 10:
+            if tb_pos % 10 < 5:
+                tb_pos = (tb_pos // 10) * 10 + 5
+            else:
+                tb_pos = ((tb_pos + 5) // 10) * 10
+
         if tb_pos in self.image_data.median_image_cache:
             self.image_data.median_image_bgr = self.image_data.median_image_cache[tb_pos]
         else:
