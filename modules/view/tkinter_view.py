@@ -62,8 +62,8 @@ class TkinterView(DisplayInterface):
 
     def _setup_sidebar_content(self, params):
         # Text label
-        self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
-        self.text_label.pack(anchor='n', pady=5)
+        # self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
+        # self.text_label.pack(anchor='n', pady=5)
 
         # Add trackbars
         if params and 'trackbars' in params:
@@ -102,12 +102,24 @@ class TkinterView(DisplayInterface):
 
         for name, button in buttons.items():
             row, col = button.get('position', (0, 0))
+            colspan = button.get('columnspan', 1)
+            margin = button.get('margin', (0, 0, 0, 0))
+            bg_color = button.get('bg_color', (200, 200, 200))
+
             btn = tk.Button(
                 button_frame,
                 text=button['text'],
-                command=button['callback']
+                command=button['callback'],
+                bg='SystemButtonFace'
             )
-            btn.grid(row=row, column=col, padx=2, pady=2, sticky='ew')
+            btn.grid(
+                row=row,
+                column=col,
+                columnspan=colspan,
+                padx=(margin[1], margin[3]),  # (left, right)
+                pady=(margin[0], margin[2]),  # (top, bottom)
+                sticky='ew'
+            )
 
         # Configure columns to expand equally
         for i in range(4):
