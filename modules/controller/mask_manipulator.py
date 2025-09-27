@@ -40,17 +40,17 @@ class MaskManipulator:
                                                                                       np.uint8), iterations=1))
 
     def _draw_on_mask(self, color, mask):
-        if self.model.mask_model.get_cursor_type() == CursorType.CIRCLE:
+        if self.model.cursor_model.get_cursor_type() == CursorType.CIRCLE:
             cv2.circle(
                 mask,
-                self.model.mask_model.get_cursor_pos(),
-                self.model.mask_model.get_cursor_size(),
+                self.model.cursor_model.get_cursor_pos(),
+                self.model.cursor_model.get_cursor_size(),
                 [color],
                 -1
             )
-        elif self.model.mask_model.get_cursor_type() == CursorType.SQUARE:
-            x, y = self.model.mask_model.get_cursor_pos()
-            size = self.model.mask_model.get_cursor_size()
+        elif self.model.cursor_model.get_cursor_type() == CursorType.SQUARE:
+            x, y = self.model.cursor_model.get_cursor_pos()
+            size = self.model.cursor_model.get_cursor_size()
             cv2.rectangle(mask,
                           (x - size, y - size),
                           (x + size, y + size),
