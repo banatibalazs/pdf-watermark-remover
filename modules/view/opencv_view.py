@@ -1,6 +1,6 @@
 import cv2
 from modules.utils import add_texts_to_image
-from modules.interfaces.gui_interfaces import DisplayInterface
+from modules.interfaces.interfaces import DisplayInterface
 
 class OpencvView(DisplayInterface):
     def __init__(self, texts, text_color, title):
