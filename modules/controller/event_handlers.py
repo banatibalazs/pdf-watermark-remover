@@ -4,15 +4,14 @@ import cv2
 import numpy as np
 from modules.controller.constants import MaskMode
 from modules.controller.mask_manipulator import MaskManipulator
-from modules.interfaces.gui_interfaces import KeyHandlerInterface, MouseHandlerInterface
+from modules.interfaces.interfaces import KeyHandlerInterface, MouseHandlerInterface
 from modules.model.base_model import BaseModel
 from modules.interfaces.events import MouseButton, EventType
 
 
 class MouseHandler(MouseHandlerInterface):
-    def __init__(self, model: BaseModel, state_manager, mask_manipulator: MaskManipulator):
+    def __init__(self, model: BaseModel, mask_manipulator: MaskManipulator):
         self.model: BaseModel = model
-        self.state_manager = state_manager
         self.mask_manipulator = mask_manipulator
         self.left_button_pressed = False
         self.right_button_pressed = False
@@ -27,7 +26,7 @@ class MouseHandler(MouseHandlerInterface):
         x, y = event.x, event.y
 
         if event.event_type == EventType.MOUSE_PRESS:
-            self.state_manager.save_state()
+            self.model.save_state()
             if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
             elif event.button == MouseButton.RIGHT:
@@ -55,7 +54,7 @@ class MouseHandler(MouseHandlerInterface):
         x, y = event.x, event.y
 
         if event.event_type == EventType.MOUSE_PRESS:
-            self.state_manager.save_state()
+            self.model.save_state()
 
             if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
@@ -85,9 +84,8 @@ class MouseHandler(MouseHandlerInterface):
 
 
 class KeyboardHandler(KeyHandlerInterface):
-    def __init__(self, model, state_manager, mask_manipulator):
+    def __init__(self, model, mask_manipulator):
         self.model: BaseModel = model
-        self.state_manager = state_manager
         self.mask_manipulator = mask_manipulator
 
     def handle_key(self, event) -> bool:
@@ -100,9 +98,9 @@ class KeyboardHandler(KeyHandlerInterface):
         elif key == ord('r'):
             self.mask_manipulator.reset_mask()
         elif key == ord('u'):
-            self.state_manager.undo()
+            self.model.undo()
         elif key == ord('y'):
-            self.state_manager.redo()
+            self.model.redo()
         elif key == ord('c'):
             if self.model.get_mode() != MaskMode.DRAW:
                 self.model.set_mode(MaskMode.DRAW)
