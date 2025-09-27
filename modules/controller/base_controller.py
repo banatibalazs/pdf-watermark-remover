@@ -3,26 +3,27 @@ from modules.controller.constants import MaskMode
 from modules.controller.file_handler import FileHandler
 from modules.controller.gui_config import MaskSelectorGUIConfig, BaseGUIConfig, ThresholdGUIConfig
 from modules.controller.gui_config import ParameterAdjusterGUIConfig
-from modules.interfaces.gui_interfaces import DisplayInterface, KeyHandlerInterface, MouseHandlerInterface
+from modules.interfaces.interfaces import DisplayInterface, KeyHandlerInterface, MouseHandlerInterface, \
+    FileHandlerInterface, RedoUndoInterface
 from modules.model.base_model import BaseModel
 
-from modules.controller.state_manager import MaskStateManager
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
 from modules.utils import remove_watermark, load_pdf
+from modules.view.tkinter_view import TkinterView
+from modules.view.pyqt_view import PyQt5View
 
 
 class BaseController:
-    def __init__(self, view: DisplayInterface, args):
-        self.view: DisplayInterface = view
+    def __init__(self, args):
+        self.view: DisplayInterface = PyQt5View(self) if args.gui_type == 'pyqt5' else TkinterView(self)
         self.model = BaseModel(load_pdf(args.pdf_path, args.dpi), args.dpi, args.max_width, args.max_height)
 
         # Initialize components
-        self.state_manager = MaskStateManager(self.model)
-        self.file_handler = FileHandler(self.model)
+        self.file_handler: FileHandlerInterface = FileHandler(self.model)
         self.mask_manipulator = MaskManipulator(self.model)
-        self.mouse_handler: MouseHandlerInterface = MouseHandler(self.model, self.state_manager, self.mask_manipulator)
-        self.keyboard_handler: KeyHandlerInterface = KeyboardHandler(self.model, self.state_manager, self.mask_manipulator)
+        self.mouse_handler: MouseHandlerInterface = MouseHandler(self.model, self.mask_manipulator)
+        self.keyboard_handler: KeyHandlerInterface = KeyboardHandler(self.model, self.mask_manipulator)
 
     def update_view(self):
         image = self.model.get_image_to_show()
@@ -153,12 +154,12 @@ class BaseController:
     # Delegating methods to appropriate components
     def erode_mask(self):
         self.mask_manipulator.erode_mask()
-        self.state_manager.save_state()
+        self.model.save_state()
         self.update_view()
 
     def dilate_mask(self):
         self.mask_manipulator.dilate_mask()
-        self.state_manager.save_state()
+        self.model.save_state()
         self.update_view()
 
     def get_threshold_min(self):
@@ -188,11 +189,11 @@ class BaseController:
         self.update_view()
 
     def redo(self):
-        self.state_manager.redo()
+        self.model.redo()
         self.update_view()
 
     def undo(self):
-        self.state_manager.undo()
+        self.model.undo()
         self.update_view()
 
     def remove_watermark(self):
