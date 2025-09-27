@@ -81,14 +81,13 @@ python remover.py
 
 The arguments for the script are as follows (all are optional)
 - **pdf_path**: The path to the PDF file. Default is `input.pdf`.
-- **save_path**: The path to save the output PDF file. Default is `output.pdf`.
 - **--dpi**: The resolution of the images extracted from the PDF file. Default is `175`.
 - **--max_width**: The maximum width of the images shown during the mask selection. Default is `900`.
 - **--max_height**: The maximum height of the images shown during the mask selection. Default is `800`.
 
 
 ```
-python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1080
+python remover.py input.pdf --dpi 300 --max_width 1920 --max_height 1080
 ```
 
 
@@ -97,6 +96,7 @@ python remover.py input.pdf output.pdf --dpi 300 --max_width 1920 --max_height 1
 - **Process is too slow:**
 
    The reading of large PDF files can be slow, especially if the resolution is high. If the process is too slow, try decreasing the `dpi` parameter.
+    The progress of the image loading is shown in the console.
 
 ## Disclaimer
 
