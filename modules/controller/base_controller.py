@@ -64,7 +64,7 @@ class BaseController:
 
     def on_click_draw(self):
         if self.model.config_model.get_mode() == MaskMode.DRAW:
-            self.model.mask_model.toggle_cursor_type()
+            self.model.cursor_model.toggle_cursor_type()
         else:
             self.change_mode(MaskMode.DRAW)
 
