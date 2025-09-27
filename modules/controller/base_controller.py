@@ -27,17 +27,17 @@ class BaseController:
 
     def update_view(self):
         image = self.model.get_image_to_show()
-        if self.model.get_mode() == MaskMode.ADJUST:
-            self.view.update_trackbars(self.model.get_current_parameters())
+        if self.model.config_model.get_mode() == MaskMode.ADJUST:
+            self.view.update_trackbars(self.model.parameter_model.get_current_parameters())
         self.view.display_image(image)
 
     def on_weight_trackbar(self, pos):
-        self.model.set_weight(int(pos) / 100.0)
+        self.model.config_model.set_weight(int(pos) / 100.0)
         self.update_view()
 
     def on_key(self, event):
         if not self.keyboard_handler.handle_key(event):
-            if self.model.get_mode() == MaskMode.THRESHOLD:
+            if self.model.config_model.get_mode() == MaskMode.THRESHOLD:
                 self.mask_manipulator.add_temp_mask_to_final_mask()
                 self.change_mode(MaskMode.SELECT)
             else:
@@ -48,11 +48,11 @@ class BaseController:
         self.change_mode(MaskMode.SELECT)
 
     def on_click_prev(self):
-        self.model.prev_image()
+        self.model.image_model.prev_image()
         self.update_view()
 
     def on_click_next(self):
-        self.model.next_image()
+        self.model.image_model.next_image()
         self.update_view()
 
     def on_click_remove(self):
@@ -63,8 +63,8 @@ class BaseController:
         self.change_mode(MaskMode.SELECT)
 
     def on_click_draw(self):
-        if self.model.get_mode() == MaskMode.DRAW:
-            self.model.toggle_cursor_type()
+        if self.model.config_model.get_mode() == MaskMode.DRAW:
+            self.model.mask_model.toggle_cursor_type()
         else:
             self.change_mode(MaskMode.DRAW)
 
@@ -73,7 +73,7 @@ class BaseController:
         self.view.display_image(image)
 
     def on_median_image_number_trackbar(self, pos):
-        self.model.set_median_trackbar_pos(pos)
+        self.model.image_model.set_median_trackbar_pos(pos)
         self.update_view()
 
     def on_click_continue(self):
@@ -87,26 +87,25 @@ class BaseController:
         self.change_mode(MaskMode.ADJUST)
 
     def next_mode(self):
-        if self.model.get_mode() == MaskMode.DRAW:
+        if self.model.config_model.get_mode() == MaskMode.DRAW:
             self.change_mode(MaskMode.THRESHOLD)
-        elif self.model.get_mode() == MaskMode.SELECT:
+        elif self.model.config_model.get_mode() == MaskMode.SELECT:
             self.change_mode(MaskMode.THRESHOLD)
-        elif self.model.get_mode() == MaskMode.THRESHOLD:
+        elif self.model.config_model.get_mode() == MaskMode.THRESHOLD:
             self.change_mode(MaskMode.SELECT)
-        elif self.model.get_mode() == MaskMode.ADJUST:
+        elif self.model.config_model.get_mode() == MaskMode.ADJUST:
             self.remove_watermark()
             self.change_mode(MaskMode.SELECT)
 
     def change_mode(self, mode: MaskMode):
-        self.model.set_mode(mode)
+        self.model.config_model.set_mode(mode)
         self.change_window_setup()
         self.update_view()
 
-
     def change_window_setup(self):
-        if self.model.get_mode() == MaskMode.ADJUST:
+        if self.model.config_model.get_mode() == MaskMode.ADJUST:
             self.view.change_window_setup(ParameterAdjusterGUIConfig.get_params(self))
-        elif self.model.get_mode() == MaskMode.THRESHOLD:
+        elif self.model.config_model.get_mode() == MaskMode.THRESHOLD:
             self.view.change_window_setup(ThresholdGUIConfig.get_params(self))
         else:
             self.view.change_window_setup(BaseGUIConfig.get_params(self))
@@ -117,9 +116,9 @@ class BaseController:
 
     def on_threshold_trackbar(self, pos, trackbar_name):
         if trackbar_name == "min":
-            self.model.set_threshold_min(pos)
+            self.model.config_model.set_threshold_min(pos)
         elif trackbar_name == "max":
-            self.model.set_threshold_max(pos)
+            self.model.config_model.set_threshold_max(pos)
         self.mask_manipulator.apply_thresholds()
         self.update_view()
 
@@ -133,14 +132,14 @@ class BaseController:
 
     def update_parameter(self, attr, val):
         val = int(val)
-        setattr(self.model.current_parameters, attr, val)
-        if self.model.config_data.apply_same_parameters:
-            for param in self.model.parameters:
+        setattr(self.model.parameter_model.current_parameters, attr, val)
+        if self.model.config_model.config_data.apply_same_parameters:
+            for param in self.model.parameter_model.parameters:
                 setattr(param, attr, val)
         self.view.display_image(self.model.get_processed_current_image())
 
     def get_parameters(self):
-        return self.model.get_parameters()
+        return self.model.parameter_model.get_parameters()
 
     #########################################################################
 
@@ -163,14 +162,14 @@ class BaseController:
         self.update_view()
 
     def get_threshold_min(self):
-        return self.model.get_threshold_min()
+        return self.model.config_model.get_threshold_min()
 
     def get_threshold_max(self):
-        return self.model.get_threshold_max()
+        return self.model.config_model.get_threshold_max()
 
     def reset_mask(self):
         self.mask_manipulator.reset_mask()
-        self.model.update_current_image()
+        self.model.image_model.update_current_image()
         self.update_view()
 
     def save_mask(self):
@@ -197,9 +196,9 @@ class BaseController:
         self.update_view()
 
     def remove_watermark(self):
-        processed_images = remove_watermark(self.model.get_original_sized_images(),
-                                            self.model.get_bgr_mask(),
-                                            self.model.get_parameters())
+        processed_images = remove_watermark(self.model.image_model.get_original_sized_images(),
+                                            self.model.mask_model.get_bgr_mask(),
+                                            self.model.parameter_model.get_parameters())
         self.model.update_data(processed_images)
 
 
