@@ -197,7 +197,7 @@ class BaseController:
 
     def remove_watermark(self):
         processed_images = remove_watermark(self.model.image_model.get_original_sized_images(),
-                                            self.model.mask_model.get_bgr_mask(),
+                                            self.model.get_bgr_mask(),
                                             self.model.parameter_model.get_parameters())
         self.model.update_data(processed_images)
 
