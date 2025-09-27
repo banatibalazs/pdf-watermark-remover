@@ -1,10 +1,12 @@
 from tkinter import filedialog
+
+from modules.interfaces.interfaces import FileHandlerInterface
 from modules.utils import load_pdf, save_images
 import os
 
 
 
-class FileHandler:
+class FileHandler(FileHandlerInterface):
     def __init__(self, model=None):
         self.model = model
 
