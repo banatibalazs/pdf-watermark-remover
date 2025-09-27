@@ -309,9 +309,6 @@ class BaseModel:
     def get_cursor_pos(self):
         return self.cursor_data.pos
 
-    def get_final_mask(self):
-        return self.mask_data.final_mask
-
     def set_final_mask(self, value):
         self.mask_data.final_mask = value
 
