@@ -17,9 +17,9 @@ class MouseHandler(MouseHandlerInterface):
         self.right_button_pressed = False
 
     def handle_mouse(self, event):
-        if self.model.get_mode() == MaskMode.DRAW:
+        if self.model.config_model.get_mode() == MaskMode.DRAW:
             self.handle_draw_mode(event)
-        elif self.model.get_mode() == MaskMode.SELECT:
+        elif self.model.config_model.get_mode() == MaskMode.SELECT:
             self.handle_select_mode(event)
 
     def handle_draw_mode(self, event):
@@ -44,11 +44,11 @@ class MouseHandler(MouseHandlerInterface):
 
         if event.event_type == EventType.MOUSE_WHEEL:
             if event.wheel_delta > 0:
-                self.model.cursor_data.size = min(self.model.cursor_data.size + 1, 50)
+                self.model.mask_model.cursor_data.size = min(self.model.mask_model.cursor_data.size + 1, 50)
             else:
-                self.model.cursor_data.size = max(self.model.cursor_data.size - 1, 1)
+                self.model.mask_model.cursor_data.size = max(self.model.mask_model.cursor_data.size - 1, 1)
 
-        self.model.cursor_data.pos = (x, y)
+        self.model.mask_model.cursor_data.pos = (x, y)
 
     def handle_select_mode(self, event):
         x, y = event.x, event.y
@@ -58,29 +58,29 @@ class MouseHandler(MouseHandlerInterface):
 
             if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
-                self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
-                self.model.mask_data.points.append((x, y))
+                self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy = x, y
+                self.model.mask_model.mask_data.points.append((x, y))
 
         elif event.event_type == EventType.MOUSE_MOVE:
             if self.left_button_pressed:
-                cv2.line(self.model.mask_data.temp_mask,
-                         (self.model.cursor_data.ix, self.model.cursor_data.iy),
+                cv2.line(self.model.mask_model.mask_data.temp_mask,
+                         (self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy),
                          (x, y), (255, 255, 255), 2)
-                self.model.cursor_data.ix, self.model.cursor_data.iy = x, y
-                self.model.mask_data.points.append((x, y))
+                self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy = x, y
+                self.model.mask_model.mask_data.points.append((x, y))
 
         elif event.event_type == EventType.MOUSE_RELEASE:
             self.left_button_pressed = False
             self.reset_current_image()
-            self.model.mask_data.points.append((x, y))
-            cv2.fillPoly(self.model.mask_data.temp_mask,
-                         [np.array(self.model.mask_data.points)],
+            self.model.mask_model.mask_data.points.append((x, y))
+            cv2.fillPoly(self.model.mask_model.mask_data.temp_mask,
+                         [np.array(self.model.mask_model.mask_data.points)],
                          (255, 255, 255))
-            self.model.mask_data.points.clear()
+            self.model.mask_model.mask_data.points.clear()
             self.mask_manipulator.apply_thresholds()
 
     def reset_current_image(self):
-        self.model.update_current_image()
+        self.model.image_model.update_current_image()
 
 
 class KeyboardHandler(KeyHandlerInterface):
@@ -102,12 +102,12 @@ class KeyboardHandler(KeyHandlerInterface):
         elif key == ord('y'):
             self.model.redo()
         elif key == ord('c'):
-            if self.model.get_mode() != MaskMode.DRAW:
-                self.model.set_mode(MaskMode.DRAW)
-            self.model.toggle_cursor_type()
+            if self.model.config_model.get_mode() != MaskMode.DRAW:
+                self.model.config_model.set_mode(MaskMode.DRAW)
+            self.model.mask_model.toggle_cursor_type()
         elif key == ord('s'):
-            if self.model.get_mode() != MaskMode.SELECT:
-                self.model.set_mode(MaskMode.SELECT)
+            if self.model.config_model.get_mode() != MaskMode.SELECT:
+                self.model.config_model.set_mode(MaskMode.SELECT)
         elif key == ord('e'):
             self.mask_manipulator.erode_mask()
         elif key == ord('q'):
