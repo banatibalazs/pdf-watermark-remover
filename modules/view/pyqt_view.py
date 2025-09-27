@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton,
                              QFrame, QGridLayout, QCheckBox)
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt, pyqtSlot
-from modules.interfaces.gui_interfaces import DisplayInterface
+from modules.interfaces.interfaces import DisplayInterface
 
 DARK_THEME_STYLESHEET = """
 QWidget {
