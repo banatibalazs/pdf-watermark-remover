@@ -123,11 +123,11 @@ class BaseGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image <---> Median Image': {'value': controller.model.get_median_trackbar_pos(),
+            'Image <---> Median Image': {'value': controller.model.image_model.get_median_trackbar_pos(),
                                     'callback': controller.on_median_image_number_trackbar,
-                                    'range': (1, min(max(1, controller.model.get_total_images()), MAX_MEDIAN_IMAGE_NUMBER))
+                                    'range': (1, min(max(1, controller.model.image_model.get_total_images()), MAX_MEDIAN_IMAGE_NUMBER))
             },
-            'Image <---> Mask': {'value': controller.model.get_weight() * 100,
+            'Image <---> Mask': {'value': controller.model.config_model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             }
@@ -181,15 +181,15 @@ class ThresholdGUIConfig:
     @staticmethod
     def get_base_trackbars(controller):
         return {
-            'Image <---> Mask': {'value': controller.model.get_weight() * 100,
+            'Image <---> Mask': {'value': controller.model.config_model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             },
-            'Threshold min:': {'value': controller.model.get_threshold_min(),
+            'Threshold min:': {'value': controller.model.config_model.get_threshold_min(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'min'),
                               'range': (0, 255)
             },
-            'Threshold max:': {'value': controller.model.get_threshold_max(),
+            'Threshold max:': {'value': controller.model.config_model.get_threshold_max(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'max'),
                               'range': (0, 255)
             }
@@ -269,36 +269,36 @@ class ParameterAdjusterGUIConfig(BaseGUIConfig):
             },
             'key': controller.on_key,
             'trackbars': {
-                'mode' : {'value': controller.model.current_parameters.mode,
+                'mode' : {'value': controller.model.parameter_model.current_parameters.mode,
                          'callback': lambda val, attr='mode': controller.on_parameter_changed(attr, val),
                          'range': (0, 1)
                                       },
-                'w': {'value': controller.model.current_parameters.w,
+                'w': {'value': controller.model.parameter_model.current_parameters.w,
                       'callback': lambda val, attr='w': controller.on_parameter_changed(attr, val),
                       'range': (0, 25)
                                    },
-                'r_min': {'value': controller.model.current_parameters.r_min,
+                'r_min': {'value': controller.model.parameter_model.current_parameters.r_min,
                           'callback': lambda val, attr='r_min': controller.on_parameter_changed(attr, val)
                                        },
-                'r_max': {'value': controller.model.current_parameters.r_max,
+                'r_max': {'value': controller.model.parameter_model.current_parameters.r_max,
                           'callback': lambda val, attr='r_max': controller.on_parameter_changed(attr, val)
                                       },
-                'g_min': {'value': controller.model.current_parameters.g_min,
+                'g_min': {'value': controller.model.parameter_model.current_parameters.g_min,
                           'callback': lambda val, attr='g_min': controller.on_parameter_changed(attr, val)
                                       },
-                'g_max': {'value': controller.model.current_parameters.g_max,
+                'g_max': {'value': controller.model.parameter_model.current_parameters.g_max,
                           'callback': lambda val, attr='g_max': controller.on_parameter_changed(attr, val)
                                       },
-                'b_min': {'value': controller.model.current_parameters.b_min,
+                'b_min': {'value': controller.model.parameter_model.current_parameters.b_min,
                           'callback': lambda val, attr='b_min': controller.on_parameter_changed(attr, val)
                                       },
-                'b_max': {'value': controller.model.current_parameters.b_max,
+                'b_max': {'value': controller.model.parameter_model.current_parameters.b_max,
                           'callback': lambda val, attr='b_max': controller.on_parameter_changed(attr, val)
                                       }
             },
             'checkboxes': {
                 'Apply same parameters to all pages': {
-                    'value': controller.model.config_data.apply_same_parameters,
+                    'value': controller.model.config_model.config_data.apply_same_parameters,
                     'callback': controller.on_toggle_apply_same_parameters
                 }
             }
