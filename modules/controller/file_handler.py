@@ -29,7 +29,7 @@ class FileHandler(FileHandlerInterface):
             ).name
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
-            save_images(self.model.get_original_sized_images(), output_path)
+            save_images(self.model.image_model.get_original_sized_images(), output_path)
             return True
         except Exception as e:
             print(f"Error saving images: {str(e)}")
@@ -56,6 +56,6 @@ class FileHandler(FileHandlerInterface):
                 filetypes=[("PNG files", "*.png"), ("All files", "*.*")],
                 initialfile="mask.png"
             ).name
-            self.model.save_mask(path)
+            self.model.mask_model.save_mask(path)
         except Exception as e:
             print(f"Error saving mask: {str(e)}")
