@@ -4,8 +4,18 @@ from typing import List, Optional, Tuple
 from dataclasses import dataclass, field
 
 from modules.controller.constants import MaskMode, CursorType
+from modules.interfaces.interfaces import RedoUndoInterface
 from modules.utils import calc_median_image, fill_masked_area, inpaint_image, sharpen_image, \
     resize_images, resize_mask, load_pdf
+
+
+
+class State:
+    def __init__(self, final_mask, temp_mask):
+        self.temp_mask = temp_mask.copy()
+        self.final_mask = final_mask.copy()
+    def get_state(self):
+        return self.final_mask, self.temp_mask
 
 
 @dataclass
@@ -26,8 +36,8 @@ class MaskData:
     final_mask: Optional[np.ndarray] = None
     temp_mask: Optional[np.ndarray] = None
     temp_mask_after_threshold: Optional[np.ndarray] = None
-    undo_stack: List[np.ndarray] = field(default_factory=list)
-    redo_stack: List[np.ndarray] = field(default_factory=list)
+    undo_stack: List[State] = field(default_factory=list)
+    redo_stack: List[State] = field(default_factory=list)
     points: List = field(default_factory=list)
 
 
@@ -70,7 +80,8 @@ class ParamsForRemoval:
     def set_parameters(self, args):
         self.r_min, self.r_max, self.g_min, self.g_max, self.b_min, self.b_max, self.w, self.mode = args
 
-    def get_parameter_names(self):
+    @staticmethod
+    def get_parameter_names():
         return ['r_min', 'r_max', 'g_min', 'g_max', 'b_min', 'b_max', 'w', 'mode']
 
     def get_params_as_dict(self):
@@ -78,7 +89,8 @@ class ParamsForRemoval:
                  'values': self.get_parameters() }
 
 
-class BaseModel:
+class BaseModel(RedoUndoInterface):
+
     def __init__(self, images=None, dpi=200, max_width=1920, max_height=1080):
 
         self.config_data = ConfigData(max_width=max_width, max_height=max_height, dpi=dpi)
@@ -113,6 +125,49 @@ class BaseModel:
 
         if self.config_data.apply_same_parameters:
             self.set_all_parameters_the_same_as_current()
+
+    def undo(self) -> None:
+        if not self.mask_data.undo_stack:
+            return
+
+        # Save current state to redo stack
+        current_state = State(
+            self.get_final_mask(),
+            self.get_temp_mask()
+        )
+        self.mask_data.redo_stack.append(current_state)
+
+        # Restore previous state
+        previous_state = self.mask_data.undo_stack.pop()
+        self.restore_state(previous_state)
+
+
+    def redo(self) -> None:
+        if not self.mask_data.redo_stack:
+            return
+
+        # Save current state to undo stack
+        current_state = State(
+            self.get_final_mask(),
+            self.get_temp_mask()
+        )
+        self.mask_data.undo_stack.append(current_state)
+
+        # Restore next state
+        next_state = self.mask_data.redo_stack.pop()
+        self.restore_state(next_state)
+
+    def restore_state(self, state: State) -> None:
+        self.mask_data.final_mask, self.mask_data.temp_mask = state.get_state()
+        self.mask_data.temp_mask_after_threshold = self.mask_data.temp_mask.copy()
+
+    def save_state(self) -> None:
+        current_state = State(
+            self.get_final_mask(),
+            self.get_temp_mask()
+        )
+        self.mask_data.undo_stack.append(current_state)
+        self.mask_data.redo_stack.clear()
 
     def toggle_apply_same_parameters(self):
         self.config_data.apply_same_parameters = not self.config_data.apply_same_parameters
@@ -213,6 +268,9 @@ class BaseModel:
         self.cursor_data.cursor_pos = pos
 
     def get_image_to_show(self):
+        cv2.imshow("Temp Mask", self.get_temp_mask())
+        cv2.imshow("Temp Mask after threshold", self.get_temp_mask_after_threshold())
+        cv2.imshow("Final Mask", self.get_final_mask())
         if self.config_data.mode == MaskMode.ADJUST:
             return self.get_processed_current_image()
         else:
