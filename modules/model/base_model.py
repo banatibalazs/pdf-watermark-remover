@@ -234,7 +234,6 @@ class MaskModel(RedoUndoInterface):
     def __init__(self, image_shape):
         self.mask_data = MaskData(image_shape)
         self.img_shape = image_shape
-        self.cursor_data = CursorData()
         self.initialize_mask()
 
     def initialize_mask(self) -> None:
@@ -300,45 +299,6 @@ class MaskModel(RedoUndoInterface):
         self.mask_data.redo_stack.clear()
         self.mask_data.points = []
 
-    def draw_cursor(self, image: np.ndarray) -> np.ndarray:
-        if self.cursor_data.type == CursorType.CIRCLE:
-            cv2.circle(image,
-                       self.cursor_data.pos,
-                       self.cursor_data.size,
-                       (0, 0, 0),
-                       self.cursor_data.thickness)
-        elif self.cursor_data.type == CursorType.SQUARE:
-            size = self.cursor_data.size
-            top_left = (self.cursor_data.pos[0] - size, self.cursor_data.pos[1] - size)
-            bottom_right = (self.cursor_data.pos[0] + size, self.cursor_data.pos[1] + size)
-            cv2.rectangle(image,
-                          top_left,
-                          bottom_right,
-                          (0, 0, 0),
-                          self.cursor_data.thickness)
-        return image
-
-    def toggle_cursor_type(self) -> None:
-        if self.cursor_data.type == CursorType.CIRCLE:
-            self.cursor_data.type = CursorType.SQUARE
-        else:
-            self.cursor_data.type = CursorType.CIRCLE
-
-    def set_cursor_size(self, size: int) -> None:
-        self.cursor_data.size = size
-
-    def set_cursor_pos(self, pos: tuple) -> None:
-        self.cursor_data.pos = pos
-
-    def get_cursor_type(self) -> CursorType:
-        return self.cursor_data.type
-
-    def get_cursor_size(self) -> int:
-        return self.cursor_data.size
-
-    def get_cursor_pos(self) -> Tuple[int, int]:
-        return self.cursor_data.pos
-
     # RedoUndoInterface implementation
     def undo(self) -> None:
         if not self.mask_data.undo_stack:
@@ -388,6 +348,33 @@ class MaskModel(RedoUndoInterface):
         self.mask_data.final_mask = value
 
 
+class CursorModel:
+    def __init__(self):
+        self.cursor_data = CursorData()
+
+    def toggle_cursor_type(self) -> None:
+        if self.cursor_data.type == CursorType.CIRCLE:
+            self.cursor_data.type = CursorType.SQUARE
+        else:
+            self.cursor_data.type = CursorType.CIRCLE
+        print("Cursor type changed to:", self.cursor_data.type)
+
+    def set_cursor_size(self, size: int) -> None:
+        self.cursor_data.size = size
+
+    def set_cursor_pos(self, pos: tuple) -> None:
+        self.cursor_data.pos = pos
+
+    def get_cursor_type(self) -> CursorType:
+        return self.cursor_data.type
+
+    def get_cursor_size(self) -> int:
+        return self.cursor_data.size
+
+    def get_cursor_pos(self) -> Tuple[int, int]:
+        return self.cursor_data.pos
+
+
 class ParameterModel:
     def __init__(self, image_model: ImageModel):
         self.image_model = image_model
@@ -420,6 +407,7 @@ class BaseModel(RedoUndoInterface):
         self.config_model = ConfigModel()
         self.image_model = ImageModel(path, max_width, max_height, dpi)
         self.mask_model = MaskModel(self.image_model.get_image_shape())
+        self.cursor_model = CursorModel()
         self.parameter_model = ParameterModel(self.image_model)
 
     def update_data(self, images):
@@ -451,8 +439,26 @@ class BaseModel(RedoUndoInterface):
         blended_image = np.clip(blended_image, 0, 255).astype(np.uint8)
 
         if self.config_model.get_mode() == MaskMode.DRAW:
-            blended_image = self.mask_model.draw_cursor(blended_image)
+            blended_image = self.draw_cursor(blended_image)
         return blended_image
+
+    def draw_cursor(self, image: np.ndarray) -> np.ndarray:
+        if self.cursor_model.cursor_data.type == CursorType.CIRCLE:
+            cv2.circle(image,
+                       self.cursor_model.cursor_data.pos,
+                       self.cursor_model.cursor_data.size,
+                       (0, 0, 0),
+                       self.cursor_model.cursor_data.thickness)
+        elif self.cursor_model.cursor_data.type == CursorType.SQUARE:
+            size = self.cursor_model.cursor_data.size
+            top_left = (self.cursor_model.cursor_data.pos[0] - size, self.cursor_model.cursor_data.pos[1] - size)
+            bottom_right = (self.cursor_model.cursor_data.pos[0] + size, self.cursor_model.cursor_data.pos[1] + size)
+            cv2.rectangle(image,
+                          top_left,
+                          bottom_right,
+                          (0, 0, 0),
+                          self.cursor_model.cursor_data.thickness)
+        return image
 
     def get_bgr_mask(self) -> np.ndarray:
         return self.mask_model.get_bgr_mask(self.config_model.get_mode())
