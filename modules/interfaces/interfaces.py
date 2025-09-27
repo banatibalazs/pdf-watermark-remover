@@ -37,3 +37,33 @@ class MouseHandlerInterface(ABC):
     @abstractmethod
     def handle_mouse(self, event) -> None:
         pass
+
+class RedoUndoInterface(ABC):
+    @abstractmethod
+    def undo(self) -> None:
+        pass
+
+    @abstractmethod
+    def redo(self) -> None:
+        pass
+
+    @abstractmethod
+    def save_state(self) -> None:
+        pass
+
+class FileHandlerInterface(ABC):
+    @abstractmethod
+    def load_images(self) -> None:
+        pass
+
+    @abstractmethod
+    def save_images(self) -> None:
+        pass
+
+    @abstractmethod
+    def load_mask(self) -> None:
+        pass
+
+    @abstractmethod
+    def save_mask(self) -> None:
+        pass
