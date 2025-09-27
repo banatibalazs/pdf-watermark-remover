@@ -9,7 +9,7 @@ from modules.model.base_model import BaseModel
 
 from modules.controller.mask_manipulator import MaskManipulator
 from modules.controller.event_handlers import MouseHandler, KeyboardHandler
-from modules.utils import remove_watermark, load_pdf
+from modules.utils import remove_watermark
 from modules.view.tkinter_view import TkinterView
 from modules.view.pyqt_view import PyQt5View
 
@@ -17,7 +17,7 @@ from modules.view.pyqt_view import PyQt5View
 class BaseController:
     def __init__(self, args):
         self.view: DisplayInterface = PyQt5View(self) if args.gui_type == 'pyqt5' else TkinterView(self)
-        self.model = BaseModel(load_pdf(args.pdf_path, args.dpi), args.dpi, args.max_width, args.max_height)
+        self.model = BaseModel(args.pdf_path, args.dpi, args.max_width, args.max_height)
 
         # Initialize components
         self.file_handler: FileHandlerInterface = FileHandler(self.model)

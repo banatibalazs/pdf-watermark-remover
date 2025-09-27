@@ -126,8 +126,9 @@ class ConfigModel:
 
 
 class ImageModel:
-    def __init__(self, max_width=1920, max_height=1080, dpi=200):
+    def __init__(self, path, max_width=1920, max_height=1080, dpi=200):
         self.image_data = ImageData(max_width=max_width, max_height=max_height, dpi=dpi)
+        self.load_images(path)
 
     def update_data(self, images: List[np.ndarray]) -> None:
         self.image_data.original_sized_images = images
@@ -223,21 +224,21 @@ class ImageModel:
     def set_current_image(self, image: np.ndarray) -> None:
         self.image_data.current_image = image
 
+    def get_image_shape(self) -> Optional[Tuple[int, int, int]]:
+        if self.image_data.current_image is not None:
+            return self.image_data.current_image.shape
+        return None
+
 
 class MaskModel(RedoUndoInterface):
-    def __init__(self, image_model: ImageModel, config_model: ConfigModel):
-        self.image_model = image_model
-        self.config_model = config_model
-        self.mask_data = MaskData()
+    def __init__(self, image_shape):
+        self.mask_data = MaskData(image_shape)
+        self.img_shape = image_shape
         self.cursor_data = CursorData()
         self.initialize_mask()
 
     def initialize_mask(self) -> None:
-        if not self.image_model.image_data.images:
-            return
-
-        img_shape = self.image_model.image_data.images[0].shape
-        self.mask_data.mask = np.zeros((img_shape[0], img_shape[1]), np.uint8)
+        self.mask_data.mask = np.zeros((self.img_shape[0], self.img_shape[1]), np.uint8)
         self.mask_data.final_mask = self.mask_data.mask.copy()
         self.mask_data.temp_mask = self.mask_data.final_mask.copy()
         self.mask_data.temp_mask_after_threshold = self.mask_data.final_mask.copy()
@@ -277,11 +278,10 @@ class MaskModel(RedoUndoInterface):
             if len(loaded_mask.shape) == 3 and loaded_mask.shape[2] == 3:
                 loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_BGR2GRAY)
 
-            current_img = self.image_model.get_current_image()
-            if loaded_mask.shape != current_img.shape[:2]:
-                loaded_mask = resize_mask(loaded_mask, current_img.shape[1], current_img.shape[0])
+            if loaded_mask.shape != self.img_shape[:2]:
+                loaded_mask = resize_mask(loaded_mask, self.img_shape[1], self.img_shape[0])
                 print(f"Resized loaded mask to match image size: {loaded_mask.shape}")
-                print(f"Image size: {current_img.shape}")
+                print(f"Image size: {self.img_shape}")
             self.mask_data.final_mask = loaded_mask
             self.reset_temp_mask()
             return True
@@ -393,6 +393,7 @@ class ParameterModel:
         self.image_model = image_model
         self.parameters: List[ParamsForRemoval] = []
         self.current_parameters: Optional[ParamsForRemoval] = None
+        self.initialize_parameters()
 
     def initialize_parameters(self) -> None:
         total_images = self.image_model.get_total_images()
@@ -415,14 +416,11 @@ class ParameterModel:
 
 
 class BaseModel(RedoUndoInterface):
-    def __init__(self, images=None, dpi=200, max_width=1920, max_height=1080):
+    def __init__(self, path=None, dpi=200, max_width=1920, max_height=1080):
         self.config_model = ConfigModel()
-        self.image_model = ImageModel(max_width, max_height, dpi)
-        self.mask_model = MaskModel(self.image_model, self.config_model)
+        self.image_model = ImageModel(path, max_width, max_height, dpi)
+        self.mask_model = MaskModel(self.image_model.get_image_shape())
         self.parameter_model = ParameterModel(self.image_model)
-
-        if images is not None:
-            self.update_data(images)
 
     def update_data(self, images):
         self.image_model.update_data(images)
@@ -431,6 +429,10 @@ class BaseModel(RedoUndoInterface):
 
         if self.config_model.get_apply_same_parameters():
             self.parameter_model.set_all_parameters_the_same_as_current()
+
+    def load_mask(self, path):
+        if self.mask_model.load_mask(path):
+            self.mask_model.save_state()
 
     def get_image_to_show(self):
         if self.config_model.get_mode() == MaskMode.ADJUST:
