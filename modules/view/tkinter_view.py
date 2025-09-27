@@ -61,10 +61,6 @@ class TkinterView(DisplayInterface):
         self.sidebar.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
 
     def _setup_sidebar_content(self, params):
-        # Text label
-        # self.text_label = tk.Label(self.sidebar, text='\n'.join(self.texts), justify=tk.LEFT)
-        # self.text_label.pack(anchor='n', pady=5)
-
         # Add trackbars
         if params and 'trackbars' in params:
             self._create_trackbars(params['trackbars'])
@@ -86,13 +82,8 @@ class TkinterView(DisplayInterface):
     def _create_trackbars(self, trackbars):
         for name, value in trackbars.items():
             range_min, range_max = value.get('range', (0, 255))
-            scale = tk.Scale(self.sidebar,
-                             from_=range_min,
-                             to=range_max,
-                             orient='horizontal',
-                             label=name,
-                             command=value['callback'],
-                             length=200)
+            scale = tk.Scale(self.sidebar, from_=range_min, to=range_max, orient='horizontal',
+                             label=name, command=value['callback'], length=200)
             scale.set(value['value'])
             scale.pack()
 
@@ -106,25 +97,15 @@ class TkinterView(DisplayInterface):
             margin = button.get('margin', (0, 0, 0, 0))
             bg_color = button.get('bg_color', (200, 200, 200))
 
-            btn = tk.Button(
-                button_frame,
-                text=button['text'],
-                command=button['callback'],
-                bg='SystemButtonFace'
-            )
-            btn.grid(
-                row=row,
-                column=col,
-                columnspan=colspan,
+            btn = tk.Button(button_frame, text=button['text'], command=button['callback'], bg='SystemButtonFace')
+            btn.grid(row=row, column=col, columnspan=colspan,
                 padx=(margin[1], margin[3]),  # (left, right)
                 pady=(margin[0], margin[2]),  # (top, bottom)
-                sticky='ew'
-            )
+                sticky='ew')
 
         # Configure columns to expand equally
         for i in range(4):
             button_frame.columnconfigure(i, weight=1)
-
 
     def _bind_events(self, params):
         if not params:

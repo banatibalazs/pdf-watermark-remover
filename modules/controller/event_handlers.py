@@ -86,7 +86,7 @@ class MouseHandler(MouseHandlerInterface):
 class KeyboardHandler(KeyHandlerInterface):
     def __init__(self, model, mask_manipulator):
         self.model: BaseModel = model
-        self.mask_manipulator = mask_manipulator
+        self.mask_manipulator: MaskManipulator = mask_manipulator
 
     def handle_key(self, event) -> bool:
         # the tkinter event has 'char' attribute for character keys, pyqt5 uses 'key_char'

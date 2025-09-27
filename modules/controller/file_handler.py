@@ -8,7 +8,7 @@ import os
 
 
 class FileHandler(FileHandlerInterface):
-    def __init__(self, model=None):
+    def __init__(self, model):
         self.model: BaseModel = model
 
     def load_images(self, path=None, dpi=300):
