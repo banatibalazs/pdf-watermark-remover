@@ -44,11 +44,11 @@ class MouseHandler(MouseHandlerInterface):
 
         if event.event_type == EventType.MOUSE_WHEEL:
             if event.wheel_delta > 0:
-                self.model.mask_model.cursor_data.size = min(self.model.mask_model.cursor_data.size + 1, 50)
+                self.model.cursor_model.cursor_data.size = min(self.model.cursor_model.cursor_data.size + 1, 50)
             else:
-                self.model.mask_model.cursor_data.size = max(self.model.mask_model.cursor_data.size - 1, 1)
+                self.model.cursor_model.cursor_data.size = max(self.model.cursor_model.cursor_data.size - 1, 1)
 
-        self.model.mask_model.cursor_data.pos = (x, y)
+        self.model.cursor_model.cursor_data.pos = (x, y)
 
     def handle_select_mode(self, event):
         x, y = event.x, event.y
@@ -58,15 +58,15 @@ class MouseHandler(MouseHandlerInterface):
 
             if event.button == MouseButton.LEFT:
                 self.left_button_pressed = True
-                self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy = x, y
+                self.model.cursor_model.cursor_data.ix, self.model.cursor_model.cursor_data.iy = x, y
                 self.model.mask_model.mask_data.points.append((x, y))
 
         elif event.event_type == EventType.MOUSE_MOVE:
             if self.left_button_pressed:
                 cv2.line(self.model.mask_model.mask_data.temp_mask,
-                         (self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy),
+                         (self.model.cursor_model.cursor_data.ix, self.model.cursor_model.cursor_data.iy),
                          (x, y), (255, 255, 255), 2)
-                self.model.mask_model.cursor_data.ix, self.model.mask_model.cursor_data.iy = x, y
+                self.model.cursor_model.cursor_data.ix, self.model.cursor_model.cursor_data.iy = x, y
                 self.model.mask_model.mask_data.points.append((x, y))
 
         elif event.event_type == EventType.MOUSE_RELEASE:
@@ -104,7 +104,7 @@ class KeyboardHandler(KeyHandlerInterface):
         elif key == ord('c'):
             if self.model.config_model.get_mode() != MaskMode.DRAW:
                 self.model.config_model.set_mode(MaskMode.DRAW)
-            self.model.mask_model.toggle_cursor_type()
+            self.model.cursor_model.toggle_cursor_type()
         elif key == ord('s'):
             if self.model.config_model.get_mode() != MaskMode.SELECT:
                 self.model.config_model.set_mode(MaskMode.SELECT)
