@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from modules.utils import add_texts_to_image
-from modules.interfaces.gui_interfaces import DisplayInterface
+from modules.interfaces.interfaces import DisplayInterface
 import cv2
 from modules.controller.event_adapter import TkinterEventAdapter
 
