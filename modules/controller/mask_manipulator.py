@@ -75,3 +75,13 @@ class MaskManipulator:
         self.model.mask_model.set_final_mask(cv2.bitwise_or(self.model.mask_model.get_final_mask(),
                                                             self.model.mask_model.get_temp_mask_after_threshold()))
         self.model.mask_model.reset_temp_mask()
+
+    def save_state(self):
+        self.model.save_state()
+
+    def redo(self):
+        self.model.redo()
+
+    def undo(self):
+        self.model.undo()
+

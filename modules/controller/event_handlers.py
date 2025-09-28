@@ -12,7 +12,7 @@ from modules.interfaces.events import MouseButton, EventType
 class MouseHandler(MouseHandlerInterface):
     def __init__(self, model: BaseModel, mask_manipulator: MaskManipulator):
         self.model: BaseModel = model
-        self.mask_manipulator = mask_manipulator
+        self.mask_manipulator: MaskManipulator = mask_manipulator
         self.left_button_pressed = False
         self.right_button_pressed = False
 

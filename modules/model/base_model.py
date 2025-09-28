@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from typing import List, Optional, Tuple, Dict, Any
 from dataclasses import dataclass, field
-
 from modules.controller.constants import MaskMode, CursorType
 from modules.interfaces.interfaces import RedoUndoInterface
 from modules.utils import calc_median_image, fill_masked_area, inpaint_image, sharpen_image, \
@@ -233,11 +232,10 @@ class ImageModel:
 class MaskModel(RedoUndoInterface):
     def __init__(self, image_shape):
         self.mask_data = MaskData(image_shape)
-        self.img_shape = image_shape
-        self.initialize_mask()
+        self.update_mask(image_shape)
 
-    def initialize_mask(self) -> None:
-        self.mask_data.mask = np.zeros((self.img_shape[0], self.img_shape[1]), np.uint8)
+    def update_mask(self, shape) -> None:
+        self.mask_data.mask = np.zeros((shape[0], shape[1]), np.uint8)
         self.mask_data.final_mask = self.mask_data.mask.copy()
         self.mask_data.temp_mask = self.mask_data.final_mask.copy()
         self.mask_data.temp_mask_after_threshold = self.mask_data.final_mask.copy()
@@ -271,16 +269,15 @@ class MaskModel(RedoUndoInterface):
         cv2.imwrite(path, cv2.bitwise_or(self.mask_data.final_mask, self.mask_data.temp_mask))
         print("Mask saved as " + path)
 
-    def load_mask(self, path=None) -> bool:
+    def load_mask(self, path, shape) -> bool:
         try:
             loaded_mask = cv2.imread(path, cv2.IMREAD_UNCHANGED)
             if len(loaded_mask.shape) == 3 and loaded_mask.shape[2] == 3:
                 loaded_mask = cv2.cvtColor(loaded_mask, cv2.COLOR_BGR2GRAY)
 
-            if loaded_mask.shape != self.img_shape[:2]:
-                loaded_mask = resize_mask(loaded_mask, self.img_shape[1], self.img_shape[0])
+            if loaded_mask.shape != shape[:2]:
+                loaded_mask = resize_mask(loaded_mask, shape[1], shape[0])
                 print(f"Resized loaded mask to match image size: {loaded_mask.shape}")
-                print(f"Image size: {self.img_shape}")
             self.mask_data.final_mask = loaded_mask
             self.reset_temp_mask()
             return True
@@ -412,14 +409,14 @@ class BaseModel(RedoUndoInterface):
 
     def update_data(self, images):
         self.image_model.update_data(images)
-        self.mask_model.initialize_mask()
+        self.mask_model.update_mask(self.image_model.get_image_shape())
         self.parameter_model.initialize_parameters()
 
         if self.config_model.get_apply_same_parameters():
             self.parameter_model.set_all_parameters_the_same_as_current()
 
     def load_mask(self, path):
-        if self.mask_model.load_mask(path):
+        if self.mask_model.load_mask(path, self.image_model.get_image_shape()):
             self.mask_model.save_state()
 
     def get_image_to_show(self):
@@ -433,8 +430,9 @@ class BaseModel(RedoUndoInterface):
         if current_image is None or self.mask_model.mask_data.final_mask is None:
             raise ValueError("Current image or final mask is not set.")
 
-        blended_image = ((1 - self.config_model.get_weight()) * current_image.astype(np.float32) + \
-                        self.config_model.get_weight() *
+        weight = self.config_model.get_weight()
+        blended_image = ((1 - weight) * current_image.astype(np.float32) + \
+                        weight *
                          self.get_bgr_mask().astype(np.float32))
         blended_image = np.clip(blended_image, 0, 255).astype(np.uint8)
 

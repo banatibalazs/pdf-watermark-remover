@@ -153,12 +153,12 @@ class BaseController:
     # Delegating methods to appropriate components
     def erode_mask(self):
         self.mask_manipulator.erode_mask()
-        self.model.save_state()
+        self.mask_manipulator.save_state()
         self.update_view()
 
     def dilate_mask(self):
         self.mask_manipulator.dilate_mask()
-        self.model.save_state()
+        self.mask_manipulator.save_state()
         self.update_view()
 
     def get_threshold_min(self):
@@ -185,14 +185,13 @@ class BaseController:
     def load_images(self):
         self.file_handler.load_images()
         self.change_mode(MaskMode.SELECT)
-        self.update_view()
 
     def redo(self):
-        self.model.redo()
+        self.mask_manipulator.redo()
         self.update_view()
 
     def undo(self):
-        self.model.undo()
+        self.mask_manipulator.undo()
         self.update_view()
 
     def remove_watermark(self):

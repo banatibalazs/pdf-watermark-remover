@@ -11,13 +11,13 @@ class FileHandler(FileHandlerInterface):
     def __init__(self, model):
         self.model: BaseModel = model
 
-    def load_images(self, path=None, dpi=300):
+    def load_images(self, path=None, dpi=175):
         path = filedialog.askopenfilename(
             title="Load mask",
             filetypes=[("All files", "*.*")]
         )
         if path:
-            images = load_pdf(path, self.model.config_data.dpi)
+            images = load_pdf(path, self.model.image_model.image_data.dpi)
             self.model.update_data(images)
 
     def save_images(self):
