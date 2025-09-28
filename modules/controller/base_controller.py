@@ -116,9 +116,9 @@ class BaseController:
 
     def on_threshold_trackbar(self, pos, trackbar_name):
         if trackbar_name == "min":
-            self.model.config_model.set_threshold_min(pos)
+            self.model.mask_model.set_threshold_min(pos)
         elif trackbar_name == "max":
-            self.model.config_model.set_threshold_max(pos)
+            self.model.mask_model.set_threshold_max(pos)
         self.mask_manipulator.apply_thresholds()
         self.update_view()
 
