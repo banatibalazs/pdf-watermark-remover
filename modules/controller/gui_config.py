@@ -125,7 +125,7 @@ class BaseGUIConfig:
         return {
             'Image <---> Median Image': {'value': controller.model.image_model.get_median_trackbar_pos(),
                                     'callback': controller.on_median_image_number_trackbar,
-                                    'range': (1, min(max(1, controller.model.image_model.get_total_images()), MAX_MEDIAN_IMAGE_NUMBER))
+                                    'range': (1, min(max(1, controller.model.image_model.get_number_of_pages()), MAX_MEDIAN_IMAGE_NUMBER))
             },
             'Image <---> Mask': {'value': controller.model.config_model.get_weight() * 100,
                                     'callback': controller.on_weight_trackbar,
