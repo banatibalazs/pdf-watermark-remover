@@ -54,12 +54,15 @@ A Python application for removing watermarks from PDF files using mask-based ima
 
 - **Thresholding:** Applies thresholding to the masked area of the image to refine the mask further.
 <p>
-    <img src='gifs/thresholding_mask.png' width='30%' />
+    <img src='gifs/threshold_1.png' width='30%' />
+    <img src='gifs/threshold_2.png' width='30%' />
+    <img src='gifs/threshold_3.png' width='30%' />
 </p>
 
 - **Mask Erosion/Dilation:**
   - Erosion: Shrinks the white areas in the mask, which can help remove small unwanted details.
   - Dilation: Expands the white areas in the mask, which can help fill in gaps and/or to cover the edges of the watermark.
+  - On the images below, the middle one is the original mask, the left one is after erosion, and the right one is after dilation.
 <p>
     <img src='gifs/erode.png' width='30%' />
     <img src='gifs/erode_dilate_original.png' width='30%' />
