@@ -398,7 +398,6 @@ class PyQt5View(DisplayInterface):
 
     def update_trackbars(self, values):
         """Updates trackbar values"""
-        print("Updating trackbars:", values)
         if hasattr(self, 'sliders'):
             for i in range(len(values['names'])):
                 name = values['names'][i]
