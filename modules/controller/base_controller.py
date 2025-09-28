@@ -47,10 +47,14 @@ class BaseController:
 
     def on_click_prev(self):
         self.model.image_model.prev_image()
+        if self.model.config_model.get_mode() == MaskMode.ADJUST:
+            self.view.update_trackbars(self.model.parameter_model.get_current_parameters_data_as_dict())
         self.update_view()
 
     def on_click_next(self):
         self.model.image_model.next_image()
+        if self.model.config_model.get_mode() == MaskMode.ADJUST:
+            self.view.update_trackbars(self.model.parameter_model.get_current_parameters_data_as_dict())
         self.update_view()
 
     def on_click_remove(self):
@@ -127,7 +131,7 @@ class BaseController:
 
     def on_parameter_changed(self, attr, val):
         self.update_parameter(attr, val)
-        self.view.update_trackbars(self.model.parameter_model.get_current_parameters_as_dict())
+        self.view.update_trackbars(self.model.parameter_model.get_current_parameters_data_as_dict())
     #      TODO: not working properly
 
     def update_parameter(self, attr, val):

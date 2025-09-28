@@ -42,24 +42,17 @@ class ParamsForRemoval:
 class ParameterModel:
     def __init__(self, image_model: ImageModel):
         self.image_model = image_model
-        self.parameters: List[ParamsForRemoval] = []
-        self.current_parameters: Optional[ParamsForRemoval] = None
-        self.apply_same_parameters = True
-        self.initialize_parameters()
-
-    def initialize_parameters(self) -> None:
-        total_images = self.image_model.get_number_of_pages()
-        self.parameters = [ParamsForRemoval() for _ in range(total_images)]
-        self.current_parameters = self.parameters[self.image_model.get_current_page_index()]
-
-    def update_current_parameters(self) -> None:
-        self.current_parameters = self.parameters[self.image_model.get_current_page_index()]
+        self.parameters: List[ParamsForRemoval] = [ParamsForRemoval() for _ in range(self.image_model.get_number_of_pages())]
+        self.apply_same_parameters = False
 
     def get_current_parameters(self) -> Dict[str, Any]:
-        return self.current_parameters.get_params_as_dict()
+        return self.parameters[self.image_model.get_current_page_index()]
+
+    def get_current_parameters_data_as_dict(self):
+        return self.parameters[self.image_model.get_current_page_index()].get_params_as_dict()
 
     def set_all_parameters_the_same_as_current(self) -> None:
-        params = self.current_parameters.get_parameters()
+        params = self.get_current_parameters().get_parameters()
         for param in self.parameters:
             param.set_parameters(params)
 
@@ -74,14 +67,11 @@ class ParameterModel:
         return self.apply_same_parameters
 
     def set_current_parameter(self, attr: str, val: Any) -> None:
-        if hasattr(self.current_parameters, attr):
-            setattr(self.current_parameters, attr, val)
-            print(f"Set {attr} to {val} for current parameters.")
+        if hasattr(self.get_current_parameters(), attr):
+            setattr(self.get_current_parameters(), attr, val)
             # If apply_same_parameters is enabled, update all parameters
             if self.apply_same_parameters:
-                print(f"Set {attr} to {val} for all parameters.")
-                for param in self.parameters:
-                    setattr(param, attr, val)
+                self.set_all_parameters_the_same_as_current()
         else:
             raise AttributeError(f"ParamsForRemoval has no attribute '{attr}'")
 
@@ -97,10 +87,7 @@ class BaseModel(RedoUndoInterface):
     def update_data(self, images):
         self.image_model.update_data(images)
         self.mask_model.update_mask(self.image_model.get_image_shape())
-        self.parameter_model.initialize_parameters()
 
-        if self.config_model.get_apply_same_parameters():
-            self.parameter_model.set_all_parameters_the_same_as_current()
 
     def load_mask(self, path):
         if self.mask_model.load_mask(path, self.image_model.get_image_shape()):
@@ -150,24 +137,24 @@ class BaseModel(RedoUndoInterface):
 
     def get_processed_current_image(self) -> np.ndarray:
         current_image = self.image_model.get_current_image()
-        lower = np.array([self.parameter_model.current_parameters.b_min,
-                          self.parameter_model.current_parameters.g_min,
-                          self.parameter_model.current_parameters.r_min], dtype=np.uint8)
-        upper = np.array([self.parameter_model.current_parameters.b_max,
-                          self.parameter_model.current_parameters.g_max,
-                          self.parameter_model.current_parameters.r_max], dtype=np.uint8)
+        lower = np.array([self.parameter_model.get_current_parameters().b_min,
+                          self.parameter_model.get_current_parameters().g_min,
+                          self.parameter_model.get_current_parameters().r_min], dtype=np.uint8)
+        upper = np.array([self.parameter_model.get_current_parameters().b_max,
+                          self.parameter_model.get_current_parameters().g_max,
+                          self.parameter_model.get_current_parameters().r_max], dtype=np.uint8)
 
         bgr_mask = self.get_bgr_mask()
         mask = cv2.bitwise_and(current_image, bgr_mask)
         gray_mask = cv2.inRange(mask, lower, upper)
         gray_mask = cv2.bitwise_and(gray_mask, cv2.cvtColor(bgr_mask, cv2.COLOR_BGR2GRAY))
 
-        if self.parameter_model.current_parameters.mode:
+        if self.parameter_model.get_current_parameters().mode:
             processed_image = fill_masked_area(current_image, gray_mask)
         else:
             processed_image = inpaint_image(current_image, gray_mask)
 
-        processed_image = sharpen_image(processed_image, self.parameter_model.current_parameters.w / 10)
+        processed_image = sharpen_image(processed_image, self.parameter_model.get_current_parameters().w / 10)
         return processed_image
 
     # RedoUndoInterface delegation
@@ -183,13 +170,11 @@ class BaseModel(RedoUndoInterface):
     # Navigation methods that need coordination
     def prev_image(self):
         if self.image_model.prev_image():
-            self.parameter_model.update_current_parameters()
             return True
         return False
 
     def next_image(self):
         if self.image_model.next_image():
-            self.parameter_model.update_current_parameters()
             return True
         return False
 

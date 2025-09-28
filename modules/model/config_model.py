@@ -9,7 +9,7 @@ class ConfigData:
     # threshold_min: int = 1
     # threshold_max: int = 225
     weight: float = 0.45
-    apply_same_parameters: bool = True
+    # apply_same_parameters: bool = True
 
 
 class ConfigModel:
