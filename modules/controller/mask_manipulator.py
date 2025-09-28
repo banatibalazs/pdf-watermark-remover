@@ -66,8 +66,8 @@ class MaskManipulator:
 
     def apply_thresholds(self) -> None:
         filtered_image = cv2.inRange(self.model.image_model.get_current_image_gray(),
-                                            np.array(self.model.config_model.get_threshold_min(), dtype=np.uint8),
-                                            np.array(self.model.config_model.get_threshold_max(), dtype=np.uint8))
+                                            np.array(self.model.mask_model.get_threshold_min(), dtype=np.uint8),
+                                            np.array(self.model.mask_model.get_threshold_max(), dtype=np.uint8))
 
         self.model.mask_model.set_temp_mask_after_threshold(cv2.bitwise_and(filtered_image, self.model.mask_model.mask_data.temp_mask))
 

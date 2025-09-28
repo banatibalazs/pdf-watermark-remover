@@ -185,11 +185,11 @@ class ThresholdGUIConfig:
                                     'callback': controller.on_weight_trackbar,
                                     'range': (0, 100)
             },
-            'Threshold min:': {'value': controller.model.config_model.get_threshold_min(),
+            'Threshold min:': {'value': controller.model.mask_model.get_threshold_min(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'min'),
                               'range': (0, 255)
             },
-            'Threshold max:': {'value': controller.model.config_model.get_threshold_max(),
+            'Threshold max:': {'value': controller.model.mask_model.get_threshold_max(),
                               'callback': lambda val: controller.on_threshold_trackbar(val, 'max'),
                               'range': (0, 255)
             }
