@@ -108,7 +108,7 @@ class ImageModel:
     def get_current_page_index(self) -> int:
         return self.image_data.current_page_index
 
-    def get_total_images(self) -> int:
+    def get_number_of_pages(self) -> int:
         return len(self.image_data.images)
 
     def get_original_sized_images(self) -> List[np.ndarray]:
