@@ -60,7 +60,10 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/thresholding_mask.png' width='30%' />
 </p>
 
-- **Mask Drawing:** Users can manually refine the mask by drawing on it. Right-click to erase, left-click to draw. There are two cursor types: circle and rectangle.
+- **Mask Drawing:** Users can manually refine the mask by drawing on it. 
+    - Right-click to erase
+    - Left-click to draw. 
+    - There are two cursor types: circle and rectangle.
 <p>
     <img src='gifs/drawing_mask.png' width='30%' />
     <img src='gifs/erasing_mask.png' width='30%' />
