@@ -40,10 +40,10 @@ class ConfigModel:
     # def set_threshold_max(self, value: int):
     #     self.config_data.threshold_max = int(value)
 
-    def toggle_apply_same_parameters(self) -> bool:
-        self.config_data.apply_same_parameters = not self.config_data.apply_same_parameters
-        return self.config_data.apply_same_parameters
-
-    def get_apply_same_parameters(self) -> bool:
-        print(self.config_data.apply_same_parameters)
-        return self.config_data.apply_same_parameters
+    # def toggle_apply_same_parameters(self) -> bool:
+    #     self.config_data.apply_same_parameters = not self.config_data.apply_same_parameters
+    #     return self.config_data.apply_same_parameters
+    #
+    # def get_apply_same_parameters(self) -> bool:
+    #     print(self.config_data.apply_same_parameters)
+    #     return self.config_data.apply_same_parameters

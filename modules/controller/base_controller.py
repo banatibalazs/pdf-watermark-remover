@@ -27,8 +27,6 @@ class BaseController:
 
     def update_view(self):
         image = self.model.get_image_to_show()
-        if self.model.config_model.get_mode() == MaskMode.ADJUST:
-            self.view.update_trackbars(self.model.parameter_model.get_current_parameters())
         self.view.display_image(image)
 
     def on_weight_trackbar(self, pos):
@@ -123,19 +121,17 @@ class BaseController:
         self.update_view()
 
     def on_toggle_apply_same_parameters(self):
-        self.model.toggle_apply_same_parameters()
+        self.model.parameter_model.toggle_apply_same_parameters()
 
     #####################################################################
 
     def on_parameter_changed(self, attr, val):
         self.update_parameter(attr, val)
+        self.view.update_trackbars(self.model.parameter_model.get_current_parameters_as_dict())
+    #      TODO: not working properly
 
     def update_parameter(self, attr, val):
-        val = int(val)
-        setattr(self.model.parameter_model.current_parameters, attr, val)
-        if self.model.config_model.config_data.apply_same_parameters:
-            for param in self.model.parameter_model.parameters:
-                setattr(param, attr, val)
+        self.model.parameter_model.set_current_parameter(attr, int(val))
         self.view.display_image(self.model.get_processed_current_image())
 
     def get_parameters(self):

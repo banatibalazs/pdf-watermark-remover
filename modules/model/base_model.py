@@ -44,6 +44,7 @@ class ParameterModel:
         self.image_model = image_model
         self.parameters: List[ParamsForRemoval] = []
         self.current_parameters: Optional[ParamsForRemoval] = None
+        self.apply_same_parameters = True
         self.initialize_parameters()
 
     def initialize_parameters(self) -> None:
@@ -64,6 +65,25 @@ class ParameterModel:
 
     def get_parameters(self) -> List[ParamsForRemoval]:
         return self.parameters
+
+    def toggle_apply_same_parameters(self) -> bool:
+        self.apply_same_parameters = not self.apply_same_parameters
+        return self.apply_same_parameters
+
+    def get_apply_same_parameters(self) -> bool:
+        return self.apply_same_parameters
+
+    def set_current_parameter(self, attr: str, val: Any) -> None:
+        if hasattr(self.current_parameters, attr):
+            setattr(self.current_parameters, attr, val)
+            print(f"Set {attr} to {val} for current parameters.")
+            # If apply_same_parameters is enabled, update all parameters
+            if self.apply_same_parameters:
+                print(f"Set {attr} to {val} for all parameters.")
+                for param in self.parameters:
+                    setattr(param, attr, val)
+        else:
+            raise AttributeError(f"ParamsForRemoval has no attribute '{attr}'")
 
 
 class BaseModel(RedoUndoInterface):
@@ -172,12 +192,5 @@ class BaseModel(RedoUndoInterface):
             self.parameter_model.update_current_parameters()
             return True
         return False
-
-    def toggle_apply_same_parameters(self):
-        apply_same = self.config_model.toggle_apply_same_parameters()
-        print("Apply same parameters to all images:", apply_same)
-        if apply_same:
-            self.parameter_model.set_all_parameters_the_same_as_current()
-        return apply_same
 
 
