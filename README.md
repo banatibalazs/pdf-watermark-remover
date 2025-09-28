@@ -18,6 +18,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/median_image_low.png' width='32%' />
     <img src='gifs/median_image_high.png' width='32%' />
 </p>
+
 - The "Image <---> Mask" trackbar: This trackbar changes the weithing between the image and the mask. 
     - At 0, only the image is shown.
     - At 100, only the mask is shown.
@@ -27,6 +28,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/both.png' width='32%' />
     <img src='gifs/mask.png' width='32%' />
 </p>
+
 - After finishing the mask, set the color ranges for the watermark removal. 
 <p>
     <img src='gifs/range_wide.png' width='32%' />
@@ -41,22 +43,26 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/area_selection.png' width='30%' />
     <img src='gifs/area_selection_after_release.png' width='30%' />
 </p>
+
 - **Thresholding:** Applies thresholding to create a binary mask of the watermark area.
 <p>
     <img src='gifs/thresholding_mask.png' width='30%' />
 </p>
+
 - **Mask Drawing:** Users can manually refine the mask by drawing on it. Right-click to erase, left-click to draw. There are two cursor types: circle and rectangle.
 <p>
     <img src='gifs/drawing_mask.png' width='30%' />
     <img src='gifs/erasing_mask.png' width='30%' />
     <img src='gifs/cursor_type_rectangle.png' width='30%' />
 </p>
+
 - **Mask Erosion/Dilation:** Provides options to erode or dilate the mask to improve accuracy.
 
 - **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
 <p>
  <img src='gifs/set_color_ranges_and_other.png' width='30%' />
 </p>
+
 - **Watermark Removal:** Removes the watermark from the images and saves the output as a new PDF file, either by filling the area with the most common color or by inpainting.
 
 
