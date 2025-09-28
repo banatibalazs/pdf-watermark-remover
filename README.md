@@ -10,7 +10,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
 
 ## Overview
 <p>
-    <img src='gifs/both.png' width='75%' />
+    <img src='gifs/both.png' width='100%' />
 </p>
 
 - The "Image <---> Median Image" trackbar: 
