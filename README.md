@@ -10,8 +10,8 @@ A Python application for removing watermarks from PDF files using mask-based ima
 
 ## Overview
 - The "Image <---> Median Image" trackbar: 
-    - Default value is 1, which means the actual image is used.
-    - Above that a 'median image' is calculated from this number of pages. It is made by calculating the median color value for each pixel across the pages. This helps to highlight the watermark, as it is usually consistent across pages, while the content varies.
+    - Default value is 1, which means the **actual image** is used.
+    - Above that a **'median image'** is calculated from this number of pages. It is made by calculating the median color value for each pixel across the pages. This helps to highlight the watermark, as it is usually consistent across pages, while the content varies.
     - It is limited to 50 pages because it is computationally expensive.
 <p>
     <img src='gifs/image.png' width='32%' />
@@ -29,7 +29,14 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/mask.png' width='32%' />
 </p>
 
-- After finishing the mask, set the color ranges for the watermark removal. 
+- After finishing the mask, set the parameters for the watermark removal. 
+  - **mode**: It has two values:
+    - **inpainting**: The watermark area is filled in using an inpainting algorithm, which tries to reconstruct the missing parts based on the surrounding pixels.
+    - **most_common_color**: The watermark area is filled with the most common color in the image, which can be effective for simple watermarks on uniform backgrounds.
+  - **w**: sharpening factor
+  - **r_min, r_max, g_min, g_max, b_min, b_max**: These define the color range for the watermark. Pixels within this range are considered part of the watermark.
+  - Every page can have its own color range and mode.
+  - When checkbox is checked, the same parameters are used for all pages.
 <p>
     <img src='gifs/range_wide.png' width='32%' />
     <img src='gifs/range_narrow.png' width='32%' />
