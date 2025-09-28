@@ -13,6 +13,8 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/image.png' width='30%' />
     <img src='gifs/both.png' width='30%' />
     <img src='gifs/mask.png' width='30%' />
+</p>
+<p>
     <img src='gifs/range_wide.png' width='30%' />
     <img src='gifs/range_narrow.png' width='30%' />
     <img src='gifs/range_optimal.png' width='30%' />
@@ -39,7 +41,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
 
 - **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
 <p>
- <img src='gifs/set_color_ranges_and_other.png' width='50%' />
+ <img src='gifs/set_color_ranges_and_other.png' width='30%' />
 </p>
 - **Watermark Removal:** Removes the watermark from the images and saves the output as a new PDF file, either by filling the area with the most common color or by inpainting.
 
