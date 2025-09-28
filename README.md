@@ -9,18 +9,38 @@
 A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
 
 ## Overview
-![Description](gifs/pyqt_gui_1.png)
+<center>
+ <img src='gifs/show_the_image.png' width='50%' />
+</center>
 
 ## Features
 - **PDF to Image Conversion:** Converts each page of the PDF into an image for processing.
 - **Area Selection:** Allows users to select the area of the watermark using a graphical interface.
-![Description](gifs/pyqt_gui_mask_selected.png)
+<center>
+ <img src='gifs/area_selection.png' width='50%' />
+</center>
+<center>
+ <img src='gifs/area_selection_after_release.png' width='50%' />
+</center>
 - **Thresholding:** Applies thresholding to create a binary mask of the watermark area.
-![Description](gifs/pyqt_gui_mask_threshold.png)
+<center>
+ <img src='gifs/thresholding_mask.png' width='50%' />
+</center>
 - **Mask Drawing:** Users can manually refine the mask by drawing on it. Right-click to erase, left-click to draw. There are two cursor types: circle and rectangle.
+<center>
+ <img src='gifs/drawing_mask.png' width='50%' />
+</center>
+<center>
+ <img src='gifs/erasing_mask.png' width='50%' />
+</center>
+<center>
+ <img src='gifs/cursor_type_rectangle.png' width='50%' />
+</center>
 - **Mask Erosion/Dilation:** Provides options to erode or dilate the mask to improve accuracy.
 - **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
-  ![Description](gifs/pyqt_gui_2.png)
+<center>
+ <img src='gifs/set_color_ranges_and_other.png' width='50%' />
+</center>
 - **Watermark Removal:** Removes the watermark from the images and saves the output as a new PDF file, either by filling the area with the most common color or by inpainting.
 
 
