@@ -19,7 +19,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/median_image_high.png' width='32%' />
 </p>
 
-- The "Image <---> Mask" trackbar: This trackbar changes the weithing between the image and the mask. 
+- The "Image <---> Mask" trackbar: This trackbar changes the weighting between the image and the mask. 
     - At 0, only the image is shown.
     - At 100, only the mask is shown.
     - In between, a weighted combination of the two is displayed. This helps to visualize how well the mask aligns with the watermark in the image.
