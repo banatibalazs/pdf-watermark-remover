@@ -47,7 +47,7 @@ class ParameterModel:
         self.initialize_parameters()
 
     def initialize_parameters(self) -> None:
-        total_images = self.image_model.get_total_images()
+        total_images = self.image_model.get_number_of_pages()
         self.parameters = [ParamsForRemoval() for _ in range(total_images)]
         self.current_parameters = self.parameters[self.image_model.get_current_page_index()]
 
