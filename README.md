@@ -9,6 +9,10 @@
 A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
 
 ## Overview
+<p>
+    <img src='gifs/both.png' width='75%' />
+</p>
+
 - The "Image <---> Median Image" trackbar: 
     - Default value is 1, which means the **actual image** is used.
     - Above that a **'median image'** is calculated from this number of pages. It is made by calculating the median color value for each pixel across the pages. This helps to highlight the watermark, as it is usually consistent across pages, while the content varies.
