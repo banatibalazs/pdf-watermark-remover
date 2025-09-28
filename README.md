@@ -13,7 +13,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/both.png' width='100%' />
 </p>
 
-- The "Image <---> Median Image" trackbar: 
+- **The "Image <---> Median Image" trackbar**: 
     - Default value is 1, which means the **actual image** is used.
     - Above that a **'median image'** is calculated from this number of pages. It is made by calculating the median color value for each pixel across the pages. This helps to highlight the watermark, as it is usually consistent across pages, while the content varies.
     - It is limited to 50 pages because it is computationally expensive.
@@ -23,7 +23,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/median_image_high.png' width='32%' />
 </p>
 
-- The "Image <---> Mask" trackbar: This trackbar changes the weighting between the image and the mask. 
+- **The "Image <---> Mask" trackbar**: This trackbar changes the weighting between the image and the mask. 
     - At 0, only the image is shown.
     - At 100, only the mask is shown.
     - In between, a weighted combination of the two is displayed. This helps to visualize how well the mask aligns with the watermark in the image.
@@ -33,7 +33,7 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/mask.png' width='32%' />
 </p>
 
-- After finishing the mask, set the parameters for the watermark removal. 
+- After finishing the mask, **set the parameters for the watermark removal**. 
   - **mode**: It has two values:
     - **inpainting**: The watermark area is filled in using an inpainting algorithm, which tries to reconstruct the missing parts based on the surrounding pixels.
     - **most_common_color**: The watermark area is filled with the most common color in the image, which can be effective for simple watermarks on uniform backgrounds.
