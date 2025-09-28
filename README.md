@@ -6,7 +6,7 @@
 ![PyQt5](https://img.shields.io/badge/pyqt5--green.svg)
 
 
-A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
+A Python application for removing watermarks from PDF files using mask-based image processing. 
 
 ## Overview
 <p>
