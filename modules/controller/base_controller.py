@@ -152,13 +152,13 @@ class BaseController:
 
     # Delegating methods to appropriate components
     def erode_mask(self):
-        self.mask_manipulator.erode_mask()
         self.mask_manipulator.save_state()
+        self.mask_manipulator.erode_mask()
         self.update_view()
 
     def dilate_mask(self):
-        self.mask_manipulator.dilate_mask()
         self.mask_manipulator.save_state()
+        self.mask_manipulator.dilate_mask()
         self.update_view()
 
     def get_threshold_min(self):
