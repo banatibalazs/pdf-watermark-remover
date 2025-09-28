@@ -33,7 +33,40 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/mask.png' width='32%' />
 </p>
 
-- After finishing the mask, **set the parameters for the watermark removal**. 
+- **Mask Selection:**: 
+    - Left-click and drag to select an arbitrary area.
+    - Releasing the mouse button finalizes the selection.
+<p>
+    <img src='gifs/area_selection.png' width='30%' />
+    <img src='gifs/area_selection_after_release.png' width='30%' />
+</p>
+
+- **Mask Drawing:** Users can select and refine the mask by drawing on it with a cursor. 
+    - Right-click to erase
+    - Left-click to draw. 
+    - There are two cursor types: circle and rectangle.
+    - The cursor size is adjustable with mouse wheel.
+<p>
+    <img src='gifs/drawing_mask.png' width='30%' />
+    <img src='gifs/erasing_mask.png' width='30%' />
+    <img src='gifs/cursor_type_rectangle.png' width='30%' />
+</p>
+
+- **Thresholding:** Applies thresholding to the masked area of the image to refine the mask further.
+<p>
+    <img src='gifs/thresholding_mask.png' width='30%' />
+</p>
+
+- **Mask Erosion/Dilation:**
+  - Erosion: Shrinks the white areas in the mask, which can help remove small unwanted details.
+  - Dilation: Expands the white areas in the mask, which can help fill in gaps and/or to cover the edges of the watermark.
+<p>
+    <img src='gifs/erode.png' width='30%' />
+    <img src='gifs/erode_dilate_original.png' width='30%' />
+    <img src='gifs/dilate.png' width='30%' />
+</p>
+
+- After pressing the **"Finished mask"** button, set the parameters for the watermark removal. 
   - **mode**: It has two values:
     - **inpainting**: The watermark area is filled in using an inpainting algorithm, which tries to reconstruct the missing parts based on the surrounding pixels.
     - **most_common_color**: The watermark area is filled with the most common color in the image, which can be effective for simple watermarks on uniform backgrounds.
@@ -45,41 +78,6 @@ A Python application for removing watermarks from PDF files using mask-based ima
     <img src='gifs/range_wide.png' width='32%' />
     <img src='gifs/range_narrow.png' width='32%' />
     <img src='gifs/range_optimal.png' width='32%' />
-</p>
-
-## Features
-- **PDF to Image Conversion:** Converts each page of the PDF into an image for processing.
-- **Area Selection:** Allows users to select the area of the watermark using a graphical interface.
-<p>
-    <img src='gifs/area_selection.png' width='30%' />
-    <img src='gifs/area_selection_after_release.png' width='30%' />
-</p>
-
-- **Thresholding:** Applies thresholding to create a binary mask of the watermark area.
-<p>
-    <img src='gifs/thresholding_mask.png' width='30%' />
-</p>
-
-- **Mask Drawing:** Users can manually refine the mask by drawing on it. 
-    - Right-click to erase
-    - Left-click to draw. 
-    - There are two cursor types: circle and rectangle.
-<p>
-    <img src='gifs/drawing_mask.png' width='30%' />
-    <img src='gifs/erasing_mask.png' width='30%' />
-    <img src='gifs/cursor_type_rectangle.png' width='30%' />
-</p>
-
-- **Mask Erosion/Dilation:** Provides options to erode or dilate the mask to improve accuracy.
-<p>
-    <img src='gifs/erode.png' width='30%' />
-    <img src='gifs/erode_dilate_original.png' width='30%' />
-    <img src='gifs/dilate.png' width='30%' />
-</p>
-
-- **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
-<p>
- <img src='gifs/set_color_ranges_and_other.png' width='30%' />
 </p>
 
 - **Watermark Removal:** Removes the watermark from the images and saves the output as a new PDF file, either by filling the area with the most common color or by inpainting.
