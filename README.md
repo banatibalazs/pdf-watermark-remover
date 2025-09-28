@@ -9,11 +9,13 @@
 A Python application for removing watermarks from PDF files using mask-based image processing. Supports multiple GUI frameworks (PyQt, Tkinter, OpenCV) and a Flask web interface.
 
 ## Overview
+- Using the 'Image <---> Mask' trackbar
 <p>
     <img src='gifs/image.png' width='30%' />
     <img src='gifs/both.png' width='30%' />
     <img src='gifs/mask.png' width='30%' />
 </p>
+- After finishing the mask, set the color ranges for the watermark removal. 
 <p>
     <img src='gifs/range_wide.png' width='30%' />
     <img src='gifs/range_narrow.png' width='30%' />
