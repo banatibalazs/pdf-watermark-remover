@@ -69,9 +69,9 @@ A Python application for removing watermarks from PDF files using mask-based ima
 
 - **Mask Erosion/Dilation:** Provides options to erode or dilate the mask to improve accuracy.
 <p>
-    <img src='gifs/erode.png' width='32%' />
-    <img src='gifs/erode_dilate_original.png' width='32%' />
-    <img src='gifs/dilate.png' width='32%' />
+    <img src='gifs/erode.png' width='30%' />
+    <img src='gifs/erode_dilate_original.png' width='30%' />
+    <img src='gifs/dilate.png' width='30%' />
 </p>
 
 - **Color Range Setting:** Allows users to set a color range to further refine which parts of the image should be considered as part of the watermark. Each page can have its own color range and mode (inpainting or filling with the most common color).
