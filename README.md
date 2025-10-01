@@ -154,7 +154,7 @@ python remover.py
 
 
 The arguments for the script are as follows (all are optional)
-- **pdf_path**: The path to the PDF file. Default is `input.pdf`.
+- **--pdf_path**: The path to the PDF file. Default is `input.pdf`.
 - **--gui_type**: The type of GUI to use. Default is `tkinter`. Other option is `pyqt` (but it is not tested on all platforms)
 - **--dpi**: The resolution of the images extracted from the PDF file. Default is `175`.
 - **--max_width**: The maximum width of the images shown during the mask selection. Default is `900`.
@@ -162,7 +162,7 @@ The arguments for the script are as follows (all are optional)
 
 
 ```
-python remover.py input.pdf --gui_type=pyqt5 --dpi 300 --max_width 1920 --max_height 1080
+python remover.py --pdf_path=input.pdf --gui_type=pyqt5 --dpi 300 --max_width 1920 --max_height 1080
 ```
 
 
