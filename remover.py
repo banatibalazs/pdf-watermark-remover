@@ -13,8 +13,8 @@ SAVE_PATH = 'output.pdf'
 # The final PDF will have the same dimensions as the original PDF
 MAX_WIDTH = 900
 MAX_HEIGHT = 800
-DEFAULT_GUI = 'pyqt5'
-# DEFAULT_GUI = 'tkinter'
+# DEFAULT_GUI = 'pyqt5'
+DEFAULT_GUI = 'tkinter'
 
 # Set the DPI for the images, this affects the quality of the final PDF
 DPI = 175
