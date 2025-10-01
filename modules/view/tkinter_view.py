@@ -97,7 +97,7 @@ class TkinterView(DisplayInterface):
             margin = button.get('margin', (0, 0, 0, 0))
             bg_color = button.get('bg_color', (200, 200, 200))
 
-            btn = tk.Button(button_frame, text=button['text'], command=button['callback'], bg='SystemButtonFace')
+            btn = tk.Button(button_frame, text=button['text'], command=button['callback'])
             btn.grid(row=row, column=col, columnspan=colspan,
                 padx=(margin[1], margin[3]),  # (left, right)
                 pady=(margin[0], margin[2]),  # (top, bottom)
