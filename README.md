@@ -117,6 +117,12 @@ The script requires the following Python libraries:
     ```bash
     python -m venv env_name
     ```
+   if virtualenv is not installed, you can install it with:
+   ```bash
+   apt-get install python3-venv  # on Ubuntu/Debian
+   ```
+   
+   then activate the virtual environment:
    - on Windows:
     
         ```bash
@@ -133,6 +139,12 @@ The script requires the following Python libraries:
     ```bash
     pip install opencv-contrib-python pymupdf PyQt5 Pillow
     ```
+
+    if tkinter is not installed, you can install it with:
+   - on Ubuntu/Debian:
+        ```bash
+        sudo apt-get install python3-tk
+        ```
 
 ## Running the Script
 
